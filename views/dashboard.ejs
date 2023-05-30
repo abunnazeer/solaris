@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- head and meta-->
+    <%- include('layouts/head') %>
+  </head>
+
+  <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
+    <div class="wrapper">
+      <!-- <div id="loader"></div> -->
+
+      <header class="main-header">
+        <!-- header-->
+        <%- include('layouts/header') %>
+      </header>
+
+      <aside class="main-sidebar">
+        <!-- sidebar-->
+        <%- include('layouts/aside') %>
+      </aside>
+
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <div class="container-full">
+          <!-- Main content -->
+          <%- include('maincontent') %>
+
+          <!-- /.content -->
+        </div>
+      </div>
+      <!-- /.content-wrapper -->
+
+      <footer class="main-footer">
+        <!-- footer-->
+        <%- include('layouts/footer') %>
+      </footer>
+      <!-- Side panel -->
+      <!-- quick_user_toggle -->
+      <div class="modal modal-right fade" id="quick_user_toggle" tabindex="-1">
+        <!-- user profile -->
+        <%- include('layouts/right') %>
+      </div>
+      <!-- /quick_user_toggle -->
+
+      <!-- Control Sidebar -->
+      <%- include('layouts/sidebar') %>
+
+      <!-- /.control-sidebar -->
+
+      <!-- Add the sidebar's background. This div must be placed immediately after the control sidebar -->
+      <!-- <div class="control-sidebar-bg"></div> -->
+    </div>
+    <!-- ./wrapper -->
+
+    <!-- chatbody -->
+
+    <!-- end chatbody -->
+    <!-- Page Content overlay -->
+
+    <%- include('layouts/script') %>
+  </body>
+</html>

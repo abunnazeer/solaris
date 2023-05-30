@@ -1,0 +1,144 @@
+.light-skin .bg-faded{
+    background-color: #F9F9F9;
+}
+
+.dark-skin .bg-faded{
+    background-color: #f0f8ff14;
+}
+.border-dash{
+    border: 2px dashed lightgray;
+}
+.bg-2500B6{
+    background-color: #2500B6;
+}
+hr{
+    margin: -0.5px;
+}
+.side-box{
+     padding: 30px 30px 32px 20px;
+}
+.box-inverse{
+    background: url('../../../../images/card-1.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+    left: -1px;
+}
+@media only screen and (max-width: 1600px) {
+    
+    hr{
+        margin: -1px;
+    }
+    #apexcharts-pie{
+        position: relative;
+        left: -50px;
+    }
+}
+@media only screen and (max-width: 1440px) {
+    .swap_box .box-header{
+        padding: 10px;
+    }
+    hr{
+        margin: 33.5px;
+    }
+    .favorite-box{
+        width: 33%;
+    }
+    .favorite-box2{
+        width: 26.66%;
+    }
+    .side-box{
+    padding: 16px 17px 12px 9px;
+    }
+    .box-inverse{
+    position: relative;
+    left: 0px;
+    }
+}
+@media only screen and (max-width: 1439px) {
+    .swap_box .box-header{
+        padding: 10px;
+    }
+    hr{
+        margin: 35px;
+    }
+    .favorite-box{
+        width: 33%;
+    }
+    .favorite-box2{
+        width: 26.66%;
+    }
+    .side-box{
+    padding: 16px 17px 11px 9px;
+    }
+    .box-inverse{
+    position: relative;
+    left: 0px;
+    }
+}
+@media only screen and (max-width: 1436px) {
+    .swap_box .box-header{
+        padding: 10px;
+    }
+    hr{
+        margin: 17px;
+    }
+    .favorite-box{
+        width: 33%;
+    }
+    .favorite-box2{
+        width: 26.66%;
+    }
+    .side-box{
+    padding: 16px 17px 10px 9px;
+    }
+    .box-inverse{
+    position: relative;
+    left: 0px;
+    }
+}
+@media only screen and (max-width: 1426px) {
+    hr{
+        margin: -1px;
+    }
+}
+@media only screen and (max-width: 1400px) {
+    hr{
+        margin: -1px;
+    }
+    .side-box{
+    padding: 4px 17px 5px 9px;
+    }
+}
+@media only screen and (max-width: 1366px) {
+    .swap_box .box-header{
+        padding: 19.5px;
+   }
+   hr{
+        margin: auto;
+        display: none;
+    }
+    .favorite-box{
+        width: 50%;
+    }
+    .favorite-box2{
+        width: auto;
+    }
+    #apexcharts-pie{
+        position: relative;
+        left: 0px;
+    }
+}
+.apexcharts-legend-marker{
+    border-radius: 10px;
+}
+.flex-nav-prev{
+     display: none;
+}
+.flex-nav-next{
+     display: none;
+}
+.light-skin .bg-f7fafe{
+    background-color: #f7fafe;
+}
+

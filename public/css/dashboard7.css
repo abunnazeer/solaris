@@ -1,0 +1,93 @@
+.index-section{
+	padding: 50px 70px 40px 0px;
+}
+.index-one{
+	background-image: url(../../../../images/box-svg.png);
+	width: auto;
+	height: auto;
+	background-position: left bottom;
+	background-size: cover;
+	background-color: #EBF3F5;
+}
+.index-two{
+	background-image: url(../../../../images/box-svg-2.png);
+	width: auto;
+	height: auto;
+	background-position: left bottom;
+	background-size: cover;
+	background-color: #FEFCE3;
+}
+.index-three{
+	background-image: url(../../../../images/box-svg-3.png);
+	width: auto;
+	height: auto;
+	background-position: left bottom;
+	background-size: cover;
+	background-color: #F2ECF6;
+}
+.index-four{
+	background-image: url(../../../../images/box-svg-4.png);
+	width: auto;
+	height: auto;
+	background-position: left bottom;
+	background-size: cover;
+	background-color: #FFF0ED;
+}
+.image-box{
+	background-color: #FEFCE3;
+}
+
+.nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link{
+	color: #0e0e23;
+}
+.nav-tabs .nav-link{
+	color: #a1a4b5;
+}
+.table-scroll-contant small{
+	display: none;
+}
+/*====================================*/
+@media only screen and (max-width: 1600px) {
+  	.index-section{
+		padding: 50px 30px 40px 0px;
+	}
+}
+@media only screen and (max-width: 1280px) {
+  	.index-section{
+		padding: 50px 15px 40px 0px;
+	}
+	.table > tbody > tr > td, .table > tbody > tr > th{
+		padding: 0.5rem;
+	}
+}
+@media only screen and (max-width: 1024px) {
+	.table > tbody > tr > td, .table > tbody > tr > th{
+		padding: 1rem;
+	}
+}
+@media only screen and (max-width: 835px) {
+	.table-scroll-contant small{
+		display: block;
+	}
+}
+@media only screen and (max-width: 768px) {
+  	.index-section{
+		padding: 50px 0px 40px 0px;
+	}
+	.nav-tabs .nav-link{
+		padding: 8px 10px;
+	}
+
+}
+@media only screen and (max-width: 414px) {
+	
+	.fund-section{
+		margin: -4px;
+	}
+}
+@media only screen and (max-width: 390px) {
+	
+	.fund-section{
+		margin: -17px;
+	}
+}

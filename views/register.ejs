@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('layouts/head') %>
+  </head>
+
+  <body
+    class="hold-transition theme-primary bg-img"
+    style="background-image: url(../../../images/auth-bg/bg-16.jpg)"
+  >
+    <div class="container h-p100">
+      <div class="row align-items-center justify-content-md-center h-p100">
+        <div class="col-12">
+          <div class="row justify-content-center g-0">
+            <div class="col-lg-5 col-md-5 col-12">
+              <div class="bg-white rounded10 shadow-lg">
+                <div class="content-top-agile p-20 pb-0">
+                  <h2 class="text-primary fw-600">Get started with Us</h2>
+                  <p class="mb-0 text-fade">Register a new membership</p>
+                </div>
+                <div class="p-40">
+                  <form class="form">
+                    <div class="form-group">
+                      <div class="input-group mb-3">
+                        <span class="input-group-text bg-transparent"
+                          ><i class="text-fade ti-user"></i
+                        ></span>
+                        <input
+                          type="text"
+                          name="fullName"
+                          class="form-control ps-15 bg-transparent"
+                          placeholder="Full Name"
+                          id="fullName"
+                        />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="input-group mb-3">
+                        <span class="input-group-text bg-transparent"
+                          ><i class="text-fade ti-email"></i
+                        ></span>
+                        <input
+                          type="email"
+                          name="email"
+                          class="form-control ps-15 bg-transparent"
+                          placeholder="Email"
+                          id="email"
+                        />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="input-group mb-3">
+                        <span class="input-group-text bg-transparent"
+                          ><i class="text-fade ti-lock"></i
+                        ></span>
+                        <input
+                          type="password"
+                          class="form-control ps-15 bg-transparent"
+                          placeholder="Password"
+                          id="password"
+                        />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="input-group mb-3">
+                        <span class="input-group-text bg-transparent"
+                          ><i class="text-fade ti-lock"></i
+                        ></span>
+                        <input
+                          type="password"
+                          class="form-control ps-15 bg-transparent"
+                          placeholder="Retype Password"
+                          id="passwordConfirm"
+                        />
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                        <div class="checkbox">
+                          <input type="checkbox" id="basic_checkbox_1" />
+                          <label for="basic_checkbox_1"
+                            >I agree to the
+                            <a href="#" class="text-primary">Terms</a></label
+                          >
+                        </div>
+                      </div>
+                      <!-- /.col -->
+                      <div class="col-12 text-center">
+                        <button
+                          type="submit"
+                          class="btn btn-primary w-p100 mt-10"
+                        >
+                          REGISTER
+                        </button>
+                      </div>
+                      <!-- /.col -->
+                    </div>
+                  </form>
+                  <div class="text-center">
+                    <p class="mt-15 mb-0 text-fade">
+                      Already have an account?<a
+                        href="/login"
+                        class="text-primary ms-5"
+                        >Sign In</a
+                      >
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vendor JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+    <script src="js/vendors.min.js"></script>
+    <script src="js/pages/chat-popup.js"></script>
+    <script src="assets/icons/feather-icons/feather.min.js"></script>
+    <script src="js/register.js"></script>
+  </body>
+</html>

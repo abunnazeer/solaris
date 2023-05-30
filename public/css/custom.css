@@ -1,0 +1,221 @@
+		#donut-chart{
+    height: 250px;
+}
+
+.four_box p{
+    font-size: 14px;
+}
+#donut-chart svg text {
+    font-weight: 500 !important;
+    font-size: 6px !important;
+    fill: #a1a4b5 !important;
+}
+.sales-effect-1 {
+    width: 90px;
+    color: #ffffff;
+    padding: 5px 25px;
+	margin-bottom:15px;
+}
+.images_box{
+    height: 22.8rem;
+}
+
+.slide_img{
+    height: 20rem;
+}
+.second_box{
+    height: 22.8rem;
+}
+.carousel-indicators [data-bs-target]{
+    background-color: #f2426d;
+}
+.widget-user-2 .widget-user-username {
+    margin-top: 5px;
+    margin-left: 70px;
+    font-size: 15px;
+}
+
+.widget-user-desc{
+    font-size: 15px;
+}
+
+#area-chart3{
+    height: 200px;
+}
+
+@media only screen and (max-width: 600px) {
+  .slide_img {
+    height: auto;
+  }
+  .images_box{
+    height: auto;
+  }
+}
+
+/*new dashboard index2*/
+
+
+.ml-auto{
+    margin-left: auto !important;
+}
+.float-right{
+    float: right;
+}
+.fs-35{
+    font-size: 35px;
+}
+.chart_card{
+    height: 34.9rem;
+}
+.chart_card2{
+    height: 40rem;
+}
+.apexcharts-toolbar{
+    display: none;
+}
+.width-100{
+    width: 100%;
+}
+
+@media only screen and (max-width: 1455px) {
+  .product_box{
+    padding:10px; ;
+  }
+}
+
+.product_box{
+    text-align: -moz-center;
+    text-align: -webkit-center;
+  }
+
+.product_icon {
+    padding: 5px;
+    background-color: #c9f4dc;
+    border-radius: 50%;
+}
+.product_icon i {
+    margin-left: -9px;
+}
+
+.l-h-55{
+    line-height: 55px;
+} 
+.ml-5{
+    margin-left: 5px;
+}
+
+.Sales_Profit{
+    height: 9.35rem;
+}
+
+@media only screen and (max-width: 1367px) {
+  .Sales_Profit .col-8{
+    padding: 0px;
+  }
+}
+@media only screen and (max-width: 1199px) {
+  .Sales_Profit .col-8{
+    padding: 0px 10px;
+  }
+}
+
+@media only screen and (max-width: 390px) {
+  .Sales_Profit .col-8{
+    padding: 0px;
+  }
+}
+
+.side_product{
+    height:59.15rem;
+  }
+
+
+
+@media only screen and (max-width: 400px) {
+  .side_product{
+    height:60.15rem;
+  }
+}
+
+
+/*index4 css*/
+#timeseries-chart .apexcharts-yaxis{
+    display: none;
+}
+
+@media only screen and (max-width: 1300px) {
+  .dashboard_box .box-body{
+    padding:10px;
+  }
+}
+@media only screen and (max-width: 1240px) {
+  .dashboard_box .box-body{
+    padding:5px; ;
+  }
+}
+@media only screen and (max-width: 1199px) {
+  .dashboard_box .box-body{
+    padding:19.5px;
+  }
+}
+
+@media only screen and (max-width: 1340px) {
+  .follow_box{
+    padding:10px;
+    padding-top: 30px;
+    height: 21.2rem;
+  }
+}
+@media only screen and (max-width: 1280px) {
+  .follow_box{
+    padding:10px;
+    padding-top: 30px;
+    height: 22.6rem;
+  }
+}
+
+@media only screen and (max-width: 1199px) {
+  .follow_box{
+    padding:19.5px;
+  }
+}
+.activ_box_1{
+    padding: 19.5px;
+}
+
+@media only screen and (max-width: 1632px) {
+  .activ_box_1{
+    padding:10px;
+  }
+
+@media only screen and (max-width: 1510px) {
+  .activ_box{
+    padding:10px;
+  }
+@media only screen and (max-width: 1199px) {
+  .activ_box{
+    padding:19.5px;
+}
+
+.activ_box_1 p{
+    margin-left: -2px;
+}
+
+@media only screen and (max-width: 1280px) {
+  .following_box{
+    padding-top:0px;
+    height: auto;
+  }
+
+
+/* --------------------Index5-Css----------------------*/
+
+.bg-faded{
+    background-color: #f0f8ff;
+}
+
+.index-one{
+    background-image: url(../../../../images/box-svg.png);
+    height: 500px;
+    width: 400px;
+}
