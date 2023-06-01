@@ -1,4 +1,4 @@
-		#donut-chart{
+	#donut-chart{
     height: 250px;
 }
 
@@ -50,7 +50,7 @@
   .images_box{
     height: auto;
   }
-}
+
 
 /*new dashboard index2*/
 
@@ -76,7 +76,7 @@
 .width-100{
     width: 100%;
 }
-
+}
 @media only screen and (max-width: 1455px) {
   .product_box{
     padding:10px; ;
@@ -135,14 +135,13 @@
   .side_product{
     height:60.15rem;
   }
-}
 
 
 /*index4 css*/
 #timeseries-chart .apexcharts-yaxis{
     display: none;
 }
-
+}
 @media only screen and (max-width: 1300px) {
   .dashboard_box .box-body{
     padding:10px;
@@ -178,11 +177,11 @@
   .follow_box{
     padding:19.5px;
   }
-}
+
 .activ_box_1{
     padding: 19.5px;
 }
-
+}
 @media only screen and (max-width: 1632px) {
   .activ_box_1{
     padding:10px;
@@ -191,7 +190,7 @@
 @media only screen and (max-width: 1510px) {
   .activ_box{
     padding:10px;
-  }
+  }}
 @media only screen and (max-width: 1199px) {
   .activ_box{
     padding:19.5px;
@@ -200,7 +199,7 @@
 .activ_box_1 p{
     margin-left: -2px;
 }
-
+}
 @media only screen and (max-width: 1280px) {
   .following_box{
     padding-top:0px;
@@ -208,14 +207,15 @@
   }
 
 
-/* --------------------Index5-Css----------------------*/
+
 
 .bg-faded{
     background-color: #f0f8ff;
 }
 
-.index-one{
-    background-image: url(../../../../images/box-svg.png);
+.index-one {
+    background-image: url(../images/box-svg.png);
     height: 500px;
     width: 400px;
+  }
 }

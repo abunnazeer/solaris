@@ -1,16 +1,25 @@
 const login = async (password, passwordConfirm) => {
   try {
-    const rest = await axios({
-      method: 'GET',
-      url: 'http://localhost:8000/reset-password/:token',
+    const res = await axios({
+      method: 'PATCH',
+      url: 'http://localhost:8000/reset-password/:id',
       data: {
         password,
         passwordConfirm,
       },
+
+      // params: {
+      //   token: 'token',
+      // },
     });
-    console.log(rest);
+    if (res.data.status === 'success') {
+      console.log('login successful');
+      window.setTimeout(() => {
+        location.assign('/activation');
+      }, 1500);
+    }
   } catch (err) {
-    console.log(err.response.data);
+    alert(err.response.data.message);
   }
 };
 

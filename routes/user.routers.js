@@ -1,11 +1,5 @@
 const express = require('express');
 const {
-  register,
-  login,
-  protect,
-  restrictTo,
-  forgetPassword,
-  resetPassword,
   getRegistrationForm,
   getLoginForm,
   getForgetPasswordForm,
@@ -13,11 +7,25 @@ const {
   getBizForm,
   getResetPasswordForm,
   getActivation,
-} = require('./user.controller');
+} = require('../controller/view.controller');
+
 const { updateProfile } = require('./profile.controller');
+const {
+  register,
+  login,
+  protect,
+  restrictTo,
+  forgetPassword,
+  resetPassword,
+  isLoggedIn,
+  activateAccount,
+} = require('../controller/auth.controller');
 
 const router = express();
+
+// router.use(isLoggedIn);
 router.post('/register', register);
+// router.post('/activate-account', activateAccount);
 router.post('/login', login);
 router.patch(
   '/update-profile/:id',
@@ -36,6 +44,7 @@ router.get('/profile', getProfile);
 router.get('/forget-password', getForgetPasswordForm);
 router.get('/activation', getActivation);
 router.get('/reset-password/:token', getResetPasswordForm);
+// router.post('/dashboard', protect);
 
 // const { getRegistrationFrom } = require('./user.view.controller');
 

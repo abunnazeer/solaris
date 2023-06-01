@@ -5,7 +5,7 @@ const sendEmail = async options => {
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT,
-    // secure: true,
+    secure: true,
 
     auth: {
       user: process.env.EMAIL_USERNAME,
@@ -29,7 +29,7 @@ const sendEmail = async options => {
 
 module.exports = sendEmail;
 
-// const sendEmail = async (subject, message, reply_to, send_to, send_from) => {
+// const sendEmail = async options => {
 //   const transporter = nodemailer.createTransport({
 //     host: process.env.EMAIL_HOST,
 //     port: process.env.EMAIL_PORT,
@@ -43,19 +43,18 @@ module.exports = sendEmail;
 //       rejectUnauthorized: false,
 //     },
 //   });
-//   const options = {
-//     from: send_from,
-//     to: send_to,
-//     replyTo: reply_to,
-//     subject: subject,
-//     html: message,
+//   const mailOptions = {
+//     from: 'Solaris Finance <dynastyitsp@gmail.com>',
+//     to: options.email,
+//     subject: options.subject,
+//     html: options.message,
 //   };
-//   transporter.sendMail(options, function (err, info) {
-//     if (err) {
-//       console.log(err);
-//     } else {
-//       console.log(info);
-//     }
-//   });
+// transporter.sendMail(mailOptions, function (err, info) {
+//   if (err) {
+//     console.log(err);
+//   } else {
+//     console.log(info);
+//   }
+// });
 // };
 // module.exports = sendEmail;
