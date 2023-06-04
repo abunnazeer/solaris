@@ -2,7 +2,7 @@ const login = async email => {
   try {
     const rest = await axios({
       method: 'POST',
-      url: 'http://localhost:8000/forget-password',
+      url: 'http://app.solarisfinance.com/forget-password',
       data: {
         email,
       },

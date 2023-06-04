@@ -2,7 +2,7 @@ const register = async (email, password, passwordConfirm, fullName, role) => {
   try {
     const rest = await axios({
       method: 'POST',
-      url: 'http://localhost:8000/register',
+      url: 'http://app.solarisfinance.com/register',
       data: {
         email,
         password,

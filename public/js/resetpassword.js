@@ -2,7 +2,7 @@ const login = async (password, passwordConfirm) => {
   try {
     const res = await axios({
       method: 'PATCH',
-      url: 'http://localhost:8000/reset-password/:id',
+      url: 'http://app.solarisfinance.com/reset-password/:id',
       data: {
         password,
         passwordConfirm,

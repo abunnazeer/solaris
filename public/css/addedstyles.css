@@ -1,0 +1,95 @@
+.flex__container_custom {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  align-content: center;
+  position: absolute;
+  bottom: 15px;
+}
+.flexbox__custom {
+  display: block;
+}
+.relat__position {
+  position: relative;
+}
+.flexbox__custom {
+  /* display: block; */
+  border-right: 1px solid #d2d2d2;
+  margin: 70px 30px 0px 5px;
+  padding-right: 1rem;
+}
+.flexbox__custom h1 {
+  font-size: 1.5rem;
+}
+.cardimg__extra {
+  width: 20rem !important;
+  height: 30rem !important;
+}
+.custom__bell {
+  position: absolute;
+  display: flex;
+  top: 24px;
+  left: 20px;
+  border-radius: 23px;
+  background: #ec8383;
+  padding: 10px 8px 0px 8px;
+  color: #fff;
+  font-size: 13px;
+}
+.custom__title {
+  position: absolute;
+  top: 30px;
+  font-size: 30px;
+}
+.custom__p {
+  font-size: 15px;
+  position: absolute;
+  top: 70px;
+  width: 40%;
+}
+.port__link {
+  color: #000;
+}
+.port__link:hover {
+  color: #000 !important;
+  cursor: pointer;
+}
+
+.right__image {
+  position: absolute;
+  top: 50px;
+  left: 1000px;
+}
+
+.image__right__img {
+  height: 300px;
+  width: 300px !important;
+}
+.port_locked {
+  position: absolute;
+  top: 50px;
+  left: 1000px;
+
+  height: 300px;
+  width: 300px !important;
+  background-color: #e3e3e3c3;
+  display: block;
+}
+
+.port_locked p {
+  margin-top: 100px;
+
+  margin-left: 10px;
+  margin-right: 10px;
+  text-align: center;
+}
+
+.port_locked a {
+  margin-left: 75px;
+}
+
+.locked__class {
+  color: red;
+  margin-left: 140px;
+  margin-bottom: 20px;
+}
