@@ -1,19 +1,30 @@
+<!-- Vendors Style-->
+<link rel="stylesheet" href="/css/vendors_css.css" />
+
+<!-- Style-->
+<!-- <link rel="stylesheet" href="../../" /> -->
+<link rel="stylesheet" href="/css/alert.css" />
+<link rel="stylesheet" href="/css/style.css" />
+<link rel="stylesheet" href="/css/skin_color.css" />
+
 <div class="d-flex align-items-center logo-box justify-content-start">
   <!-- Logo -->
   <a href="/dashboard" class="logo">
     <!-- logo-->
     <div class="logo-mini w-40">
       <span class="light-logo"
-        ><img src="images/favicon.png" alt="logo"
+        ><img src="/images/favicon.png" alt="logo"
       /></span>
-      <span class="dark-logo"><img src="images/favicon.png" alt="logo" /></span>
+      <span class="dark-logo"
+        ><img src="/images/favicon.png" alt="logo"
+      /></span>
     </div>
     <div class="logo-lg">
       <span class="light-logo"
-        ><img src="images/blacktrans.png" alt="logo"
+        ><img src="/images/blacktrans.png" alt="logo"
       /></span>
       <span class="dark-logo"
-        ><img src="images/blacktrans.png" alt="logo"
+        ><img src="/images/blacktrans.png" alt="logo"
       /></span>
     </div>
   </a>
@@ -74,62 +85,6 @@
         </label>
       </li>
 
-      <li class="btn-group d-xl-inline-flex d-none">
-        <a
-          href="#"
-          class="waves-effect waves-light nav-link btn-primary-light svg-bt-icon dropdown-toggle"
-          data-bs-toggle="dropdown"
-        >
-          <img
-            class="rounded"
-            src="https://investx-admin-template.multipurposethemes.com/New_InvestX-main-files/html/images/svg-icon/usa.svg"
-            alt=""
-          />
-        </a>
-        <div class="dropdown-menu">
-          <a class="dropdown-item my-5" href="#"
-            ><img
-              class="w-20 rounded me-10"
-              src="https://investx-admin-template.multipurposethemes.com/New_InvestX-main-files/html/images/svg-icon/usa.svg"
-              alt=""
-            />
-            English</a
-          >
-          <a class="dropdown-item my-5" href="#"
-            ><img
-              class="w-20 rounded me-10"
-              src="https://investx-admin-template.multipurposethemes.com/New_InvestX-main-files/html/images/svg-icon/spain.svg"
-              alt=""
-            />
-            Spanish</a
-          >
-          <a class="dropdown-item my-5" href="#"
-            ><img
-              class="w-20 rounded me-10"
-              src="https://investx-admin-template.multipurposethemes.com/New_InvestX-main-files/html/images/svg-icon/ger.svg"
-              alt=""
-            />
-            German</a
-          >
-          <a class="dropdown-item my-5" href="#"
-            ><img
-              class="w-20 rounded me-10"
-              src="https://investx-admin-template.multipurposethemes.com/New_InvestX-main-files/html/images/svg-icon/jap.svg"
-              alt=""
-            />
-            Japanese</a
-          >
-          <a class="dropdown-item my-5" href="#"
-            ><img
-              class="w-20 rounded me-10"
-              src="https://investx-admin-template.multipurposethemes.com/New_InvestX-main-files/html/images/svg-icon/fra.svg"
-              alt=""
-            />
-            French</a
-          >
-        </div>
-      </li>
-
       <li class="btn-group nav-item d-xl-inline-flex d-none">
         <a
           href="#"
@@ -140,34 +95,39 @@
           <i data-feather="maximize"></i>
         </a>
       </li>
-      <!-- Control Sidebar Toggle Button -->
-      <li class="btn-group nav-item d-xl-inline-flex d-none">
-        <a
-          href="#"
-          data-toggle="control-sidebar"
-          title="Setting"
-          class="waves-effect waves-light nav-link btn-primary-light svg-bt-icon"
-        >
-          <i data-feather="sliders"></i>
-        </a>
-      </li>
 
-      <!-- User Account-->
-      <li class="dropdown user user-menu">
+      <li class="btn-group d-xl-inline-flex d-none">
         <a
           href="#"
-          class="waves-effect waves-light dropdown-toggle w-auto l-h-12 bg-transparent p-0 no-shadow"
-          title="User"
-          data-bs-toggle="modal"
-          data-bs-target="#quick_user_toggle"
+          class="waves-effect waves-light nav-link btn-primary-light svg-bt-icon dropdown-toggle"
+          data-bs-toggle="dropdown"
         >
-          <img
-            src="images/avatar/avatar-13.png"
-            class="avatar rounded bg-primary-light"
-            alt=""
-          />
+          <img class="rounded" src="/images/avatar/avatar-13.png" alt="" />
         </a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item my-5" href="/user/profile">
+            <i data-feather="user">-</i>
+            Profile</a
+          >
+          <hr />
+          <a class="dropdown-item my-5 logout" href="#">
+            <i data-feather="log-out"></i>
+
+            Logout</a
+          >
+        </div>
       </li>
     </ul>
   </div>
 </nav>
+<script src="/js/bundle.js"></script>
+<script src="/js/vendors.min.js"></script>
+<script src="/js/pages/chat-popup.js"></script>
+<script src="/assets/icons/feather-icons/feather.min.js"></script>
+
+<script src="assets/vendor_components/apexcharts-bundle/dist/apexcharts.js"></script>
+
+<!-- InvestX App -->
+<script src="/js/demo.js"></script>
+<script src="/js/template.js"></script>
+<script src="/js/pages/dashboard.js"></script>

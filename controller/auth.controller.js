@@ -11,7 +11,6 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const sendEmail = require('../utils/email');
 const { profile } = require('console');
-// const { profile } = require('console');
 
 // function for jwt
 const signToken = id => {
@@ -87,6 +86,17 @@ const login = catchAsync(async (req, res, next) => {
   // });
 });
 
+const logout = (req, res) => {
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+  res.status(200).json({
+    status: 'success',
+    message: ' Your successfully logged out',
+  });
+};
+
 // Role-based authorization endpoint
 const protect = catchAsync(async (req, res, next) => {
   let token;
@@ -124,35 +134,45 @@ const protect = catchAsync(async (req, res, next) => {
   next();
 });
 
+// Middleware to check if user is logged in
 const isLoggedIn = catchAsync(async (req, res, next) => {
   if (req.cookies.jwt) {
-    // verify token
+    // Verify token
     const decoded = await promisify(jwt.verify)(
       req.cookies.jwt,
       process.env.JWT_SECRET
     );
-    //
+
+    // Find the user associated with the decoded token
     const currentUser = await User.findById(decoded.id);
+
     if (!currentUser) {
+      // If user not found, proceed to next middleware
       return next();
     }
 
-    //check to see if user exitst
-
+    // Check if the user exists in the database
     const existingUser = await User.findById(decoded.id);
+
     if (!existingUser) {
+      // If user not found, proceed to next middleware
       return next();
     }
 
-    // check if user change password after the token was issued
+    // Check if user changed password after the token was issued
     if (existingUser.changedPasswordAfter(decoded.iat)) {
+      // If password changed, proceed to next middleware
       return next();
     }
-    // Login user
-    // res.local.user = existingUser;
 
-    next();
+    // Set the logged in user in res.locals
+    res.locals.user = existingUser;
+
+    // Proceed to next middleware
+    return next();
   }
+
+  // No token found, proceed to next middleware
   next();
 });
 
@@ -235,6 +255,7 @@ module.exports = {
   forgetPassword,
   restrictTo,
   isLoggedIn,
+  logout,
 };
 
 // // const express = require('express');

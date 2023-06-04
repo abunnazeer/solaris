@@ -1,0 +1,42 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to cPanel
+        uses: devlato/deploy-to-cpanel@v1
+        with:
+          cpanel_ssh_host: ${{ secrets.CPANEL_SSH_HOST }}
+          cpanel_ssh_port: ${{ secrets.CPANEL_SSH_PORT }}
+          cpanel_ssh_user: ${{ secrets.CPANEL_SSH_USER }}
+          cpanel_ssh_private_key: ${{ secrets.CPANEL_SSH_PRIVATE_KEY }}
+          cpanel_domain: example.com
+          cpanel_directory: /public_html
+          local_directory: dist
+          exclude: '.git'

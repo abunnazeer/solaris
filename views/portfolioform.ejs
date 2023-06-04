@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- head and meta-->
+    <%- include('layouts/head') %>
+  </head>
+
+  <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
+    <div class="wrapper">
+      <!-- <div id="loader"></div> -->
+
+      <header class="main-header">
+        <!-- header-->
+        <%- include('layouts/header') %>
+      </header>
+
+      <aside class="main-sidebar">
+        <!-- sidebar-->
+        <%- include('layouts/aside') %>
+      </aside>
+
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <div class="container-full">
+          <!-- Main content -->
+          <section class="content">
+      <div class="row">
+     <div class="col-xl-9 col-12">
+      <div class="box">
+        <div class="box-body pb-lg-0">
+          <div class="row">
+          <form action="/create-portfolio'" method="Post">
+            <div class="form-group">
+              <div class="input-group mb-3">
+                <input
+                  id="text"
+                  type="text"
+                  class="form-control ps-15 bg-transparent"
+                  placeholder="Title"
+                  name="title"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+             
+                <input
+                  id="minimumCapital"
+                  type="text"
+                  class="form-control ps-15 bg-transparent"
+                  placeholder="minimum Capital"
+                  name="minimumCapital"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="input-group mb-3">
+                <input
+                  id="minimumCapital"
+                  type="text"
+                  class="form-control ps-15 bg-transparent"
+                  placeholder="return On Investment"
+                  name="returnOnInvestment"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="input-group mb-3">
+                <input
+                  id="minimumCapital"
+                  type="text"
+                  class="form-control ps-15 bg-transparent"
+                  placeholder="portfolio Duration"
+                  name="portfolioDuration"
+                />
+              </div>
+            </div>
+
+            
+
+              <div class="form-group">
+              <div class="input-group mb-3">
+                <input
+                  id="minimumCapital"
+                  type="text"
+                  class="form-control ps-15 bg-transparent"
+                  placeholder="weekly Earnings"
+                  name="weeklyEarnings"
+                />
+              </div>
+              <div class="form-group">
+              <div class="input-group mb-3">
+                <input
+                  id="minimumCapital"
+                  type="text"
+                  class="form-control ps-15 bg-transparent"
+                  placeholder="target Size"
+                  name="targetSize"
+                />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 text-center">
+                <button
+                  type="submit"
+                  class="waves-effect waves-light btn mb-5 bg-gradient-warning mt-10"
+                >
+                  SUBMIT
+                </button>
+              </div>
+              <!-- /.col -->
+            </div>
+          </form>
+</div>
+</div>
+</div></div>
+          <!-- /.content -->
+          </div>
+        </section>
+        </div>
+      </div>
+      <!-- /.content-wrapper -->
+
+      <footer class="main-footer">
+        <!-- footer-->
+        <%- include('layouts/footer') %>
+      </footer>
+      <!-- Side panel -->
+      <!-- quick_user_toggle -->
+      <div class="modal modal-right fade" id="quick_user_toggle" tabindex="-1">
+        <!-- user profile -->
+        <%- include('layouts/right') %>
+      </div>
+      <!-- /quick_user_toggle -->
+
+      <!-- Control Sidebar -->
+      <%- include('layouts/sidebar') %>
+
+      <!-- /.control-sidebar -->
+
+      <!-- Add the sidebar's background. This div must be placed immediately after the control sidebar -->
+      <!-- <div class="control-sidebar-bg"></div> -->
+    </div>
+    <!-- ./wrapper -->
+
+    <!-- chatbody -->
+
+    <!-- end chatbody -->
+    <!-- Page Content overlay -->
+
+    <%- include('layouts/script') %>
+  </body>
+</html>
