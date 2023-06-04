@@ -4,7 +4,7 @@ export const register = async (email, password, passwordConfirm, fullName) => {
   try {
     const res = await axios({
       method: 'POST',
-      url: 'http://localhost:8000/register',
+      url: 'http://app.solarisfinance.com/register',
       data: {
         email,
         password,

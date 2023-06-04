@@ -12017,7 +12017,7 @@ var login = /*#__PURE__*/function () {
           _context.next = 3;
           return (0, _axios.default)({
             method: 'POST',
-            url: 'http://localhost:8000/login',
+            url: 'http://app.solarisfinance.com/login',
             data: {
               email: email,
               password: password
@@ -12058,7 +12058,7 @@ var logout = /*#__PURE__*/function () {
           _context2.next = 3;
           return (0, _axios.default)({
             method: 'GET',
-            url: 'http://localhost:8000/user/logout'
+            url: 'http://app.solarisfinance.com/user/logout'
           });
         case 3:
           res = _context2.sent;
@@ -12104,7 +12104,7 @@ var register = /*#__PURE__*/function () {
           _context.next = 3;
           return (0, _axios.default)({
             method: 'POST',
-            url: 'http://localhost:8000/register',
+            url: 'http://app.solarisfinance.com/register',
             data: {
               email: email,
               password: password,
@@ -12320,7 +12320,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55146" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60226" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

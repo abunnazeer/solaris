@@ -5,7 +5,7 @@ export const login = async (email, password) => {
   try {
     const res = await axios({
       method: 'POST',
-      url: 'http://localhost:8000/login',
+      url: 'http://app.solarisfinance.com/login',
       data: {
         email,
         password,
@@ -27,7 +27,7 @@ export const logout = async () => {
   try {
     const res = await axios({
       method: 'GET',
-      url: 'http://localhost:8000/user/logout',
+      url: 'http://app.solarisfinance.com/user/logout',
     });
     if ((res.data.status = 'success')) location.reload(true);
   } catch (err) {
