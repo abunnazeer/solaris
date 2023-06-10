@@ -1,21 +1,21 @@
-const login = async email => {
+import axios from 'axios';
+import { showAlert } from './alert';
+export const forgetPassword = async email => {
   try {
-    const rest = await axios({
+    const res = await axios({
       method: 'POST',
-      url: 'http://app.solarisfinance.com/forget-password',
+      url: 'http://localhost:8000/forget-password',
       data: {
         email,
       },
     });
-    console.log(rest);
+    if (res.data.status === 'success') {
+      showAlert('success', 'Please Check your email for password reset link');
+      window.setTimeout(() => {
+        location.assign('/user/login');
+      }, 1500);
+    }
   } catch (err) {
-    console.log(err.response.data);
+    showAlert('error', err.response.data);
   }
 };
-
-document.querySelector('.form').addEventListener('submit', e => {
-  e.preventDefault();
-  const email = document.getElementById('email').value;
-
-  login(email);
-});

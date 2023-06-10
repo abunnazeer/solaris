@@ -2,6 +2,10 @@
 <html lang="en">
   <head>
     <%- include('layouts/head') %>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
   </head>
 
   <body
@@ -18,32 +22,44 @@
                   <img src="/images/blacktrans.png" alt="logo" width="300" />
                 </div>
                 <div class="p-40">
-                  <form class="form">
+                  <form class="form" action="/user/login" method="post">
                     <div class="form-group">
-                      <div class="input-group mb-3">
+                      <div class="input-group mb-3" id="email__error">
                         <span class="input-group-text bg-transparent"
                           ><i class="text-fade ti-user"></i
                         ></span>
+
                         <input
-                          id="email"
                           type="email"
                           class="form-control ps-15 bg-transparent"
-                          placeholder="email"
+                          id="email"
+                          placeholder="Email"
+                          name="email"
+                          required
                         />
                       </div>
+                      <div class="error" id="emailError"></div>
                     </div>
                     <div class="form-group">
-                      <div class="input-group mb-3">
+                      <div class="input-group mb-3" id="password__error">
                         <span class="input-group-text bg-transparent"
                           ><i class="text-fade ti-lock"></i
                         ></span>
+
                         <input
-                          id="password"
                           type="password"
                           class="form-control ps-15 bg-transparent"
+                          id="password"
                           placeholder="Password"
+                          name="password"
+                          required
                         />
+                        <i
+                          class="password-toggle fas fa-eye-slash"
+                          onclick="togglePasswordVisibility()"
+                        ></i>
                       </div>
+                      <div class="error" id="passwordError"></div>
                     </div>
                     <div class="row">
                       <div class="col-6">
@@ -56,7 +72,7 @@
                       <div class="col-6">
                         <div class="fog-pwd text-end">
                           <a
-                            href="/userforget-password"
+                            href="/user/forget-password"
                             class="text-primary fw-500 hover-primary text-warning"
                             ><i class="ion ion-locked"></i> Forgot pwd?</a
                           ><br />
@@ -67,6 +83,7 @@
                         <button
                           type="submit"
                           class="waves-effect waves-light btn mb-5 bg-gradient-warning w-p100 mt-10"
+                          onclick="validateForm(event)"
                         >
                           SIGN IN
                         </button>
@@ -94,9 +111,9 @@
 
     <!-- Vendor JS -->
 
+    <script src="/js/validation.js"></script>
     <script src="/js/vendors.min.js"></script>
     <script src="/js/pages/chat-popup.js"></script>
     <script src="/assets/icons/feather-icons/feather.min.js"></script>
-    <script src="/js/bundle.js"></script>
   </body>
 </html>

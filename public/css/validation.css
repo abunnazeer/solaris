@@ -1,0 +1,38 @@
+.error {
+  color: red !important;
+}
+
+.error-border {
+  border: 1px solid red !important;
+  border-radius: 5px;
+}
+
+.success-border {
+  border: 1px solid green !important;
+  border-radius: 5px;
+}
+
+.password-toggle {
+  position: relative;
+  left: -25px;
+  cursor: pointer;
+  top: 9px;
+  z-index: 99999999;
+}
+
+.passwordConfirm-toggle {
+  position: relative;
+  left: -25px;
+  cursor: pointer;
+  top: 9px;
+  z-index: 99999999;
+}
+#myerrorp {
+  border: 1px #f6f9fb solid !important;
+  border-radius: 6px;
+}
+
+.check__post {
+  position: relative;
+  top: 196px;
+}

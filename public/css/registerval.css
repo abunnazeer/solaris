@@ -1,0 +1,15 @@
+.error {
+  border-color: red !important;
+}
+
+.password-toggle-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.password-toggle-icon:hover {
+  color: #777;
+}

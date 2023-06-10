@@ -20,6 +20,13 @@ const userSchema = new mongoose.Schema({
     required: [true, 'please provide a password'],
     minlength: 8,
     select: false,
+    validate: {
+      validator: function (el) {
+        // Alphanumeric password validation
+        return /^(?=.*[a-zA-Z])(?=.*[0-9])/.test(el);
+      },
+      message: 'Password must contain at least one letter and one number.',
+    },
   },
   passwordConfirm: {
     type: String,
@@ -36,11 +43,13 @@ const userSchema = new mongoose.Schema({
     enum: ['user', 'Business', 'admin'],
     default: 'user',
   },
-
+  emailVerificationToken: String,
+  emailVerificationExpires: Date,
   isActive: {
     type: Boolean,
     default: false,
   },
+
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
@@ -85,5 +94,14 @@ userSchema.methods.createPasswordResetToken = function () {
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
   return resetToken;
 };
-
+// Generate email verification token
+userSchema.methods.generateEmailVerificationToken = function () {
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+  this.emailVerificationToken = crypto
+    .createHash('sha256')
+    .update(verificationToken)
+    .digest('hex');
+  this.emailVerificationExpires = Date.now() + 24 * 60 * 60 * 1000; // Token expires in 24 hours
+  return verificationToken;
+};
 module.exports = mongoose.model('User', userSchema);

@@ -1,25 +1,25 @@
 import axios from 'axios';
 import { showAlert } from './alert';
-export const register = async (email, password, passwordConfirm, fullName) => {
+
+const resetPassword = async (password, passwordConfirm, token) => {
   try {
     const res = await axios({
-      method: 'POST',
-      url: 'http://localhost:8000/register',
+      method: 'PATCH',
+      url: `http://localhost:8000/reset-password/${token}`,
       data: {
-        email,
         password,
         passwordConfirm,
-        fullName,
       },
     });
-
     if (res.data.status === 'success') {
-      showAlert('success', 'Registration successful');
+      showAlert('success', 'You have successfully reset your password');
       window.setTimeout(() => {
-        location.assign('/user/activation');
+        location.assign('/user/login');
       }, 1500);
     }
   } catch (err) {
     showAlert('error', err.response.data);
   }
 };
+
+module.exports = resetPassword;
