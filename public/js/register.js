@@ -4,7 +4,7 @@ export const register = async (email, password, passwordConfirm, fullName) => {
   try {
     const res = await axios({
       method: 'POST',
-      url: 'http://app.solarisfinance.com/register',
+      url: 'http://localhost:8000/register',
       data: {
         email,
         password,
@@ -16,10 +16,10 @@ export const register = async (email, password, passwordConfirm, fullName) => {
     if (res.data.status === 'success') {
       showAlert('success', 'Registration successful');
       window.setTimeout(() => {
-        location.assign('/activation');
+        location.assign('/user/activation');
       }, 1500);
     }
   } catch (err) {
-    showAlert('error', err.response.data.message);
+    showAlert('error', err.response.data);
   }
 };

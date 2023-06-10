@@ -2,6 +2,11 @@
 <html lang="en">
   <head>
     <%- include('layouts/head') %>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/css/validation.css" />
   </head>
 
   <body
@@ -18,9 +23,9 @@
                   <img src="/images/blacktrans.png" alt="logo" width="300" />
                 </div>
                 <div class="p-40">
-                  <form class="rform">
+                  <form class="rform__modified" action="" method="post">
                     <div class="form-group">
-                      <div class="input-group mb-3">
+                      <div class="input-group mb-3" id="name__error">
                         <span class="input-group-text bg-transparent"
                           ><i class="text-fade ti-user"></i
                         ></span>
@@ -32,9 +37,10 @@
                           id="fullName"
                         />
                       </div>
+                      <span class="error" id="nameError"></span>
                     </div>
                     <div class="form-group">
-                      <div class="input-group mb-3">
+                      <div class="input-group mb-3" id="email__error">
                         <span class="input-group-text bg-transparent"
                           ><i class="text-fade ti-email"></i
                         ></span>
@@ -44,11 +50,13 @@
                           class="form-control ps-15 bg-transparent"
                           placeholder="Email"
                           id="email"
+                          required
                         />
                       </div>
+                      <span class="error" id="emailError"></span>
                     </div>
                     <div class="form-group">
-                      <div class="input-group mb-3">
+                      <div class="input-group mb-3" id="password__error">
                         <span class="input-group-text bg-transparent"
                           ><i class="text-fade ti-lock"></i
                         ></span>
@@ -57,11 +65,18 @@
                           class="form-control ps-15 bg-transparent"
                           placeholder="Password"
                           id="password"
+                          name="password"
+                          required
                         />
+                        <i
+                          class="password-toggle fas fa-eye-slash"
+                          onclick="togglePasswordVisibility()"
+                        ></i>
                       </div>
+                      <span class="error" id="passwordError"></span>
                     </div>
                     <div class="form-group">
-                      <div class="input-group mb-3">
+                      <div class="input-group mb-3" id="password__c__error">
                         <span class="input-group-text bg-transparent"
                           ><i class="text-fade ti-lock"></i
                         ></span>
@@ -70,13 +85,24 @@
                           class="form-control ps-15 bg-transparent"
                           placeholder="Retype Password"
                           id="passwordConfirm"
+                          name="passwordConfirm"
+                          required
                         />
+                        <i
+                          class="passwordConfirm-toggle fas fa-eye-slash"
+                          onclick="togglePasswordVisibilityX()"
+                        ></i>
                       </div>
+                      <span class="error" id="passwordConfirmError"></span>
                     </div>
                     <div class="row">
                       <div class="col-12">
                         <div class="checkbox">
-                          <input type="checkbox" id="basic_checkbox_1" />
+                          <input
+                            type="checkbox"
+                            id="basic_checkbox_1"
+                            required
+                          />
                           <label for="basic_checkbox_1"
                             >I agree to the
                             <a href="#" class="text-primary text-warning"
@@ -85,11 +111,13 @@
                           >
                         </div>
                       </div>
+                      <span class="error" id="checkError"></span>
                       <!-- /.col -->
                       <div class="col-12 text-center">
                         <button
                           type="submit"
                           class="waves-effect waves-light btn mb-5 bg-gradient-warning w-p100 mt-10"
+                          onclick="validateForm(event)"
                         >
                           REGISTER
                         </button>
@@ -115,10 +143,10 @@
     </div>
 
     <!-- Vendor JS -->
+    <script src="/js/registerval.js"></script>
 
     <script src="/js/vendors.min.js"></script>
     <script src="/js/pages/chat-popup.js"></script>
     <script src="/assets/icons/feather-icons/feather.min.js"></script>
-    <script src="/js/bundle.js"></script>
   </body>
 </html>

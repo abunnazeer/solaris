@@ -1,32 +1,23 @@
-const login = async (password, passwordConfirm) => {
+import axios from 'axios';
+import { showAlert } from './alert';
+
+export const resetPassword = async (password, passwordConfirm) => {
   try {
     const res = await axios({
       method: 'PATCH',
-      url: 'http://app.solarisfinance.com/reset-password/:id',
+      url: 'http://localhost:8000/reset-password/:token',
       data: {
         password,
         passwordConfirm,
       },
-
-      // params: {
-      //   token: 'token',
-      // },
     });
     if (res.data.status === 'success') {
-      console.log('login successful');
+      showAlert('success', 'You have successfully reset your password');
       window.setTimeout(() => {
-        location.assign('/activation');
+        location.assign('/user/login');
       }, 1500);
     }
   } catch (err) {
-    alert(err.response.data.message);
+    showAlert('error', err.response.data);
   }
 };
-
-document.querySelector('.form').addEventListener('submit', e => {
-  e.preventDefault();
-  const password = document.getElementById('password').value;
-  const passwordConfirm = document.getElementById('passwordConfirm').value;
-
-  login(password, passwordConfirm);
-});

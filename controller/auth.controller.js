@@ -1,105 +1,163 @@
-// const express = require('express');
 const { promisify } = require('util');
 const crypto = require('crypto');
-// const nodemailer = require('nodemailer');
-
-// const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/user/user.model');
 const Profile = require('../models/user/profile.model');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const sendEmail = require('../utils/email');
-const { profile } = require('console');
 
-// function for jwt
+//Function for JWT
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
 
-const createSendToken = (user, profile, statusCode, res) => {
+const createSendToken = (user, profile, statusCode, res, redirectUrl) => {
   const token = signToken(user._id);
+
   const cookieOptions = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIES_EXPIRES_IN * 24 * 60 * 1000
     ),
-
     httpOnly: true,
   };
   if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
   res.cookie('jwt', token, cookieOptions);
-  // this remove the password from output
+  // This removes the password from the output
   user.password = undefined;
-  res.status(statusCode).json({
-    status: 'success',
-    token,
-    data: {
-      user,
-      profile,
-    },
-  });
+
+  res.status(statusCode).redirect(redirectUrl);
 };
+
 // Registration endpoint
+
 const register = catchAsync(async (req, res, next) => {
+  const { email, password, passwordConfirm, role } = req.body;
+
+  // Validate password and password confirmation
+  if (password !== passwordConfirm) {
+    return next(new AppError('Passwords do not match.', 400));
+  }
+
+  // Password validation: at least 8 characters, alphanumeric combination
+  const isAlphanumeric = /^[0-9a-zA-Z]+$/;
+  if (password.length < 8 || isAlphanumeric.test(password)) {
+    return next(
+      new AppError(
+        'Password must be at least 8 characters long and contain only alphanumeric characters.',
+        400
+      )
+    );
+  }
+
+  // Create a new user
   const newUser = await User.create({
-    email: req.body.email,
-    password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
-    role: req.body.role,
+    email,
+    password,
+    passwordConfirm,
+    role,
   });
-  // create user profile while creating user
+  //Create user profile while creating user
   const newProfile = await Profile.create({
-    //assigning user id to profle id
+    // Assigning user id to profile id
     _id: newUser._id,
     fullName: req.body.fullName,
     role: newUser.role,
   });
-  // const token = signToken(newUser._id);
-  createSendToken(newUser, newProfile, 201, res);
+
+  // Generate email verification token
+  const emailVerificationToken = newUser.generateEmailVerificationToken();
+  await newUser.save({ validateBeforeSave: false });
+
+  // Email verification URL
+  const emailVerificationURL = `${req.protocol}://${req.get(
+    'host'
+  )}/user/verify-email/${emailVerificationToken}`;
+
+  // Send verification email
+  const message = `Please click on the following link to verify your email: ${emailVerificationURL}`;
+  await sendEmail({
+    email: newUser.email,
+    subject: 'Email Verification',
+    message,
+  });
+
+  // Remove password from the response
+  newUser.password = undefined;
+
+  const user = newUser;
+  const profile = newProfile;
+  const statusCode = 201;
+  const redirectUrl = '/user/activation';
+  createSendToken(user, profile, statusCode, res, redirectUrl);
+});
+
+// Email verification endpoint
+const verifyEmail = catchAsync(async (req, res, next) => {
+  const response = 'Email verified. You can now log in.';
+
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+
+  const user = await User.findOne({
+    emailVerificationToken: hashedToken,
+    emailVerificationExpires: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(
+      new AppError('Verification token is invalid or has expired.', 400)
+    );
+  }
+
+  user.active = true; // Activate the user's account
+  user.emailVerificationToken = undefined;
+  user.emailVerificationExpires = undefined;
+  await user.save({ validateBeforeSave: false });
+
+  res.render('response', { response });
 });
 
 // Login endpoint
 const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
+
   // Check if email and password are in the db
   if (!email || !password) {
-    return next(new AppError('Please provide email and password'));
+    return next(new AppError('Please provide email and password.', 400));
   }
-  // Check to see if email and password is correct
-  const user = await User.findOne({ email }).select('+password');
+
+  // Check if the user's account is activated
+  const user = await User.findOne({ email, active: true }).select('+password');
 
   if (!user || !(await user.correctPassword(password, user.password))) {
-    return next(new AppError('Incorrect email or password', 401));
+    return next(new AppError('Incorrect email or password.', 401));
   }
 
-  // if everything is ok, send token to client
-
-  // const token = signToken(user._id);
-  createSendToken(user._id, null, 201, res);
-  // res.status(200).json({
-  //   status: 'success',
-  //   message: 'Your successfully logged in',
-  //   // status: ' Your successfully logged in',
-  //   token,
-  // });
+  // If everything is ok, send token to client
+  const statusCode = 201;
+  const redirectUrl = '/dashboard';
+  createSendToken(user, null, statusCode, res, redirectUrl);
 });
 
 const logout = (req, res) => {
-  res.cookie('jwt', 'loggedout', {
-    expires: new Date(Date.now() + 10 * 1000),
+  // Clear the 'jwt' cookie by setting it to an empty string and expiring it in the past
+  res.cookie('jwt', '', {
+    expires: new Date(0),
     httpOnly: true,
   });
-  res.status(200).json({
-    status: 'success',
-    message: ' Your successfully logged out',
-  });
+
+  res.redirect('/user/login');
 };
 
 // Role-based authorization endpoint
 const protect = catchAsync(async (req, res, next) => {
   let token;
+
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
@@ -111,25 +169,28 @@ const protect = catchAsync(async (req, res, next) => {
 
   if (!token) {
     return next(
-      new AppError('You are not login please login to get access', 401)
+      new AppError('You are not logged in. Please log in to get access.', 401)
     );
   }
-  // verifying the token
+
+  // Verify the token
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
-  //check to see if user exitst
-
+  // Check if user exists
   const existingUser = await User.findById(decoded.id);
+
   if (!existingUser) {
     return next(
-      new AppError('The user beloging  to this user does no longer exist.', 401)
+      new AppError('The user belonging to this token does not exist.', 401)
     );
   }
+
   if (existingUser.changedPasswordAfter(decoded.iat)) {
     return next(
-      new AppError('User rencently changed password! please log in again.', 401)
+      new AppError('User recently changed password! Please log in again.', 401)
     );
   }
+
   req.user = existingUser;
   next();
 });
@@ -176,300 +237,26 @@ const isLoggedIn = catchAsync(async (req, res, next) => {
   next();
 });
 
-const restrictTo = (...role) => {
+const restrictTo = (...roles) => {
   return (req, res, next) => {
-    if (!role.includes(req.user.role)) {
+    if (!roles.includes(req.user.role)) {
       return next(
-        new AppError('You dont have permision to to perform this action', 403)
+        new AppError('You do not have permission to perform this action.', 403)
       );
     }
     next();
   };
 };
-const forgetPassword = catchAsync(async (req, res, next) => {
-  const user = await User.findOne({ email: req.body.email });
-  if (!user) {
-    return next(new AppError('There is no user with this email', 404));
-  }
 
-  const resetToken = user.createPasswordResetToken();
-
-  await user.save({ validateBeforeSave: false });
-
-  const resetUrl = `${req.protocol}://${req.get(
-    'host'
-  )}/reset-password/${resetToken}`;
-
-  const message = `Forgot your password? Submit a Update request with a new password and passwordConfirm to reset ${resetUrl}.\nif you didn't forget your password please ignore this mail`;
-
-  try {
-    await sendEmail({
-      email: user.email,
-      subject: 'Your password Reset token(valid for min)',
-      message,
-    });
-
-    res.status(200).json({
-      status: 'success',
-      message: 'token sent to email!',
-    });
-  } catch (err) {
-    user.passwordResetToken = undefined;
-    user.passwordResetExpires = undefined;
-    await user.save({ validateBeforeSave: false });
-    return next(new AppError('there an error sending email', 500));
-  }
-});
-
-const resetPassword = catchAsync(async (req, res, next) => {
-  const hashedToken = crypto
-    .createHash('sha256')
-    .update(req.params.token)
-    .digest('hex');
-  const user = await User.findOne({
-    passwordResetToken: hashedToken,
-    passwordResetExpires: { $gt: Date.now() },
-  });
-
-  if (!user) {
-    return next(new AppError('Token is invalid or it has expired', 400));
-  }
-  user.password = req.body.password;
-  user.passwordConfirm = req.body.passwordConfirm;
-  user.passwordResetToken = undefined;
-  user.passwordResetExpires = undefined;
-  await user.save();
-  const token = signToken(user._id);
-  res.status(200).json({
-    status: 'success',
-    message: ' Your successfully logged in',
-    token,
-  });
-});
-
-module.exports = {
-  register,
-  login,
-  protect,
-  resetPassword,
-  forgetPassword,
-  restrictTo,
-  isLoggedIn,
-  logout,
-};
-
-// // const express = require('express');
-// const { promisify } = require('util');
-// const crypto = require('crypto');
-// // const nodemailer = require('nodemailer');
-
-// // const router = express.Router();
-// const jwt = require('jsonwebtoken');
-// const User = require('../models/user/user.model');
-// const Profile = require('../models/user/profile.model');
-// const AppError = require('../utils/appError');
-// const catchAsync = require('../utils/catchAsync');
-// const sendEmail = require('../utils/email');
-// const { profile } = require('console');
-// // const { profile } = require('console');
-
-// // function for jwt
-// const signToken = id => {
-//   return jwt.sign({ id }, process.env.JWT_SECRET, {
-//     expiresIn: process.env.JWT_EXPIRES_IN,
-//   });
-// };
-
-// const createSendToken = async (user, profile, statusCode, res) => {
-//   const token = signToken(user._id);
-//   const cookieOptions = {
-//     expires: new Date(
-//       Date.now() + process.env.JWT_COOKIES_EXPIRES_IN * 24 * 60 * 1000
-//     ),
-//     httpOnly: true,
-//   };
-//   if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
-//   res.cookie('jwt', token, cookieOptions);
-//   // this removes the password from the output
-//   user.password = undefined;
-
-//   if (user.isActive) {
-//     // Send activation email to the user
-//     const activationToken = signToken(user._id);
-//     const activationUrl = `${req.protocol}://${req.get(
-//       'host'
-//     )}/activate-account/${activationToken}`;
-
-//     const activationMessage = `Welcome to our platform! Please click the following link to activate your account: ${activationUrl}`;
-
-//     try {
-//       await sendEmail({
-//         email: user.email,
-//         subject: 'Account Activation',
-//         message: activationMessage,
-//       });
-//     } catch (err) {
-//       // Handle error if unable to send activation email
-//       console.error('Error sending activation email:', err);
-//     }
-//   }
-
-//   res.status(statusCode).json({
-//     status: 'success',
-//     token,
-//     data: {
-//       user,
-//       profile,
-//     },
-//   });
-// };
-
-// // Registration endpoint
-// const register = catchAsync(async (req, res, next) => {
-//   const newUser = await User.create({
-//     email: req.body.email,
-//     password: req.body.password,
-//     passwordConfirm: req.body.passwordConfirm,
-//     role: req.body.role,
-//     isActive: false, // Set isActive flag to false initially
-//   });
-//   // create user profile while creating user
-//   const newProfile = await Profile.create({
-//     // assigning user id to profile id
-//     _id: newUser._id,
-//     fullName: req.body.fullName,
-//     role: newUser.role,
-//   });
-//   // const token = signToken(newUser._id);
-//   createSendToken(newUser, newProfile, 201, res);
-// });
-// // User Activation
-// const activateAccount = catchAsync(async (req, res, next) => {
-//   const { token } = req.params;
-
-//   // Verify the activation token
-//   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-
-//   const user = await User.findById(decoded.id);
-//   if (!user) {
-//     return next(new AppError('User not found', 404));
-//   }
-
-//   // Activate the user account
-//   user.isActive = true;
-//   await user.save();
-
-//   res.status(200).json({
-//     status: 'success',
-//     message: 'Account activated successfully',
-//   });
-// });
-
-// // Login endpoint
-// const login = catchAsync(async (req, res, next) => {
-//   const { email, password } = req.body;
-//   // Check if email and password are in the db
-//   if (!email || !password) {
-//     return next(new AppError('Please provide email and password'));
-//   }
-//   // Check to see if email and password are correct
-//   const user = await User.findOne({ email }).select('+password');
-
-//   if (!user || !(await user.correctPassword(password, user.password))) {
-//     return next(new AppError('Incorrect email or password', 401));
-//   }
-
-//   if (!user.isActive) {
-//     return next(new AppError('Your account is not yet activated', 401));
-//   }
-
-//   // if everything is ok, send token to client
-//   createSendToken(user, null, 201, res);
-// });
-
-// // Role-based authorization endpoint
-// const protect = catchAsync(async (req, res, next) => {
-//   let token;
-//   if (
-//     req.headers.authorization &&
-//     req.headers.authorization.startsWith('Bearer')
-//   ) {
-//     token = req.headers.authorization.split(' ')[1];
-//   } else if (req.cookies.jwt) {
-//     token = req.cookies.jwt;
-//   }
-
-//   if (!token) {
-//     return next(
-//       new AppError('You are not logged in. Please login to get access', 401)
-//     );
-//   }
-//   // verifying the token
-//   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-
-//   // check to see if user exists
-
-//   const existingUser = await User.findById(decoded.id);
-//   if (!existingUser) {
-//     return next(
-//       new AppError('The user belonging to this token does not exist.', 401)
-//     );
-//   }
-//   if (existingUser.changedPasswordAfter(decoded.iat)) {
-//     return next(
-//       new AppError('User recently changed password! Please log in again.', 401)
-//     );
-//   }
-//   req.user = existingUser;
-//   next();
-// });
-
-// const isLoggedIn = catchAsync(async (req, res, next) => {
-//   if (req.cookies.jwt) {
-//     // verify token
-//     const decoded = await promisify(jwt.verify)(
-//       req.cookies.jwt,
-//       process.env.JWT_SECRET
-//     );
-//     //
-//     const currentUser = await User.findById(decoded.id);
-//     if (!currentUser) {
-//       return next();
-//     }
-
-//     // check to see if user exists
-
-//     const existingUser = await User.findById(decoded.id);
-//     if (!existingUser) {
-//       return next();
-//     }
-
-//     // check if user changed password after the token was issued
-//     if (existingUser.changedPasswordAfter(decoded.iat)) {
-//       return next();
-//     }
-//     // Login user
-//     // res.local.user = existingUser;
-
-//     next();
-//   }
-//   next();
-// });
-
-// const restrictTo = (...roles) => {
-//   return (req, res, next) => {
-//     if (!roles.includes(req.user.role)) {
-//       return next(
-//         new AppError('You do not have permission to perform this action', 403)
-//       );
-//     }
-//     next();
-//   };
-// };
 // const forgetPassword = catchAsync(async (req, res, next) => {
 //   const user = await User.findOne({ email: req.body.email });
+
+//   const response = 'Reset password link has been sent to your email!';
+
 //   if (!user) {
-//     return next(new AppError('There is no user with this email', 404));
+//     req.flash('error', 'Email does not exist');
+//     // return next(new AppError('There is no user with this email.', 404));
+//     return res.redirect('/forget-password');
 //   }
 
 //   const resetToken = user.createPasswordResetToken();
@@ -478,62 +265,135 @@ module.exports = {
 
 //   const resetUrl = `${req.protocol}://${req.get(
 //     'host'
-//   )}/reset-password/${resetToken}`;
+//   )}/user/reset-password/${resetToken}`;
 
-//   const message = `Forgot your password? Submit an update request with a new password and passwordConfirm to reset ${resetUrl}.\nIf you didn't forget your password, please ignore this email`;
+//   const message = `Forgot your password? Submit a password update request with a new password and passwordConfirm to reset: ${resetUrl}.\nIf you didn't forget your password, please ignore this email.`;
 
 //   try {
 //     await sendEmail({
 //       email: user.email,
-//       subject: 'Your password Reset token (valid for 10 min)',
+//       subject: 'Your Password Reset Token (valid for 10 minutes)',
 //       message,
 //     });
 
-//     res.status(200).json({
-//       status: 'success',
-//       message: 'Token sent to email!',
-//     });
+//     res.render('response', { response });
 //   } catch (err) {
 //     user.passwordResetToken = undefined;
 //     user.passwordResetExpires = undefined;
 //     await user.save({ validateBeforeSave: false });
-//     return next(new AppError('There was an error sending the email', 500));
+//     return next(new AppError('There was an error sending the email.', 500));
 //   }
 // });
 
-// const resetPassword = catchAsync(async (req, res, next) => {
-//   const hashedToken = crypto
-//     .createHash('sha256')
-//     .update(req.params.token)
-//     .digest('hex');
-//   const user = await User.findOne({
-//     passwordResetToken: hashedToken,
-//     passwordResetExpires: { $gt: Date.now() },
-//   });
+const forgetPassword = catchAsync(async (req, res, next) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
 
-//   if (!user) {
-//     return next(new AppError('Token is invalid or has expired', 400));
-//   }
-//   user.password = req.body.password;
-//   user.passwordConfirm = req.body.passwordConfirm;
-//   user.passwordResetToken = undefined;
-//   user.passwordResetExpires = undefined;
-//   await user.save();
-//   const token = signToken(user._id);
-//   res.status(200).json({
-//     status: 'success',
-//     message: 'You have successfully logged in',
-//     token,
-//   });
-// });
+  if (!user) {
+    return res.status(404).render('forgetpassword', {
+      error: 'There is no user with this email.',
+    });
+  }
+  const resetToken = user.createPasswordResetToken();
 
-// module.exports = {
-//   register,
-//   login,
-//   protect,
-//   resetPassword,
-//   forgetPassword,
-//   restrictTo,
-//   isLoggedIn,
-//   activateAccount,
-// };
+  await user.save({ validateBeforeSave: false });
+
+  const resetUrl = `${req.protocol}://${req.get(
+    'host'
+  )}/user/reset-password/${resetToken}`;
+
+  const message = `Forgot your password? Submit a password update request with a new password and passwordConfirm to reset: ${resetUrl}.\nIf you didn't forget your password, please ignore this email.`;
+
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: 'Your Password Reset Token (valid for 10 minutes)',
+      message,
+    });
+
+    res.render('response', {
+      response: 'Reset password link has been sent to your email!',
+    });
+  } catch (err) {
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+    return next(new AppError('There was an error sending the email.', 500));
+  }
+});
+
+/////////////////////////////////////////////////////////////////////////////////
+const resetPassword = catchAsync(async (req, res, next) => {
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+
+  // Find user with the valid token and non-expired password reset token
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(new AppError('Token is invalid or has expired.', 400));
+  }
+
+  // Update the user's password and clear the password reset token and expiration
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+
+  // Validate password and password confirmation
+  if (user.password !== user.passwordConfirm) {
+    return next(new AppError('Passwords do not match.', 400));
+  }
+
+  // Password validation: at least 8 characters, alphanumeric combination
+  const isAlphanumeric = /^[0-9a-zA-Z]+$/;
+  if (user.password.length < 8 || isAlphanumeric.test(user.password)) {
+    return next(
+      new AppError(
+        'Password must be at least 8 characters long and contain only alphanumeric characters.',
+        400
+      )
+    );
+  }
+
+  await user.save();
+
+  try {
+    // Send email notification to the user
+    await sendEmail({
+      email: user.email,
+      subject: 'You have successfully changed your password',
+      message:
+        "You can login to your account and make sure you don't share your password with anyone",
+    });
+  } catch (err) {
+    // If there is an error sending the email, clear the password reset token and expiration
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+    return next(new AppError('There was an error sending the email.', 500));
+  }
+
+  const statusCode = 200;
+
+  createSendToken(user, null, statusCode, res, null);
+
+  createSendToken(user, null, 200, res);
+});
+
+module.exports = {
+  register,
+  verifyEmail,
+  login,
+  protect,
+  resetPassword,
+  forgetPassword,
+  restrictTo,
+  isLoggedIn,
+  logout,
+};

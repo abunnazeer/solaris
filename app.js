@@ -16,7 +16,7 @@ const AppError = require('./utils/appError');
 //importing routers
 const userRouter = require('./routes/user.routers');
 const portRouter = require('./routes/portfolio.routers');
-const { protect } = require('./controller/auth.controller');
+const { protect, logoutUser } = require('./controller/auth.controller');
 
 const app = express();
 // GLOBAL MIDDLEWARE
@@ -48,7 +48,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 // limit request from same API
 const limiter = rateLimit({
-  max: 100,
+  max: 1000,
   windowMs: 60 * 60 * 1000,
   message: 'Too Many Request from this ip, Please try again in an hour!',
 });
@@ -71,9 +71,11 @@ app.use(xss());
 //     //add value to array latter if you want to whitelist
 //     // whitelist: [],
 //   })
+
 // );
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname + '/public/')));
+// app.use('/static', express.static(path.join(__dirname, 'public')));
 
 // Test Middle Ware
 
@@ -82,15 +84,16 @@ app.use(express.static(path.join(__dirname + '/public/')));
 //   console.log(req.cookies);
 //   next();
 // });
+// app.use(logoutUser);
 app.get('/dashboard', protect, (req, res) => {
-  res.status(200).render('dashboard', { title: 'Dashboard' });
+  res.status(200).render('dashboard', { logoutUser: 'Dashboard' });
 });
 
 app.use(userRouter);
 // app.use('create-portfolio', portRouter);
 app.use(portRouter);
 
-app.all('*', (req, res, next) => {
+app.all('/*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 // Error Handling midleware

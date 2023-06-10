@@ -38,13 +38,14 @@
             <div class="col-lg-5 col-md-5 col-12">
               <div class="bg-white rounded10 shadow-lg">
                 <div class="content-top-agile p-20 pb-0">
-                  <h2 class="text-primary fw-600 text-warning">
-                    Let's Get Started
-                  </h2>
-                  <p class="mb-0 text-fade">Sign in to continue to Solaris.</p>
+                  <img src="/images/blacktrans.png" alt="logo" width="300" />
                 </div>
                 <div class="p-40">
-                  <form class="form">
+                  <form
+                    class="form__modified"
+                    action="/user/login"
+                    method="post"
+                  >
                     <div class="form-group">
                       <div class="input-group mb-3">
                         <span class="input-group-text bg-transparent"
@@ -55,6 +56,8 @@
                           type="email"
                           class="form-control ps-15 bg-transparent"
                           placeholder="email"
+                          name="email"
+                          required
                         />
                       </div>
                     </div>
@@ -68,6 +71,8 @@
                           type="password"
                           class="form-control ps-15 bg-transparent"
                           placeholder="Password"
+                          name="password"
+                          required
                         />
                       </div>
                     </div>
@@ -82,7 +87,7 @@
                       <div class="col-6">
                         <div class="fog-pwd text-end">
                           <a
-                            href="/forget-password"
+                            href="/user/forget-password"
                             class="text-primary fw-500 hover-primary text-warning"
                             ><i class="ion ion-locked"></i> Forgot pwd?</a
                           ><br />
@@ -104,7 +109,7 @@
                     <p class="mt-15 mb-0 text-fade">
                       Don't have an account?
                       <a
-                        href="/registration"
+                        href="/user/registration"
                         class="text-primary ms-5 text-warning"
                         >Sign Up</a
                       >
@@ -123,6 +128,6 @@
     <script src="./js/vendors.min.js"></script>
     <script src="./js/pages/chat-popup.js"></script>
     <script src="./assets/icons/feather-icons/feather.min.js"></script>
-    <script src="./js/bundle.js"></script>
+    <!-- <script src="./js/bundle.js"></script> -->
   </body>
 </html>
