@@ -40,6 +40,7 @@ const {
   verifyEmail,
   // logout,
   logout,
+  changePassword,
 } = require('../controller/auth.controller');
 
 const router = express();
@@ -58,6 +59,9 @@ router.post('/user/login', login);
 //  this is a api baised url
 router.post('/user/forget-password', forgetPassword);
 router.post('/user/reset-password/:token', resetPassword);
+// Route to handle the change password form submission
+router.patch('/user/change-password', protect, changePassword);
+// router.post('/user/change-password', protect, changePassword);
 
 //  this render the view of user forms
 router.get('/user/register', getRegistrationForm);
@@ -68,7 +72,9 @@ router.get('/logout', logout);
 
 router.get('/user/profile', protect, getProfile);
 router.get('/user/forget-password', getForgetPasswordForm);
-router.get('/user/change-password', getChangePasswordForm);
+// Route to display the change password form
+router.get('/user/change-password', protect, getChangePasswordForm);
+
 router.get('/user/two-factor', getTwoFactor);
 router.get('/user/activation', getActivation);
 router.get('/user/registration', getRegOption);
