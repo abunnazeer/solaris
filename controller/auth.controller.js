@@ -31,8 +31,9 @@ const createSendToken = (user, profile, statusCode, res, redirectUrl) => {
   res.status(statusCode).redirect(redirectUrl);
 };
 
-// Registration endpoint
-
+//////////////////////////////////////////////////////
+//////////// REGISTERING  ENDPOINT //////////////////
+/////////////////////////////////////////////////////
 const register = catchAsync(async (req, res, next) => {
   const { email, password, passwordConfirm, role } = req.body;
 
@@ -121,8 +122,9 @@ const verifyEmail = catchAsync(async (req, res, next) => {
 
   res.render('response', { response });
 });
-
-// Login endpoint
+/////////////////////////////////////////////////////
+//////////// LOGIN ENDPOINT /////////////////////////
+/////////////////////////////////////////////////////
 const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -153,8 +155,10 @@ const logout = (req, res) => {
 
   res.redirect('/user/login');
 };
+/////////////////////////////////////////////////////
+//////////// AUTHORIZATION ENDPOINT /////////////////
+/////////////////////////////////////////////////////
 
-// Role-based authorization endpoint
 const protect = catchAsync(async (req, res, next) => {
   let token;
 
@@ -195,7 +199,10 @@ const protect = catchAsync(async (req, res, next) => {
   next();
 });
 
-// Middleware to check if user is logged in
+/////////////////////////////////////////////////////
+/////// MIDDLEWARE TO CHECK IF USER IS LOGGED IN ////
+/////////////////////////////////////////////////////
+
 const isLoggedIn = catchAsync(async (req, res, next) => {
   if (req.cookies.jwt) {
     // Verify token
@@ -223,6 +230,7 @@ const isLoggedIn = catchAsync(async (req, res, next) => {
     // Check if user changed password after the token was issued
     if (existingUser.changedPasswordAfter(decoded.iat)) {
       // If password changed, proceed to next middleware
+
       return next();
     }
 
@@ -248,43 +256,9 @@ const restrictTo = (...roles) => {
   };
 };
 
-// const forgetPassword = catchAsync(async (req, res, next) => {
-//   const user = await User.findOne({ email: req.body.email });
-
-//   const response = 'Reset password link has been sent to your email!';
-
-//   if (!user) {
-//     req.flash('error', 'Email does not exist');
-//     // return next(new AppError('There is no user with this email.', 404));
-//     return res.redirect('/forget-password');
-//   }
-
-//   const resetToken = user.createPasswordResetToken();
-
-//   await user.save({ validateBeforeSave: false });
-
-//   const resetUrl = `${req.protocol}://${req.get(
-//     'host'
-//   )}/user/reset-password/${resetToken}`;
-
-//   const message = `Forgot your password? Submit a password update request with a new password and passwordConfirm to reset: ${resetUrl}.\nIf you didn't forget your password, please ignore this email.`;
-
-//   try {
-//     await sendEmail({
-//       email: user.email,
-//       subject: 'Your Password Reset Token (valid for 10 minutes)',
-//       message,
-//     });
-
-//     res.render('response', { response });
-//   } catch (err) {
-//     user.passwordResetToken = undefined;
-//     user.passwordResetExpires = undefined;
-//     await user.save({ validateBeforeSave: false });
-//     return next(new AppError('There was an error sending the email.', 500));
-//   }
-// });
-
+///////////////////////////////////////////////////////
+//////////// FORGET PASSWORD ENDPOINT ////////////////
+/////////////////////////////////////////////////////
 const forgetPassword = catchAsync(async (req, res, next) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
@@ -321,14 +295,15 @@ const forgetPassword = catchAsync(async (req, res, next) => {
     return next(new AppError('There was an error sending the email.', 500));
   }
 });
-
-/////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+//////////// RESET PASSWORD ENDPOINT ////////////////
+/////////////////////////////////////////////////////
 const resetPassword = catchAsync(async (req, res, next) => {
   const hashedToken = crypto
     .createHash('sha256')
     .update(req.params.token)
     .digest('hex');
-
+  console.log(hashedToken);
   // Find user with the valid token and non-expired password reset token
   const user = await User.findOne({
     passwordResetToken: hashedToken,
@@ -338,7 +313,7 @@ const resetPassword = catchAsync(async (req, res, next) => {
   if (!user) {
     return next(new AppError('Token is invalid or has expired.', 400));
   }
-
+  console.log(user);
   // Update the user's password and clear the password reset token and expiration
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
@@ -355,7 +330,7 @@ const resetPassword = catchAsync(async (req, res, next) => {
   if (user.password.length < 8 || isAlphanumeric.test(user.password)) {
     return next(
       new AppError(
-        'Password must be at least 8 characters long and contain only alphanumeric characters.',
+        'Password must be at least 8 characters long and contain at least one non-alphanumeric character.',
         400
       )
     );
@@ -379,11 +354,110 @@ const resetPassword = catchAsync(async (req, res, next) => {
     return next(new AppError('There was an error sending the email.', 500));
   }
 
+  res.render('response', {
+    response: 'Your successfully change your password!',
+  });
+});
+
+//////////////////////////////////////////////////////
+//////////// Change PASSWORD ENDPOINT ////////////////
+/////////////////////////////////////////////////////
+
+// const changePassword = catchAsync(async (req, res, next) => {
+//   const { currentPassword, newPassword, newPasswordConfirm } = req.body;
+//   const { user } = req;
+
+//   // Check if the current password is correct
+//   const isCurrentPasswordCorrect = await user.correctPassword(
+//     currentPassword,
+//     user.password
+//   );
+//   if (!isCurrentPasswordCorrect) {
+//     return next(new AppError('Current password is incorrect.', 401));
+//   }
+
+//   // Validate the new password and password confirmation
+//   if (newPassword !== newPasswordConfirm) {
+//     return next(new AppError('Passwords do not match.', 400));
+//   }
+
+//   // Password validation: at least 8 characters, alphanumeric combination
+//   const isAlphanumeric = /^[0-9a-zA-Z]+$/;
+//   if (newPassword.length < 8 || !isAlphanumeric.test(newPassword)) {
+//     return next(
+//       new AppError(
+//         'Password must be at least 8 characters long and contain at least one non-alphanumeric character.',
+//         400
+//       )
+//     );
+//   }
+
+//   // Update the user's password
+//   user.password = newPassword;
+//   user.passwordConfirm = newPasswordConfirm;
+
+//   // Save the updated user
+//   await user.save();
+
+//   // Send email notification to the user
+//   try {
+//     await sendEmail({
+//       email: user.email,
+//       subject: 'Your password has been changed',
+//       message:
+//         "You have successfully changed your password. If you didn't make this change, please contact us immediately.",
+//     });
+//   } catch (err) {
+//     return next(new AppError('There was an error sending the email.', 500));
+//   }
+
+//   res.render('response', {
+//     response: 'Your password has been changed successfully!',
+//   });
+// });
+
+// const updatePassword = catchAsync(async (req, res, next) => {
+//   // get the user from the db
+//   const user = await User.findById(req.user.id).select('+password');
+//   // chek if posted current password  is correct
+//   if (!(await user.correctPassword(req.body.currentPassword, user.password))) {
+//     return next(new AppError('Your corrent password is wrong.', 401));
+//   }
+//   // if all checkec, update password
+//   user.password = req.body.password;
+//   user.passwordConfirm = req.body.confirmpassword;
+//   await user.save();
+
+//   // login user in, send JWT
+//   // const user = newUser;
+//   // const profile = newProfile;
+//   const statusCode = 200;
+//   // const redirectUrl = '/user/activation';
+//   createSendToken(user, null, statusCode, res, null);
+// });
+const changePassword = catchAsync(async (req, res, next) => {
+  const { currentPassword, password, confirmPassword } = req.body;
+
+  // Get the user from the database
+  const user = await User.findById(req.user.id).select('+password');
+
+  // Check if the posted current password is correct
+  const isCurrentPasswordCorrect = await user.correctPassword(
+    currentPassword,
+    user.password
+  );
+  if (!isCurrentPasswordCorrect) {
+    return next(new AppError('Your current password is wrong.', 401));
+  }
+
+  // Update the password
+  user.password = password;
+  user.passwordConfirm = confirmPassword;
+  await user.save();
+
+  // Log in the user and send JWT
   const statusCode = 200;
-
   createSendToken(user, null, statusCode, res, null);
-
-  createSendToken(user, null, 200, res);
 });
 
 module.exports = {
@@ -396,4 +470,6 @@ module.exports = {
   restrictTo,
   isLoggedIn,
   logout,
+  changePassword,
+  // updatePassword,
 };
