@@ -43,7 +43,7 @@ function validateForm(event) {
   }
 
   // Prevent form submission if there are errors
-  if (!isPasswordValid(password) || !passwordConfirm) {
+  if (!isPasswordValid(password) || password !== passwordConfirm) {
     event.preventDefault();
   }
 }
