@@ -6,7 +6,11 @@ const userProfileSchema = new mongoose.Schema({
     type: String,
     required: [true, 'please provide your full name'],
   },
-
+  profilePicture: {
+    type: String,
+    required: [true, 'please add profile photo'],
+    default: '../../../images/avatar/avatar-13.png',
+  },
   phoneNumber: {
     type: String,
     required: [true, 'please provide your phone number'],
