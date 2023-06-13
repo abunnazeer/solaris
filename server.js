@@ -1,6 +1,8 @@
 const http = require('http');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
 
 process.on('uncaughtException', err => {
   console.log('UNCAUGHT EXCEPTION! server is shutting down now');
@@ -27,6 +29,19 @@ mongoose
   });
 
 const PORT = process.env.PORT || 9000;
+
+// Session configuration
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET, // Use your session secret key from the .env file
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: DB, // Use the MongoDB URL
+      ttl: 7 * 24 * 60 * 60, // Session TTL (7 days in seconds)
+    }),
+  })
+);
 
 const server = http.createServer(app);
 server.listen(PORT, () => {

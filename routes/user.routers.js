@@ -27,7 +27,6 @@ const {
   getwithdrawalHistory,
 } = require('../controller/view.controller');
 
-const { updateProfile } = require('./profile.controller');
 const {
   register,
   login,
@@ -42,6 +41,8 @@ const {
   logout,
   changePassword,
 } = require('../controller/auth.controller');
+const { updateProfile, uploadProfilePhoto } = require('./user.controller');
+// const { getMe } = require('./user.controller');
 
 const router = express();
 
@@ -61,7 +62,8 @@ router.post('/user/forget-password', forgetPassword);
 router.post('/user/reset-password/:token', resetPassword);
 // Route to handle the change password form submission
 router.patch('/user/change-password', protect, changePassword);
-// router.post('/user/change-password', protect, changePassword);
+router.post('/user/profile/update', uploadProfilePhoto, protect, updateProfile);
+router.post('/user/change-password', protect, changePassword);
 
 //  this render the view of user forms
 router.get('/user/register', getRegistrationForm);
@@ -70,7 +72,10 @@ router.get('/user/biz-register', getBizForm);
 router.get('/user/login', getLoginForm);
 router.get('/logout', logout);
 
+// router.get()
+// GET ME ROUTE
 router.get('/user/profile', protect, getProfile);
+
 router.get('/user/forget-password', getForgetPasswordForm);
 // Route to display the change password form
 router.get('/user/change-password', protect, getChangePasswordForm);
@@ -83,21 +88,21 @@ router.get('/user/reset-password/:token', getResetPasswordForm);
 router.get('/user/verify-email/:token', verifyEmail);
 
 // activty routes
-router.get('/user/activity', getActivity);
-router.get('/user/transfer', getTransfer);
+router.get('/user/activity', protect, getActivity);
+router.get('/user/transfer', protect, getTransfer);
 
 // PORTFOLIO
-router.get('/user/view-investments-portfolio', getInvestPortfolio);
-router.get('/user/user-investments', getUSerInvest);
-router.get('/user/investment-history', getInvestHistory);
-router.get('/user/short-term-funds', getShortTermForm);
-router.get('/user/portfolio-details', getDetailsPage);
+router.get('/user/view-investments-portfolio', protect, getInvestPortfolio);
+router.get('/user/user-investments', protect, getUSerInvest);
+router.get('/user/investment-history', protect, getInvestHistory);
+router.get('/user/short-term-funds', protect, getShortTermForm);
+router.get('/user/portfolio-details', protect, getDetailsPage);
 // REFERRAL VIEW
-router.get('/user/referred-users', getReferral);
-router.get('/user/referral-bonus', getReferralBunus);
+router.get('/user/referred-users', protect, getReferral);
+router.get('/user/referral-bonus', protect, getReferralBunus);
 // Withdrawal Routes
-router.get('/user/withdrawal-request', getWithdrawalRequest);
-router.get('/user/withdrawal-history', getwithdrawalHistory);
+router.get('/user/withdrawal-request', protect, getWithdrawalRequest);
+router.get('/user/withdrawal-history', protect, getwithdrawalHistory);
 // router.delete('/update-profile/:id', protect, updateProfile);
 
 module.exports = router;

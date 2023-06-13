@@ -1,208 +1,263 @@
 <!DOCTYPE html>
 <html lang="en">
-  <!-- Mirrored from investx-admin-template.multipurposethemes.com/New_InvestX-main-files/html/template/vertical-light/main/extra_profile.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 24 May 2023 23:01:32 GMT -->
-  <head>
-    <%- include('layouts/head') %>
-  </head>
-  <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
-    <div class="wrapper">
-      <!-- <div id="loader"></div> -->
+<head>
+<%- include('layouts/head') %>
+</head>
 
-      <header class="main-header">
-        <!-- header -->
-        <%- include('layouts/header') %>
-      </header>
+<body class="hold-transition light-skin sidebar-mini theme-primary fixed">
+<div class="wrapper">
+<!-- <div id="loader"></div> -->
 
-      <!-- Left side column. contains the logo and sidebar -->
-      <aside class="main-sidebar">
-        <!-- sidebar-->
-        <%- include('layouts/aside') %>
-      </aside>
+<header class="main-header">
+<!-- header -->
+<%- include('layouts/header') %>
+</header>
 
-      <!-- Content Wrapper. Contains page content -->
-      <div class="content-wrapper">
-        <div class="container-full">
-        
+<!-- Left side column. contains the logo and sidebar -->
+<aside class="main-sidebar">
+<!-- sidebar-->
+<%- include('layouts/aside') %>
+</aside>
 
-          	<!-- Main content -->
-		<section class="content">
-			<div class="row">
-				<div class="col-xl-4 col-lg-5">
-					<div class="card text-center">
-						<div class="card-body">
-							<img src="../../../images/avatar/avatar-13.png" class="bg-light w-100 h-100 rounded-circle avatar-lg img-thumbnail" alt="profile-image">
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+<div class="container-full">
+<!-- Main content -->
+<section class="content">
+<div class="row">
+<div class="col-xl-6 col-lg-6">
+<div class="card text-center">
+<div class="card-body">
+<img
+id="profileImagePreview"
+src="<%= userProfile.profilePicture ? '/profile/' + userProfile.profilePicture : '../../../images/avatar/avatar-13.png' %>"
+class="bg-light w-100 h-100 rounded-circle avatar-lg img-thumbnail"
+alt="profile-image"
+/>
 
-							<h4 class="mb-0 mt-2">Nil Yeager</h4>
-					
-							
-							<div class="text-start mt-3">
-								<p class="header-title mb-2"><strong>About Me :</strong></p>
-								<p class="text-muted  mb-3">
-									Hi I'm Nil Yeager,has been the industry's standard dummy text ever since the
-									1500s, when an unknown printer took a galley of type.
-								</p>
-								<p class="text-muted mb-2 "><strong class="text-dark">Full Name :</strong> <span class="ms-2">Nil Yeager</span></p>
+<h4 class="mb-0 mt-2"></h4>
+<p class="text-muted fs-14"></p>
 
-								<p class="text-muted mb-2 "><strong class="text-dark">Mobile :</strong><span class="ms-2">(123)123 1234</span></p>
+<button
+type="button"
+class="btn btn-primary btn-sm mb-2"
+onclick="document.getElementById('profilePicture').click()"
+>
+Upload Photo
+</button>
 
-								<p class="text-muted mb-2 "><strong class="text-dark">Email :</strong> <span class="ms-2 ">user@email.domain</span></p>
 
-								<p class="text-muted mb-1 "><strong class="text-dark">Location :</strong> <span class="ms-2">USA</span></p>
-							</div>
 
-					
-						</div> <!-- end card-body -->
-					</div> <!-- end card -->
+<div class="text-start mt-3">
+<p class="text-muted mb-2">
+<strong class="text-dark">Full Name :</strong>
+<span class="ms-2"><%= userProfile.fullName %></span>
+</p>
+<p class="text-muted mb-2">
+<strong class="text-dark">Mobile :</strong>
+<span class="ms-2"><%= userProfile.phoneNumber %></span>
+</p>
+<p class="text-muted mb-2">
+<strong class="text-dark">Email :</strong>
+<span class="ms-2"><%= user.email %></span>
+</p>
+</div>
+</div>
+</div>
 
-				
-				</div> <!-- end col-->
-
-				<div class="col-xl-8 col-lg-7">
-					<div class="card">
-						<div class="card-body">
-							
-						
-
-								<div class="tab-pane" id="settings">
-									<form>
-										<h5 class="mb-4 text-uppercase">
-                      <i class="mdi mdi-account-circle me-1"></i> 
-Personal Information
+<div class="card">
+<div class="card-body">
+<form
+enctype="multipart/form-data"
+action="/user/profile/update"
+method="POST"
+>
+<h5 class="mb-4 text-uppercase">
+<i class="mdi mdi-account-circle me-1"></i> Personal
+Information
 </h5>
-										<div class="row">
-											<div class="col-md-6">
-												<div class="mb-3">
-													<label for="firstname" class="form-label">First Name</label>
-													<input type="text" class="form-control" id="firstname">
-												</div>
-											</div>
-											<div class="col-md-6">
-												<div class="mb-3">
-													<label for="lastname" class="form-label">Last Name</label>
-													<input type="text" class="form-control" id="lastname">
-												</div>
-											</div> <!-- end col -->
-										</div> <!-- end row -->
 
-										<div class="row">
-											<div class="col-12">
-												<div class="mb-3">
-													<label for="userbio" class="form-label">Bio</label>
-													<textarea class="form-control" id="userbio" rows="4"></textarea>
-												</div>
-											</div> <!-- end col -->
-										</div> <!-- end row -->
+<div class="col-md-12">
+<div class="mb-3">
+<label for="fullName" class="form-label">Full Name</label>
+<input
+type="text"
+class="form-control"
+id="fullName"
+value="<%= userProfile.fullName %>"
+name="fullName"
+/>
+</div>
+</div>
 
-										<div class="row">
-											<div class="col-md-6">
-												<div class="mb-3">
-													<label for="useremail" class="form-label">Email Address</label>
-													<input type="email" class="form-control" id="useremail">
-													<span class="form-text text-muted">If you want to change email please <a href="javascript: void(0);">click</a> here.</span>
-												</div>
-											</div>
-											<div class="col-md-6">
-												<div class="mb-3">
-													<label for="userpassword" class="form-label">Password</label>
-													<input type="password" class="form-control" id="userpassword">
-													<span class="form-text text-muted">If you want to change password please <a href="javascript: void(0);">click</a> here.</span>
-												</div>
-											</div> <!-- end col -->
-										</div> <!-- end row -->
+<!-- end row -->
 
+<div class="col-md-12">
+<div class="mb-3">
+<label for="useremail" class="form-label">Email Address</label>
+<input
+type="email"
+class="form-control"
+id="useremail"
+value="<%= user.email %>"
+disabled
+/>
+</div>
+</div>
 
-										<h5 class="mt-3 mb-4 text-uppercase"><i class="mdi mdi-earth me-1"></i> Social</h5>
-										<div class="row">
-											<div class="col-md-6">
-												<div class="mb-3">
-													<label for="social-fb" class="form-label">Facebook</label>
-													<div class="input-group">
-														<span class="input-group-text"><i class="mdi mdi-facebook"></i></span>
-														<input type="text" class="form-control" id="social-fb">
-													</div>
-												</div>
-											</div>
-											<div class="col-md-6">
-												<div class="mb-3">
-													<label for="social-tw" class="form-label">Twitter</label>
-													<div class="input-group">
-														<span class="input-group-text"><i class="mdi mdi-twitter"></i></span>
-														<input type="text" class="form-control" id="social-tw">
-													</div>
-												</div>
-											</div> <!-- end col -->
-										</div> <!-- end row -->
+<div class="col-md-12">
+<div class="mb-3">
+<label for="phoneNumber" class="form-label">Phone Number</label>
+<input
+type="number"
+class="form-control"
+id="phoneNumber"
+value="<%= userProfile.phoneNumber %>"
+name="phoneNumber"
+/>
+</div>
+</div>
 
-										<div class="row">
-											<div class="col-md-6">
-												<div class="mb-3">
-													<label for="social-insta" class="form-label">Instagram</label>
-													<div class="input-group">
-														<span class="input-group-text"><i class="mdi mdi-instagram"></i></span>
-														<input type="text" class="form-control" id="social-insta">
-													</div>
-												</div>
-											</div>
-											<div class="col-md-6">
-												<div class="mb-3">
-													<label for="social-lin" class="form-label">Linkedin</label>
-													<div class="input-group">
-														<span class="input-group-text"><i class="mdi mdi-linkedin"></i></span>
-														<input type="text" class="form-control" id="social-lin">
-													</div>
-												</div>
-											</div> <!-- end col -->
-										</div> <!-- end row -->
+<div class="col-md-12">
+<div class="mb-3">
+<label for="street" class="form-label">Street</label>
+<input
+type="text"
+class="form-control"
+id="street"
+value="<%= userProfile.address.street %>"
+name="street"
+/>
+</div>
+</div>
+<div class="row">
+<div class="col-md-6">
+<div class="mb-3">
+<label for="city" class="form-label">City</label>
+<input
+type="text"
+class="form-control"
+id="city"
+value="<%= userProfile.address.city %>"
+name="city"
+/>
+</div>
+</div>
 
-										<div class="row">
-											<div class="col-md-6">
-												<div class="mb-3">
-													<label for="social-sky" class="form-label">Skype</label>
-													<div class="input-group">
-														<span class="input-group-text"><i class="mdi mdi-skype"></i></span>
-														<input type="text" class="form-control" id="social-sky">
-													</div>
-												</div>
-											</div>
-											<div class="col-md-6">
-												<div class="mb-3">
-													<label for="social-gh" class="form-label">Github</label>
-													<div class="input-group">
-														<span class="input-group-text"><i class="mdi mdi-github-face"></i></span>
-														<input type="text" class="form-control" id="social-gh">
-													</div>
-												</div>
-											</div> <!-- end col -->
-										</div> <!-- end row -->
+<div class="col-md-6">
+<div class="mb-3">
+<label for="state" class="form-label">State</label>
+<input
+type="text"
+class="form-control"
+id="state"
+value="<%= userProfile.address.state %>"
+name="state"
+/>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-md-6">
+<div class="mb-3">
+<label for="country" class="form-label">Country</label>
+<input
+type="text"
+class="form-control"
+id="country"
+value="<%= userProfile.address.country %>"
+name="country"
+/>
+</div>
+</div>
 
-										<div class="text-end">
-											<button type="submit" class="btn btn-primary mt-2"><i class="mdi mdi-content-save"></i> Update Profile</button>
-										</div>
-									</form>
-								</div>
-								<!-- end settings content-->
+<div class="col-md-6">
+<div class="mb-3">
+<label for="zipCode" class="form-label">Zip Code</label>
+<input
+type="text"
+class="form-control"
+id="zipCode"
+value="<%= userProfile.address.zipCode %>"
+name="zipCode"
+/>
+</div>
+</div>
+</div>
 
-						
-						</div> <!-- end card body -->
-					</div> <!-- end card -->
-				</div> <!-- end col -->
-			</div>
-			<!-- end row-->
+<input
+type="file"
+id="profilePicture"
+name="profilePicture"
+style="display: none"
+onchange="previewProfileImage(event)"
+/>
 
-		</section>
-		<!-- /.content -->
-        </div>
-      </div>
-      <!-- /.content-wrapper -->
+<!-- end row -->
 
-      <footer class="main-footer">
-        <!-- footer -->
-        <%- include('layouts/footer') %>
-      </footer>
-      
-    <!-- Vendor JS -->
-    <%- include('layouts/script') %>
-  </body>
-  <script src="/js/bundle.js"></script>
-  <!-- Mirrored from investx-admin-template.multipurposethemes.com/New_InvestX-main-files/html/template/vertical-light/main/extra_profile.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 24 May 2023 23:01:34 GMT -->
+<div class="text-start">
+<button
+type="submit"
+class="btn btn-primary mt-2 bg-gradient-warning"
+>
+<i class="mdi mdi-content-save"></i> Update Profile
+</button>
+</div>
+</form>
+
+<!-- end settings content-->
+</div>
+<!-- end card body -->
+</div>
+<!-- end card -->
+</div>
+<!-- end col -->
+</div>
+<!-- end row -->
+</section>
+<!-- /.content -->
+</div>
+</div>
+<!-- /.content-wrapper -->
+
+<footer class="main-footer">
+<!-- footer -->
+<%- include('layouts/footer') %>
+</footer>
+
+<!-- Vendor JS -->
+<%- include('layouts/script') %>
+<script>
+function handleFileSelection(event) {
+const fileInput = event.target;
+const file = fileInput.files[0];
+const button = document.getElementById('uploadButton');
+if (button) {
+if (file) {
+button.textContent = `Selected: ${file.name}`;
+} else {
+button.textContent = 'Upload Photo';
+}
+}
+}
+
+const fileInput = document.getElementById('profilePicture');
+fileInput.addEventListener('change', handleFileSelection);
+
+function previewProfileImage(event) {
+const reader = new FileReader();
+reader.onload = function () {
+const previewImage = document.getElementById('profileImagePreview');
+previewImage.src = reader.result;
+};
+if (event.target.files && event.target.files[0]) {
+reader.readAsDataURL(event.target.files[0]);
+} else {
+const previewImage = document.getElementById('profileImagePreview');
+previewImage.src = '../../../images/avatar/avatar-13.png'; // Default image URL
+}
+}
+</script>
+
+</body>
 </html>
