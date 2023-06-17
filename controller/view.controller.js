@@ -93,10 +93,8 @@ const getResetPasswordForm = catchAsync(async (req, res, next) => {
 ////////////////////////
 
 const getChangePasswordForm = (req, res) => {
-  const error = req.query.error;
   res.render('changepassword', {
     title: 'Change Password',
-    error: error,
   });
 };
 

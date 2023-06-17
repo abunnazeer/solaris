@@ -5,7 +5,7 @@
       <ul class="sidebar-menu" data-widget="tree">
         <li>
           <a href="/dashboard">
-           <i data-feather="home"></i>
+            <i data-feather="home"></i>
             <span>Dashboard</span>
             <span class="pull-right-container">
               <i class="fa fa-angle-right pull-right"></i>
@@ -13,10 +13,9 @@
           </a>
         </li>
 
-        
-      <li >
+        <li>
           <a href="/user/profile">
-           <i data-feather="user"></i>
+            <i data-feather="user"></i>
             <span>Profile</span>
             <span class="pull-right-container">
               <i class="fa fa-angle-right pull-right"></i>
@@ -31,16 +30,13 @@
               <i class="fa fa-angle-right pull-right"></i>
             </span>
           </a>
-           <ul class="treeview-menu">
-						<li>
-							<li><a href="/user/change-password">Change Password</a></li>
-							<li><a href="/user/two-factor">2FA</a></li>
-							
-						</li>	
-				  </ul>
+          <ul class="treeview-menu">
+            <li><a href="/user/change-password">Change Password</a></li>
+            <li><a href="/user/two-factor">2FA</a></li>
+          </ul>
         </li>
 
-         <li class="treeview">
+        <li class="treeview">
           <a href="#">
             <i data-feather="file-text"></i>
             <span>Account</span>
@@ -48,16 +44,13 @@
               <i class="fa fa-angle-right pull-right"></i>
             </span>
           </a>
-           <ul class="treeview-menu">
-						<li>
-							<li><a href="/user/activity">Transaction Activities</a></li>
-							<li><a href="/user/transfer">Inter Account Transfer</a></li>
-							
-						</li>	
-				  </ul>
+          <ul class="treeview-menu">
+            <li><a href="/user/activity">Transaction Activities</a></li>
+            <li><a href="/user/transfer">Inter Account Transfer</a></li>
+          </ul>
         </li>
 
-          <li class="treeview">
+        <li class="treeview">
           <a href="#">
             <i data-feather="dollar-sign"></i>
             <span>Portfolios</span>
@@ -65,18 +58,25 @@
               <i class="fa fa-angle-right pull-right"></i>
             </span>
           </a>
-           <ul class="treeview-menu">
-						<li>
-							<li><a href="/user/view-investments-portfolio">Purchase Investment Portfolio</a></li>
-							<li><a href="/user/user-investments">Active Investment Portfolio</a></li>
-							<li><a href="/user/investment-history">Investment Portfolio History</a></li>
-							<li><a href="/user/short-term-funds">Short Term Funds</a></li>
-							
-						</li>	
-				  </ul>
+          <ul class="treeview-menu">
+            <li>
+              <a href="/user/view-investments-portfolio"
+                >Purchase Investment Portfolio</a
+              >
+            </li>
+            <li>
+              <a href="/user/user-investments">Active Investment Portfolio</a>
+            </li>
+            <li>
+              <a href="/user/investment-history"
+                >Investment Portfolio History</a
+              >
+            </li>
+            <li><a href="/user/short-term-funds">Short Term Funds</a></li>
+          </ul>
         </li>
 
-          <li class="treeview">
+        <li class="treeview">
           <a href="#">
             <i data-feather="users"></i>
             <span>Referrals</span>
@@ -84,18 +84,15 @@
               <i class="fa fa-angle-right pull-right"></i>
             </span>
           </a>
-           <ul class="treeview-menu">
-						<li>
-							<li><a href="/user/referred-users">Referred Members</a></li>
-							<li><a href="/user/referral-bonus">Member Benefit Commission</a></li>
-							<!-- <li><a href="/user/voyager-program">Voyerger Program</a></li> -->
-							
-						</li>	
-				  </ul>
+          <ul class="treeview-menu">
+            <li><a href="/user/referred-users">Referred Members</a></li>
+            <li>
+              <a href="/user/referral-bonus">Member Benefit Commission</a>
+            </li>
+          </ul>
         </li>
 
-
-           <li class="treeview">
+        <li class="treeview">
           <a href="#">
             <i data-feather="credit-card"></i>
             <span>Withdrawals</span>
@@ -103,16 +100,43 @@
               <i class="fa fa-angle-right pull-right"></i>
             </span>
           </a>
-           <ul class="treeview-menu">
-						<li>
-							<li><a href="/user/withdrawal-request">Withdrawals Request</a></li>
-							<li><a href="/user/withdrawal-history">Withdrawals History</a></li>
-							
-						</li>	
-				  </ul>
+          <ul class="treeview-menu">
+            <li><a href="/user/withdrawal-request">Withdrawals Request</a></li>
+            <li><a href="/user/withdrawal-history">Withdrawals History</a></li>
+          </ul>
         </li>
 
-      
+        <% if (user.role === 'admin') { %>
+
+        <li class="header">Administration Menu</li>
+        <li class="treeview">
+          <a href="#">
+            <i data-feather="credit-card"></i>
+            <span>Manage Users</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-right pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="/user/users">Manage users</a></li>
+            <li><a href="/user/create-user">Create Moderators</a></li>
+          </ul>
+        </li>
+        <li class="treeview">
+          <a href="#">
+            <i data-feather="credit-card"></i>
+            <span>Manage Portfolios</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-right pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="/port/create-portfolio">Add new</a></li>
+            <li><a href="/port/portfolio">Manage</a></li>
+          </ul>
+        </li>
+
+        <% } %>
       </ul>
     </div>
   </div>

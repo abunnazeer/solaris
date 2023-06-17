@@ -97,7 +97,7 @@ app.get('/dashboard', protect, (req, res) => {
 });
 
 app.use(userRouter);
-// app.use('create-portfolio', portRouter);
+app.use(portRouter);
 app.use(portRouter);
 
 app.all('/*', (req, res, next) => {
