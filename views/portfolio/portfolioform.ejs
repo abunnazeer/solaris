@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- head and meta-->
+    <%- include('../layouts/head') %>
+  </head>
+
+  <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
+    <div class="wrapper">
+      <!-- <div id="loader"></div> -->
+
+      <header class="main-header">
+        <!-- header-->
+        <%- include('../layouts/header') %>
+      </header>
+
+      <aside class="main-sidebar">
+        <!-- sidebar-->
+        <%- include('../layouts/aside') %>
+      </aside>
+
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <div class="container-full">
+          <!-- Main content -->
+          <section class="content">
+            <div class="row">
+              <div class="col-xl-9 col-12">
+                <div class="box">
+                  <div class="box-body pb-lg-0">
+                    <div class="row">
+                      <form action="/port/create-portfolio" method="POST">
+                        <div class="form-group">
+                          <div class="input-group mb-3">
+                            <input
+                              id="title"
+                              type="text"
+                              class="form-control ps-15 bg-transparent"
+                              placeholder="Title"
+                              name="title"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <div class="input-group mb-3">
+                            <input
+                              id="description"
+                              type="text"
+                              class="form-control ps-15 bg-transparent"
+                              placeholder="Description"
+                              name="description"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <div class="input-group mb-3">
+                            <input
+                              id="minimumCapital"
+                              type="text"
+                              class="form-control ps-15 bg-transparent"
+                              placeholder="Minimum Capital"
+                              name="minimumCapital"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <div class="input-group mb-3">
+                            <input
+                              id="returnOnInvestment"
+                              type="text"
+                              class="form-control ps-15 bg-transparent"
+                              placeholder="Return on Investment"
+                              name="returnOnInvestment"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <div class="input-group mb-3">
+                            <input
+                              id="portfolioDuration"
+                              type="text"
+                              class="form-control ps-15 bg-transparent"
+                              placeholder="Portfolio Duration"
+                              name="portfolioDuration"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <div class="input-group mb-3">
+                            <input
+                              id="weeklyEarnings"
+                              type="text"
+                              class="form-control ps-15 bg-transparent"
+                              placeholder="Weekly Earnings"
+                              name="weeklyEarnings"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <div class="input-group mb-3">
+                            <input
+                              id="targetSize"
+                              type="text"
+                              class="form-control ps-15 bg-transparent"
+                              placeholder="Target Size"
+                              name="targetSize"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <div class="input-group mb-3">
+                            <input
+                              id="reimbursement"
+                              type="text"
+                              class="form-control ps-15 bg-transparent"
+                              placeholder="Reimbursement"
+                              name="reimbursement"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-12 text-left">
+                            <button
+                              type="submit"
+                              class="waves-effect waves-light btn mb-5 bg-gradient-warning mt-10"
+                            >
+                              SUBMIT
+                            </button>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /.content -->
+            </div>
+          </section>
+        </div>
+      </div>
+      <!-- /.content-wrapper -->
+
+      <footer class="main-footer">
+        <!-- footer-->
+        <%- include('../layouts/footer') %>
+      </footer>
+      <!-- Side panel -->
+      <!-- quick_user_toggle -->
+      <div class="modal modal-right fade" id="quick_user_toggle" tabindex="-1">
+        <!-- user profile -->
+        <%- include('../layouts/right') %>
+      </div>
+      <!-- /quick_user_toggle -->
+
+      <!-- Control Sidebar -->
+      <%- include('../layouts/sidebar') %>
+
+      <!-- /.control-sidebar -->
+
+      <!-- Add the sidebar's background. This div must be placed immediately after the control sidebar -->
+      <!-- <div class="control-sidebar-bg"></div> -->
+    </div>
+    <!-- ./wrapper -->
+
+    <!-- chatbody -->
+
+    <!-- end chatbody -->
+    <!-- Page Content overlay -->
+
+    <%- include('../layouts/script') %>
+  </body>
+</html>

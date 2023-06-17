@@ -376,18 +376,18 @@ const changePassword = catchAsync(async (req, res, next) => {
     user.password
   );
   if (!isCurrentPasswordCorrect) {
-    // return next(new AppError('Your current password is wrong.', 400));
-    return res.status(400).render('changepassword', {
-      error: 'Your current password is wrong.',
-    });
+    return next(new AppError('Your current password is wrong.', 400));
+    // return res.status(400).render('changepassword', {
+    //   error: 'Your current password is wrong.',
+    // });
   }
 
   // Update the password
   if (!newPassword || !newPasswordConfirm) {
-    // return next(new AppError('Please fill in all fields.', 400));
-    return res.status(400).render('changepassword', {
-      error: 'Please fill in all fields.',
-    });
+    return next(new AppError('Please fill in all fields.', 400));
+    // return res.status(400).render('changepassword', {
+    //   error: 'Please fill in all fields.',
+    // });
   }
 
   user.password = newPassword;
