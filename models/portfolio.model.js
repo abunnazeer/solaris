@@ -5,6 +5,10 @@ const portfolioSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  description: {
+    type: String,
+    required: true,
+  },
   minimumCapital: {
     type: String,
     required: true,
@@ -31,6 +35,11 @@ const portfolioSchema = new mongoose.Schema({
   },
   reimbursement: {
     type: String,
+    required: true,
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: true,
   },
 });

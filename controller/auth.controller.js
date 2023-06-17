@@ -196,6 +196,7 @@ const protect = catchAsync(async (req, res, next) => {
   }
 
   req.user = existingUser;
+  res.locals.user = existingUser;
   next();
 });
 
@@ -363,80 +364,8 @@ const resetPassword = catchAsync(async (req, res, next) => {
 //////////// Change PASSWORD ENDPOINT ////////////////
 /////////////////////////////////////////////////////
 
-// const changePassword = catchAsync(async (req, res, next) => {
-//   const { currentPassword, newPassword, newPasswordConfirm } = req.body;
-//   const { user } = req;
-
-//   // Check if the current password is correct
-//   const isCurrentPasswordCorrect = await user.correctPassword(
-//     currentPassword,
-//     user.password
-//   );
-//   if (!isCurrentPasswordCorrect) {
-//     return next(new AppError('Current password is incorrect.', 401));
-//   }
-
-//   // Validate the new password and password confirmation
-//   if (newPassword !== newPasswordConfirm) {
-//     return next(new AppError('Passwords do not match.', 400));
-//   }
-
-//   // Password validation: at least 8 characters, alphanumeric combination
-//   const isAlphanumeric = /^[0-9a-zA-Z]+$/;
-//   if (newPassword.length < 8 || !isAlphanumeric.test(newPassword)) {
-//     return next(
-//       new AppError(
-//         'Password must be at least 8 characters long and contain at least one non-alphanumeric character.',
-//         400
-//       )
-//     );
-//   }
-
-//   // Update the user's password
-//   user.password = newPassword;
-//   user.passwordConfirm = newPasswordConfirm;
-
-//   // Save the updated user
-//   await user.save();
-
-//   // Send email notification to the user
-//   try {
-//     await sendEmail({
-//       email: user.email,
-//       subject: 'Your password has been changed',
-//       message:
-//         "You have successfully changed your password. If you didn't make this change, please contact us immediately.",
-//     });
-//   } catch (err) {
-//     return next(new AppError('There was an error sending the email.', 500));
-//   }
-
-//   res.render('response', {
-//     response: 'Your password has been changed successfully!',
-//   });
-// });
-
-// const updatePassword = catchAsync(async (req, res, next) => {
-//   // get the user from the db
-//   const user = await User.findById(req.user.id).select('+password');
-//   // chek if posted current password  is correct
-//   if (!(await user.correctPassword(req.body.currentPassword, user.password))) {
-//     return next(new AppError('Your corrent password is wrong.', 401));
-//   }
-//   // if all checkec, update password
-//   user.password = req.body.password;
-//   user.passwordConfirm = req.body.confirmpassword;
-//   await user.save();
-
-//   // login user in, send JWT
-//   // const user = newUser;
-//   // const profile = newProfile;
-//   const statusCode = 200;
-//   // const redirectUrl = '/user/activation';
-//   createSendToken(user, null, statusCode, res, null);
-// });
 const changePassword = catchAsync(async (req, res, next) => {
-  const { currentPassword, password, confirmPassword } = req.body;
+  const { currentPassword, newPassword, newPasswordConfirm } = req.body;
 
   // Get the user from the database
   const user = await User.findById(req.user.id).select('+password');
@@ -447,17 +376,26 @@ const changePassword = catchAsync(async (req, res, next) => {
     user.password
   );
   if (!isCurrentPasswordCorrect) {
-    return next(new AppError('Your current password is wrong.', 401));
+    return next(new AppError('Your current password is wrong.', 400));
+    // return res.status(400).render('changepassword', {
+    //   error: 'Your current password is wrong.',
+    // });
   }
 
   // Update the password
-  user.password = password;
-  user.passwordConfirm = confirmPassword;
+  if (!newPassword || !newPasswordConfirm) {
+    return next(new AppError('Please fill in all fields.', 400));
+    // return res.status(400).render('changepassword', {
+    //   error: 'Please fill in all fields.',
+    // });
+  }
+
+  user.password = newPassword;
+  user.passwordConfirm = newPasswordConfirm;
+  user.passwordChangedAt = Date.now();
   await user.save();
 
-  // Log in the user and send JWT
-  const statusCode = 200;
-  createSendToken(user, null, statusCode, res, null);
+  res.redirect('/user/change-password');
 });
 
 module.exports = {
@@ -471,5 +409,4 @@ module.exports = {
   isLoggedIn,
   logout,
   changePassword,
-  // updatePassword,
 };

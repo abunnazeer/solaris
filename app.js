@@ -8,6 +8,8 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
+// const flash = require('express-flash');
+const session = require('express-session');
 
 // controller
 const globalErrorHandler = require('./controller/error.controller');
@@ -16,33 +18,39 @@ const AppError = require('./utils/appError');
 //importing routers
 const userRouter = require('./routes/user.routers');
 const portRouter = require('./routes/portfolio.routers');
-const { protect, logoutUser } = require('./controller/auth.controller');
+const { protect } = require('./controller/auth.controller');
 
 const app = express();
+
+//Configure express-session
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+// app.use(flash());
+
+// app.use((req, res, next) => {
+//   // Check if an alert message is stored in the session
+//   if (req.session.alert) {
+//     // Pass the alert message to the template context
+//     res.locals.alert = req.session.alert;
+//     // Clear the alert message from the session
+//     delete req.session.alert;
+//   }
+//   next();
+// });
+
 // GLOBAL MIDDLEWARE
 
 // set security HTTP Headers
 // app.use(helmet());
-// app.use(
-//   helmet.contentSecurityPolicy({
-//     directives: {
-//       // defaultSrc: ["'self'", 'data:', 'blob:'],
 
-//       // fontSrc: ["'self'", 'https:', 'data:'],
-
-//       // scriptSrc: ["'self'", 'unsafe-inline'],
-
-//       scriptSrc: ["'self'", 'https://*.cloudflare.com'],
-
-//       scriptSrcElem: ["'self'", 'https:', 'https://*.cloudflare.com'],
-
-//       // styleSrc: ["'self'", 'https:', 'unsafe-inline'],
-
-//       connectSrc: ["'self'", 'data', 'https://*.cloudflare.com'],
-//     },
-//   })
-// );
 // loading development
+
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
@@ -75,7 +83,6 @@ app.use(xss());
 // );
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname + '/public/')));
-// app.use('/static', express.static(path.join(__dirname, 'public')));
 
 // Test Middle Ware
 
@@ -90,7 +97,7 @@ app.get('/dashboard', protect, (req, res) => {
 });
 
 app.use(userRouter);
-// app.use('create-portfolio', portRouter);
+app.use(portRouter);
 app.use(portRouter);
 
 app.all('/*', (req, res, next) => {

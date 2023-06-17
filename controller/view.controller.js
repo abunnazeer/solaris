@@ -1,22 +1,9 @@
-// const express = require('express');
-// const { promisify } = require('util');
-// const crypto = require('crypto');
-
-// const jwt = require('jsonwebtoken');
-// const User = require('../models/user/user.model');
-// const Profile = require('../models/user/profile.model');
-// const AppError = require('../utils/appError');
-// const catchAsync = require('../utils/catchAsync');
-// const sendEmail = require('../utils/email');
-
-const { promisify } = require('util');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user/user.model');
 const Profile = require('../models/user/profile.model');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
-const sendEmail = require('../utils/email');
 
 // Function for JWT
 const signToken = id => {
@@ -106,7 +93,7 @@ const getResetPasswordForm = catchAsync(async (req, res, next) => {
 ////////////////////////
 
 const getChangePasswordForm = (req, res) => {
-  res.status(200).render('changepassword', {
+  res.render('changepassword', {
     title: 'Change Password',
   });
 };
@@ -117,12 +104,21 @@ const getTwoFactor = (req, res) => {
   });
 };
 
-const getProfile = (req, res) => {
-  res.status(200).render('profile', {
-    title: 'Profile',
-    user: res.locals.user,
-  });
-};
+const getProfile = catchAsync(async (req, res) => {
+  try {
+    // Retrieve the user profile data from the database or any other source
+    const userProfile = await Profile.findOne({ user: req.user._id });
+
+    res.status(200).render('profile', {
+      title: 'Profile',
+      userProfile: userProfile,
+    });
+  } catch (error) {
+    // Handle error if profile retrieval fails
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 const getActivation = (req, res) => {
   res.status(200).render('activation', {
@@ -206,13 +202,6 @@ const getwithdrawalHistory = (req, res) => {
     .status(200)
     .render('withdrawal/withdrawalhistory', { title: 'Withdrawal History' });
 };
-
-// getting Register and login form
-// const getPortfolioForm = (req, res) => {
-//   res.status(200).render('portfolioform', {
-//     title: 'portfolio',
-//   });
-// };
 
 module.exports = {
   getRegistrationForm,
