@@ -6,20 +6,33 @@ const {
   getPortfolio,
 } = require('../controller/portfolio.controller');
 
-const { getPortfolioForm } = require('../controller/view.portfolio');
+const {
+  getPortfolioForm,
+  getPortfolioIndex,
+  getEditPortfolioForm,
+} = require('../controller/view.portfolio');
 
 const { restrictTo } = require('../controller/auth.controller');
 
 const router = express.Router();
 
 router.get(
-  '/port/create-portfolio',
-  restrictTo('admin', 'farmer'),
+  '/portfolio/create-portfolio',
+  restrictTo('admin'),
   getPortfolioForm
 );
 
-router.post('/port/create-portfolio', createPortfolio);
-router.put('/port/portfolio/:id', updatePortfolio);
-router.delete('/port/portfolio/:id', deletePortfolio);
+router.get('/create-portfolio', getPortfolioForm);
+router.get('/', getPortfolioIndex);
+// router.get('/portfolio', getPortfolioIndex);
+router.post('/create-portfolio', createPortfolio);
+// router.put('/:id', updatePortfolio);
+router.delete('/:id', deletePortfolio);
+
+// Route to render the edit form
+router.get('/edit-portfolio/:id', getEditPortfolioForm);
+
+// Route to handle the update request
+router.post('/update-portfolio/:id', updatePortfolio);
 
 module.exports = router;

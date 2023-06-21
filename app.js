@@ -17,7 +17,7 @@ const globalErrorHandler = require('./controller/error.controller');
 const AppError = require('./utils/appError');
 //importing routers
 const userRouter = require('./routes/user.routers');
-const portRouter = require('./routes/portfolio.routers');
+const portfolioRouter = require('./routes/portfolio.routers');
 const { protect } = require('./controller/auth.controller');
 
 const app = express();
@@ -51,9 +51,9 @@ app.use(
 
 // loading development
 
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-}
+// if (process.env.NODE_ENV === 'development') {
+//   app.use(morgan('dev'));
+// }
 // limit request from same API
 const limiter = rateLimit({
   max: 1000,
@@ -81,6 +81,10 @@ app.use(xss());
 //   })
 
 // );
+
+app.get('/', (req, res) => {
+  res.redirect('/user/login');
+});
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname + '/public/')));
 
@@ -92,13 +96,15 @@ app.use(express.static(path.join(__dirname + '/public/')));
 //   next();
 // });
 // app.use(logoutUser);
+// Default route
+
 app.get('/dashboard', protect, (req, res) => {
   res.status(200).render('dashboard', { logoutUser: 'Dashboard' });
 });
 
 app.use(userRouter);
-app.use(portRouter);
-app.use(portRouter);
+// app.use(portRouter);
+app.use('/portfolio', portfolioRouter);
 
 app.all('/*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

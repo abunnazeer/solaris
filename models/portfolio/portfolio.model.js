@@ -4,6 +4,7 @@ const portfolioSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
+    unique: true,
   },
   description: {
     type: String,
@@ -37,11 +38,11 @@ const portfolioSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
+  // user: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: 'User',
+  //   required: true,
+  // },
 });
 
 const Portfolio = mongoose.model('Portfolio', portfolioSchema);

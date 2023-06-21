@@ -91,7 +91,7 @@ const register = catchAsync(async (req, res, next) => {
   const user = newUser;
   const profile = newProfile;
   const statusCode = 201;
-  const redirectUrl = '/user/activation';
+  const redirectUrl = '/user/success';
   createSendToken(user, profile, statusCode, res, redirectUrl);
 });
 

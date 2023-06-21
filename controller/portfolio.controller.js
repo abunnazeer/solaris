@@ -1,4 +1,4 @@
-const Portfolio = require('../models/portfolio.model');
+const Portfolio = require('../models/portfolio/portfolio.model');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
@@ -8,18 +8,38 @@ const getPortfolio = catchAsync(async (req, res) => {
   res.json(portfolio);
 });
 
-// Create portfolio
+// // // Create portfolio
 const createPortfolio = catchAsync(async (req, res, next) => {
   try {
     const portfolio = await Portfolio.create(req.body);
-    console.log(req.body);
-    res
-      .status(201)
-      .json({ message: 'Portfolio created successfully', portfolio });
+    res.status(201).render('msg/succeed', {
+      message: 'Portfolio created successfully',
+      portfolio,
+    });
   } catch (error) {
     return next(new AppError('Failed to create portfolio', 500));
   }
 });
+
+// // Update portfolio
+// const updatePortfolio = catchAsync(async (req, res) => {
+//   const { id } = req.params;
+//   const updatedPortfolio = req.body;
+
+//   try {
+//     const portfolio = await Portfolio.findByIdAndUpdate(id, updatedPortfolio, {
+//       new: true,
+//     });
+
+//     if (!portfolio) {
+//       return res.status(404).json({ message: 'Portfolio not found' });
+//     }
+
+//     res.json({ message: 'Portfolio updated successfully', portfolio });
+//   } catch (error) {
+//     res.status(500).json({ message: 'Failed to update portfolio' });
+//   }
+// });
 
 // Update portfolio
 const updatePortfolio = catchAsync(async (req, res) => {
