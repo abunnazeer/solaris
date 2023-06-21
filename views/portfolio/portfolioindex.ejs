@@ -41,9 +41,11 @@
                       <% portfolio.forEach((item) => { %>
                       <tr>
                         <td><%= item.title %></td>
-
                         <td class="table-action min-w-100">
-                          <a href="#" class="text-fade hover-primary">
+                          <a
+                            href="/portfolio/view/<%= item._id %>"
+                            class="text-fade hover-primary"
+                          >
                             <i data-feather="eye" style="color: #308345"></i>
                           </a>
                           <a

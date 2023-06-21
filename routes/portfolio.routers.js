@@ -1,4 +1,5 @@
 const express = require('express');
+// const slugify = require('slugify');
 const {
   createPortfolio,
   updatePortfolio,
@@ -10,6 +11,7 @@ const {
   getPortfolioForm,
   getPortfolioIndex,
   getEditPortfolioForm,
+  viewPortfolio,
 } = require('../controller/view.portfolio');
 
 const { restrictTo } = require('../controller/auth.controller');
@@ -34,5 +36,7 @@ router.get('/edit-portfolio/:id', getEditPortfolioForm);
 
 // Route to handle the update request
 router.post('/update-portfolio/:id', updatePortfolio);
+// View single portfolio
+router.get('/view/:id', viewPortfolio);
 
 module.exports = router;
