@@ -1,5 +1,6 @@
 const Portfolio = require('../models/portfolio/portfolio.model');
 const catchAsync = require('../utils/catchAsync');
+// const slugify = require('slugify');
 // const AppError = require('../utils/appError');
 
 const getPortfolioForm = (req, res) => {
@@ -49,8 +50,29 @@ const getPortfolioIndex = catchAsync(async (req, res) => {
   });
 });
 
+const viewPortfolio = catchAsync(async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // const portfolio = await Portfolio.findById(id);
+    const portfolio = await Portfolio.findOne({ slug: id });
+
+    if (!portfolio) {
+      return res.status(404).json({ message: 'Portfolio not found' });
+    }
+
+    res.status(200).render('portfolio/portfoliodetail', {
+      title: 'Portfolio Detail',
+      portfolio: portfolio,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch portfolio' });
+  }
+});
+
 module.exports = {
   getPortfolioForm,
   getPortfolioIndex,
   getEditPortfolioForm,
+  viewPortfolio,
 };
