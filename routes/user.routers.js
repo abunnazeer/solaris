@@ -6,10 +6,11 @@ const {
   getProfile,
   getBizForm,
   getResetPasswordForm,
-  getActivation,
+  getSuccess,
   getRegOption,
   getChangePasswordForm,
   getTwoFactor,
+
   // Activity
   getActivity,
   getTransfer,
@@ -55,6 +56,7 @@ router.patch(
   updateProfile
 );
 // api end point routes
+
 router.post('/user/register', register);
 router.post('/user/login', login);
 //  this is a api baised url
@@ -81,7 +83,7 @@ router.get('/user/forget-password', getForgetPasswordForm);
 router.get('/user/change-password', protect, getChangePasswordForm);
 
 router.get('/user/two-factor', getTwoFactor);
-router.get('/user/activation', getActivation);
+router.get('/user/success', getSuccess);
 router.get('/user/registration', getRegOption);
 
 router.get('/user/reset-password/:token', getResetPasswordForm);

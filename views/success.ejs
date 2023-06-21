@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('layouts/head') %>
+  </head>
+  <body
+    class="hold-transition light-skin theme-primary bg-img"
+    style="
+      background-image: url(../../../images/auth-bg/bg-17.png);
+      background-position: bottom right;
+    "
+  >
+    <section class="error-page h-p100">
+      <div class="container h-p100">
+        <div class="row align-items-center justify-content-center text-center">
+          <div class="col-lg-7 col-md-10 col-12">
+            <div style="padding-top: 40vh">
+              <h1 class="fs">
+                You have successfully registered. Please check your email for
+                verification
+              </h1>
+
+              <div class="my-30">
+                <a
+                  href="/user/login"
+                  class="waves-effect waves-light btn mb-5 bg-gradient-warning"
+                  >Login</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <%- include('layouts/script') %>
+    <!-- <script src="js/bundle.js"></script> -->
+  </body>
+</html>

@@ -144,8 +144,8 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['user', 'business', 'admin'],
-    default: 'user',
+    enum: ['personal', 'business', 'admin'],
+    default: 'personal',
   },
   emailVerificationToken: String,
   emailVerificationExpires: Date,

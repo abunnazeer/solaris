@@ -42,7 +42,7 @@ const getRegistrationForm = (req, res, next) => {
   res.status(201).render('register', {
     title: 'Registration',
   });
-  res.redirect('/user/activation');
+  res.redirect('/user/success');
 };
 
 const getBizForm = (req, res, next) => {
@@ -68,6 +68,8 @@ const getForgetPasswordForm = (req, res) => {
     error: error,
   });
 };
+
+// Handler function for default route
 
 // this Render the reset password form
 const getResetPasswordForm = catchAsync(async (req, res, next) => {
@@ -120,8 +122,8 @@ const getProfile = catchAsync(async (req, res) => {
   }
 });
 
-const getActivation = (req, res) => {
-  res.status(200).render('activation', {
+const getSuccess = (req, res) => {
+  res.status(200).render('success', {
     title: 'Activation',
   });
 };
@@ -210,7 +212,7 @@ module.exports = {
   getProfile,
   getBizForm,
   getResetPasswordForm,
-  getActivation,
+  getSuccess,
   getRegOption,
   getChangePasswordForm,
   getTwoFactor,
