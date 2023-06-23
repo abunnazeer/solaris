@@ -29,11 +29,14 @@
                 <div class="box">
                   <div class="box-body pb-lg-0">
                     <div class="row">
+                      <!-- portfolioedit.ejs -->
+
                       <form
-                        action="/portfolio/create-portfolio"
+                        action="/portfolio/update-portfolio/<%= portfolio._id %>"
                         method="POST"
-                        enctype="multipart/form-data"
                       >
+                        <!-- Form fields for editing the portfolio details -->
+                        <!-- Replace the input values with the corresponding portfolio data -->
                         <div class="form-group">
                           <div class="input-group mb-3">
                             <input
@@ -42,10 +45,12 @@
                               class="form-control ps-15 bg-transparent"
                               placeholder="Title"
                               name="title"
+                              value="<%= portfolio.title %>"
                               required
                             />
                           </div>
                         </div>
+
                         <div class="form-group">
                           <div class="input-group mb-3">
                             <input
@@ -54,18 +59,7 @@
                               class="form-control ps-15 bg-transparent"
                               placeholder="Description"
                               name="description"
-                              required
-                            />
-                          </div>
-                        </div>
-                        <!-- Add the file input field for image upload -->
-                        <div class="form-group">
-                          <div class="input-group mb-3">
-                            <input
-                              id="image"
-                              type="file"
-                              class="form-control ps-15 bg-transparent"
-                              name="image"
+                              value="<%= portfolio.description %>"
                               required
                             />
                           </div>
@@ -78,6 +72,7 @@
                               class="form-control ps-15 bg-transparent"
                               placeholder="Minimum Capital"
                               name="minimumCapital"
+                              value="<%= portfolio.minimumCapital %>"
                               required
                             />
                           </div>
@@ -90,6 +85,7 @@
                               class="form-control ps-15 bg-transparent"
                               placeholder="Return on Investment"
                               name="returnOnInvestment"
+                              value="<%= portfolio.returnOnInvestment %>"
                               required
                             />
                           </div>
@@ -102,7 +98,7 @@
                               class="form-control ps-15 bg-transparent"
                               placeholder="Portfolio Duration"
                               name="portfolioDuration"
-                              required
+                              value="<%= portfolio.portfolioDuration %>"
                             />
                           </div>
                         </div>
@@ -114,6 +110,7 @@
                               class="form-control ps-15 bg-transparent"
                               placeholder="Weekly Earnings"
                               name="weeklyEarnings"
+                              value="<%= portfolio.weeklyEarnings %>"
                               required
                             />
                           </div>
@@ -126,6 +123,7 @@
                               class="form-control ps-15 bg-transparent"
                               placeholder="Target Size"
                               name="targetSize"
+                              value="<%= portfolio.targetSize %>"
                               required
                             />
                           </div>
@@ -138,17 +136,21 @@
                               class="form-control ps-15 bg-transparent"
                               placeholder="Reimbursement"
                               name="reimbursement"
+                              value="<%= portfolio.reimbursement %>"
                               required
                             />
                           </div>
                         </div>
+
+                        <!-- Add other form fields for other portfolio details -->
+
                         <div class="row">
                           <div class="col-12 text-left">
                             <button
                               type="submit"
                               class="waves-effect waves-light btn mb-5 bg-gradient-warning mt-10"
                             >
-                              SUBMIT
+                              UPDATE
                             </button>
                           </div>
                         </div>

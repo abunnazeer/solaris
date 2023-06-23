@@ -18,17 +18,24 @@
               <h1 class="fs"><%= msg %>!</h1>
 
               <div class="my-30">
-                <a
-                  href="/user/login"
+                <button
                   class="waves-effect waves-light btn mb-5 bg-gradient-warning"
-                  >Go back</a
+                  onclick="goBack()"
                 >
+                  Go back
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
     </section>
+
+    <script>
+      function goBack() {
+        window.history.back();
+      }
+    </script>
 
     <%- include('layouts/script') %>
     <!-- <script src="js/bundle.js"></script> -->

@@ -4,6 +4,10 @@ const User = require('../models/user/user.model');
 const Profile = require('../models/user/profile.model');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
+const Portfolio = require('../models/portfolio/portfolio.model');
+const byPortfolio = require('../models/portfolio/buyportfolio.model');
+
+// const AppError = require('../utils/appError');
 
 // Function for JWT
 const signToken = id => {
@@ -34,6 +38,20 @@ const createSendToken = (user, profile, statusCode, res) => {
   });
 };
 
+// //////////////Dashboard ////////////
+
+// const dashboard = (req, res) => {
+//   res.status(200).render('dashboard', { title: 'Dashboard' });
+// };
+
+const dashboard = catchAsync(async (req, res) => {
+  const user = req.user.id; // Assuming the authenticated user ID is available in req.user.id
+  const portfolios = await byPortfolio.find({ userId: user }); // Find all portfolios with matching user ID
+  res.status(200).render('dashboard', { title: 'Dashboard', portfolios });
+});
+
+module.exports = dashboard;
+
 // Registration endpoint
 
 const getRegistrationForm = (req, res, next) => {
@@ -42,7 +60,7 @@ const getRegistrationForm = (req, res, next) => {
   res.status(201).render('register', {
     title: 'Registration',
   });
-  res.redirect('/user/activation');
+  res.redirect('/user/success');
 };
 
 const getBizForm = (req, res, next) => {
@@ -68,6 +86,8 @@ const getForgetPasswordForm = (req, res) => {
     error: error,
   });
 };
+
+// Handler function for default route
 
 // this Render the reset password form
 const getResetPasswordForm = catchAsync(async (req, res, next) => {
@@ -120,8 +140,8 @@ const getProfile = catchAsync(async (req, res) => {
   }
 });
 
-const getActivation = (req, res) => {
-  res.status(200).render('activation', {
+const getSuccess = (req, res) => {
+  res.status(200).render('success', {
     title: 'Activation',
   });
 };
@@ -148,11 +168,21 @@ const getTransfer = (req, res) => {
 
 // INVESTMENT PORTFOLIO
 
-const getInvestPortfolio = (req, res) => {
+// const getInvestPortfolio = (req, res) => {
+//   res.status(200).render('portfolio/investmentsportfolio', {
+//     title: 'Investment Portfolio',
+//   });
+// };
+
+const getInvestPortfolio = catchAsync(async (req, res) => {
+  const portfolios = await Portfolio.find();
+  const userProfile = await Profile.findOne({ user: req.user._id });
   res.status(200).render('portfolio/investmentsportfolio', {
     title: 'Investment Portfolio',
+    portfolios: portfolios,
+    userProfile: userProfile,
   });
-};
+});
 
 const getUSerInvest = (req, res) => {
   res
@@ -210,7 +240,7 @@ module.exports = {
   getProfile,
   getBizForm,
   getResetPasswordForm,
-  getActivation,
+  getSuccess,
   getRegOption,
   getChangePasswordForm,
   getTwoFactor,
@@ -232,4 +262,5 @@ module.exports = {
   //Withdrawal
   getWithdrawalRequest,
   getwithdrawalHistory,
+  dashboard,
 };

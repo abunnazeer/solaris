@@ -29,17 +29,28 @@
 <section class="content">
 <div class="row">
 
+  <h1>The Defensive Portfolio  </h1>
+ <% portfolios.forEach((portfolio) => { %>
 
-
-<h1>The Defensive Portfolio  </h1>
 <div class="row relat__position">
 <div class="col-lg-12">
   
-  <a href="/user/portfolio-details" class="port__link">
+ 
 <div class="card ">
 <div class="row g-0 align-items-center">
 <div class="col-md-2">
-  <img src="../../../images/gallery/landscape20.jpg" class="card-img cardimg__extra" alt="...">
+  
+   <img
+                        src="/portfolio/<%= portfolio.imageName %>"class="card-img cardimg__extra"
+                        alt="<%= portfolio.imageName %>"
+                        srcset=""
+                      />
+                       <% if (portfolio.closingSoon) { %>
+                  <div class="custom__bell">
+                    <i data-feather="bell"></i>
+                    <p>Closing Soon</p>
+                  </div>
+                <% } %>
 
 <div class="custom__bell">
    <i data-feather="bell"></i>
@@ -48,21 +59,21 @@
 </div>
 <div class="col-md-8">
   <div class="card-body">
-    <h5 class="custom__title">Basic Yield Portfolio</h5>
-    <p class="card-text text-gray-600 custom__p">A growth portfolio providing access to selected top-tier growth equity and VC funds.</p>
+    <h5 class="custom__title"><%= portfolio.title %></h5>
+    <p class="card-text text-gray-600 custom__p"><%= portfolio.description %>.</p>
    
     <div class="flex__container_custom">
       <div class="flexbox__custom">
         <h1>Portfolio Duration</h1>
-        <p>12 months</p>
+        <p><%= portfolio.portfolioDuration %></p>
       </div>
       <div class="flexbox__custom">
         <h1>Return on investment</h1>
-        <p>4.05% - 4.25%  Weekly</p>
+        <p><%= portfolio.returnOnInvestment %></p>
       </div>
       <div class="flexbox__custom">
         <h1> Minimum Capital</h1>
-        <p>$1000</p>
+        <p><%= portfolio.minimumCapital %></p>
       </div>
 
     </div>
@@ -73,185 +84,32 @@
 </div> <!-- end row-->
 </div> <!-- end card-->
 <div class="right__image">
- <img src="../../../images/gallery/landscape20.jpg" class="card-img  image__right__img" alt="...">
+  <img src="/portfolio/chartbasic.png" class="card-img image__right__img" alt="...">
 </div>
-<div class="port_locked">
-  <p>Complete your profile to access portfolio fund details, webbinar, fund document and more</p>
+<% if (userProfile && userProfile.phone === '0800000000000' && userProfile.user.toString() === req.user._id.toString()) { %>
+  <div class="port_locked">
+    <p>Complete your profile to access portfolio fund details, webinar, fund document, and more</p>
     <i data-feather="lock" class="locked__class"></i><br>
-  <a href="/user/profile">Complete your profile</a>
-</div>
+    <a href="/user/profile">Complete your profile</a>
+  </div>
+<% } else { %>
+  <div class="port_unlocked">
+    <a href="/portfolio/<%= portfolio._id %>">View portfolio details</a>
+  </div>
+<% } %>
 
-</a>
+
 </div> <!-- end col-->
 
-</div>
 
-<div class="row relat__position">
-<div class="col-lg-12">
-  
-  <a href="/user/portfolio-details" class="port__link">
-<div class="card ">
-<div class="row g-0 align-items-center">
-<div class="col-md-2">
-  <img src="../../../images/gallery/landscape5.jpg" class="card-img cardimg__extra" alt="...">
 
-<!-- <div class="custom__bell">
-   <i data-feather="bell"></i>
-  <p>Comming Soon</p>
-</div> -->
-</div>
-<div class="col-md-8">
-  <div class="card-body">
-    <h5 class="custom__title">Core Plus Income Portfolio
-</h5>
-    <p class="card-text text-gray-600 custom__p">A growth portfolio providing access to selected top-tier growth equity and VC funds.</p>
-   
-    <div class="flex__container_custom">
-      <div class="flexbox__custom">
-        <h1>Portfolio Duration</h1>
-        <p>12 months</p>
-      </div>
-      <div class="flexbox__custom">
-        <h1>Return on investment</h1>
-        <p>4.05% - 4.25%  Weekly</p>
-      </div>
-      <div class="flexbox__custom">
-        <h1> Minimum Capital</h1>
-        <p>$1000</p>
-      </div>
-
-    </div>
-  </div> <!-- end card-body-->
  
-</div> <!-- end col -->
 
-</div> <!-- end row-->
-</div> <!-- end card-->
-<div class="right__image">
- <img src="../../../images/gallery/landscape5.jpg" class="card-img  image__right__img" alt="...">
-</div>
-<div class="port_locked">
-  <p>Complete your profile to access portfolio fund details, webbinar, fund document and more</p>
-    <i data-feather="lock" class="locked__class"></i><br>
-  <a href="/user/profile">Complete your profile</a>
-</div>
-
-</a>
-</div> <!-- end col-->
 
 </div>
 
 
-<div class="row relat__position">
-<div class="col-lg-12">
-  
-  <a href="/user/portfolio-details" class="port__link">
-<div class="card ">
-<div class="row g-0 align-items-center">
-<div class="col-md-2">
-  <img src="../../../images/gallery/landscape7.jpg" class="card-img cardimg__extra" alt="...">
-
-<!-- <div class="custom__bell">
-   <i data-feather="bell"></i>
-  <p>Comming Soon</p>
-</div> -->
-</div>
-<div class="col-md-8">
-  <div class="card-body">
-    <h5 class="custom__title">Advanced Mutual Fund Portfolio</h5>
-    <p class="card-text text-gray-600 custom__p">A growth portfolio providing access to selected top-tier growth equity and VC funds.</p>
-   
-    <div class="flex__container_custom">
-      <div class="flexbox__custom">
-        <h1>Portfolio Duration</h1>
-        <p>12 months</p>
-      </div>
-      <div class="flexbox__custom">
-        <h1>Return on investment</h1>
-        <p>4.05% - 4.25%  Weekly</p>
-      </div>
-      <div class="flexbox__custom">
-        <h1> Minimum Capital</h1>
-        <p>$1000</p>
-      </div>
-
-    </div>
-  </div> <!-- end card-body-->
- 
-</div> <!-- end col -->
-
-</div> <!-- end row-->
-</div> <!-- end card-->
-<div class="right__image">
- <img src="../../../images/gallery/landscape7.jpg" class="card-img  image__right__img" alt="...">
-</div>
-<div class="port_locked">
-  <p>Complete your profile to access portfolio fund details, webbinar, fund document and more</p>
-    <i data-feather="lock" class="locked__class"></i><br>
-  <a href="/user/profile">Complete your profile</a>
-</div>
-
-</a>
-</div> <!-- end col-->
-
-</div>
-
-
-<div class="row relat__position">
-<div class="col-lg-12">
-  
-  <a href="/user/portfolio-details" class="port__link">
-<div class="card ">
-<div class="row g-0 align-items-center">
-<div class="col-md-2">
-  <img src="../../../images/gallery/landscape3.jpg" class="card-img cardimg__extra" alt="...">
-
-<!-- <div class="custom__bell">
-   <i data-feather="bell"></i>
-  <p>Comming Soon</p>
-</div> -->
-</div>
-<div class="col-md-8">
-  <div class="card-body">
-    <h5 class="custom__title">Intermediate Mutual Fund Portfolio</h5>
-    <p class="card-text text-gray-600 custom__p">A growth portfolio providing access to selected top-tier growth equity and VC funds.</p>
-   
-    <div class="flex__container_custom">
-      <div class="flexbox__custom">
-        <h1>Portfolio Duration</h1>
-        <p>12 months</p>
-      </div>
-      <div class="flexbox__custom">
-        <h1>Return on investment</h1>
-        <p>4.05% - 4.25%  Weekly</p>
-      </div>
-      <div class="flexbox__custom">
-        <h1> Minimum Capital</h1>
-        <p>$1000</p>
-      </div>
-
-    </div>
-  </div> <!-- end card-body-->
- 
-</div> <!-- end col -->
-
-</div> <!-- end row-->
-</div> <!-- end card-->
-<div class="right__image">
- <img src="../../../images/gallery/landscape3.jpg" class="card-img  image__right__img" alt="...">
-</div>
-<div class="port_locked">
-  <p>Complete your profile to access portfolio fund details, webbinar, fund document and more</p>
-    <i data-feather="lock" class="locked__class"></i><br>
-  <a href="/user/profile">Complete your profile</a>
-</div>
-
-</a>
-</div> <!-- end col-->
-
-</div>
-
-
+ <% }) %>
 </div>
 <!-- end row-->
 

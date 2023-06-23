@@ -25,6 +25,24 @@
                 <div class="p-40">
                   <form class="rform__modified" action="" method="post">
                     <div class="form-group">
+                      <div class="input-group mb-3" id="type__error">
+                        <span class="input-group-text bg-transparent">
+                          <i class="text-fade ti-briefcase"></i>
+                        </span>
+                        <select
+                          name="role"
+                          class="form-control ps-15 bg-transparent"
+                          id="role"
+                        >
+                          <option value="">Select Registration type</option>
+                          <option value="business">Business</option>
+                          <option value="personal">Personal</option>
+                        </select>
+                      </div>
+                      <span class="error" id="typeError"></span>
+                    </div>
+
+                    <div class="form-group">
                       <div class="input-group mb-3" id="name__error">
                         <span class="input-group-text bg-transparent"
                           ><i class="text-fade ti-user"></i
