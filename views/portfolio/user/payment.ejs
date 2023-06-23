@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%=title%></title>
+    <%- include('../../layouts/head') %>
+    <style>
+      .qr__image {
+        width: 150px;
+        height: 150px;
+        margin: 20px 0px 30px 0px;
+      }
+    </style>
+  </head>
+
+  <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
+    <div class="wrapper">
+      <!-- <div id="loader"></div> -->
+
+      <header class="main-header">
+        <!-- header -->
+        <%- include('../../layouts/header') %>
+      </header>
+
+      <!-- Left side column. contains the logo and sidebar -->
+      <aside class="main-sidebar">
+        <!-- sidebar-->
+        <%- include('../../layouts/aside') %>
+      </aside>
+
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <div class="container-full">
+          <!-- Main content -->
+          <section class="content">
+            <div class="row">
+              <div class="col-xl-3 col-12"></div>
+              <div class="col-xl-5 col-12">
+                <div class="box">
+                  <div class="box-body pb-lg-0">
+                    <div class="row">
+                      <div class="col-xl-12 col-12">
+                        <div class="card-body">
+                          <h5 class="card-title fw-600 text-center">
+                            <%=portfolio.portfolioName%>
+                          </h5>
+                        </div>
+                        <ul class="list-group list-group-flush text-center">
+                          <li class="list-group-item">
+                            <h5>
+                              <strong>Amount to pay:</strong>
+                            </h5>
+                            <h2>$<%= portfolio.amount %></h2>
+                          </li>
+                          <li class="list-group-item">
+                            <h5><strong>Currency type:</strong></h5>
+                            <h2><%= portfolio.currency %></h2>
+                          </li>
+                          <% cryptoDetails.forEach((wallet) => { %> <% if
+                          (portfolio.currency === wallet.name) { %>
+                          <li class="list-group-item">
+                            <h5><strong>In crypto:</strong></h5>
+                            <h2><%= wallet.cryptoAmount %></h2>
+                          </li>
+                        </ul>
+                      </div>
+                      <div class="col-xl-12 col-12 text-center center">
+                        <img
+                          src="<%= wallet.url %>"
+                          class="qr__image"
+                          alt="..."
+                        />
+
+                        <form
+                          action="/portfolio/payment/<%=portfolio._id%>"
+                          method="post"
+                        >
+                          <div class="input-group bootstrap-touchspin">
+                            <input
+                              type="hidden"
+                              id="cryptoAmount"
+                              name="cryptoAmount"
+                              value="<%= wallet.cryptoAmount %>"
+                            />
+
+                            <input
+                              id="walletAddressInput"
+                              type="text"
+                              value="<%= wallet.address %>"
+                              name="walletAddress"
+                              readonly
+                              data-bts-button-down-class="btn btn-secondary"
+                              data-bts-button-up-class="btn btn-secondary"
+                              class="form-control"
+                              style="display: block"
+                            /><span
+                              class="input-group-addon bootstrap-touchspin-postfix"
+                              style="display: none"
+                            ></span
+                            ><span class="input-group-btn"
+                              ><button
+                                class="btn btn-secondary bootstrap-touchspin-up"
+                                type="button"
+                                onclick="copyToClipboard()"
+                              >
+                                <i data-feather="copy"></i></button
+                            ></span>
+                          </div>
+
+                          <button
+                            type="submit"
+                            class="waves-effect waves-light btn mb-20 bg-gradient-warning mt-20"
+                          >
+                            Confirm Payment
+                          </button>
+                        </form>
+
+                        <% } %> <% }); %>
+                      </div>
+
+                      <!-- ... -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /.content -->
+            </div>
+
+            <!-- end row-->
+          </section>
+          <!-- /.content -->
+        </div>
+      </div>
+      <!-- /.content-wrapper -->
+
+      <footer class="main-footer">
+        <!-- footer -->
+        <%- include('../../layouts/footer') %>
+      </footer>
+
+      <!-- Vendor JS -->
+      <%- include('../../layouts/formscript') %>
+      <script>
+        function copyToClipboard() {
+          var walletAddressInput =
+            document.getElementById('walletAddressInput');
+          walletAddressInput.select();
+          document.execCommand('copy');
+        }
+      </script>
+    </div>
+    <!-- <script src="/js/bundle.js"></script> -->
+  </body>
+</html>

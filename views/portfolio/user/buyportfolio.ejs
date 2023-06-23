@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%=portfolio.title%></title>
+    <%- include('../../layouts/head') %>
+  </head>
+
+  <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
+    <div class="wrapper">
+      <!-- <div id="loader"></div> -->
+
+      <header class="main-header">
+        <!-- header -->
+        <%- include('../../layouts/header') %>
+      </header>
+
+      <!-- Left side column. contains the logo and sidebar -->
+      <aside class="main-sidebar">
+        <!-- sidebar-->
+        <%- include('../../layouts/aside') %>
+      </aside>
+
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <div class="container-full">
+          <!-- Main content -->
+          <section class="content">
+            <div class="row">
+              <div class="col-xl-8 col-12">
+                <div class="box">
+                  <div class="box-body pb-lg-0">
+                    <div class="row">
+                      <div class="col-xl-6 col-12">
+                        <div class="card-body">
+                          <h5 class="card-title fw-600">
+                            <%=portfolio.title%>
+                          </h5>
+                          <p class="card-text text-gray-600">
+                            <%=portfolio.description%>
+                          </p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                          <li class="list-group-item">
+                            <h5>Minimum Capital:</h5>
+                            <%= portfolio.minimumCapital %>
+                          </li>
+                          <li class="list-group-item">
+                            <h5>Return On Investment:</h5>
+                            <%= portfolio.returnOnInvestment %>
+                          </li>
+                          <li class="list-group-item">
+                            <h5>Portfolio Duration:</h5>
+                            <%= portfolio.portfolioDuration %>
+                          </li>
+                        </ul>
+                      </div>
+                      <div class="col-xl-6 col-12">
+                        <!-- ... -->
+                        <form
+                          action="/portfolio/buy-portfolio/<%=portfolio._id%>"
+                          method="POST"
+                        >
+                          <!-- ... -->
+
+                          <div class="form-group">
+                            <label for="amount">Amount:</label>
+                            <div class="input-group mb-20">
+                              <input
+                                type="number"
+                                class="form-control"
+                                placeholder="Amount"
+                                name="amount"
+                                id="amount"
+                                required
+                              />
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label class="form-label" for="payout"
+                              >Payout:</label
+                            >
+                            <div class="input-group mb-20">
+                              <select
+                                class="form-control select2"
+                                style="width: 100%"
+                                name="payout"
+                                id="payout"
+                                required
+                              >
+                                <option value="" selected="selected">
+                                  Select Payout
+                                </option>
+                                <option value="daily payout">
+                                  Daily Payout
+                                </option>
+                                <option value="12 month compounding">
+                                  12 Month Compounding
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label class="form-label" for="currency"
+                              >Currency:</label
+                            >
+                            <div class="input-group mb-20">
+                              <select
+                                class="form-control select2"
+                                style="width: 100%"
+                                name="currency"
+                                id="currency"
+                                required
+                              >
+                                <option value="" selected="selected">
+                                  Select Currency
+                                </option>
+                                <option value="Bitcoin">Bitcoin</option>
+                                <option value="Ethereum">Ethereum</option>
+                                <option value="Tether USD TRC20">
+                                  Tether USD TRC20
+                                </option>
+                                <option value="Tether USD ERC20">
+                                  Tether USD ERC20
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <div class="input-group mb-3">
+                              <button
+                                type="submit"
+                                class="waves-effect waves-light btn mb-5 bg-gradient-warning w-p100 mt-10"
+                              >
+                                Buy now
+                              </button>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                      <!-- ... -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /.content -->
+            </div>
+            <!-- end row-->
+          </section>
+          <!-- /.content -->
+        </div>
+      </div>
+      <!-- /.content-wrapper -->
+
+      <footer class="main-footer">
+        <!-- footer -->
+        <%- include('../../layouts/footer') %>
+      </footer>
+
+      <!-- Vendor JS -->
+      <%- include('../../layouts/formscript') %>
+    </div>
+    <!-- <script src="/js/bundle.js"></script> -->
+  </body>
+</html>

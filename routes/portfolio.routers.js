@@ -4,7 +4,8 @@ const {
   createPortfolio,
   updatePortfolio,
   deletePortfolio,
-  getPortfolio,
+
+  uploadPortfolioPhoto,
 } = require('../controller/portfolio.controller');
 
 const {
@@ -12,31 +13,46 @@ const {
   getPortfolioIndex,
   getEditPortfolioForm,
   viewPortfolio,
+  getBuyPortfolioForm,
+  postBuyPortfolio,
+  getPayment,
+  updatePayment,
 } = require('../controller/view.portfolio');
 
-const { restrictTo } = require('../controller/auth.controller');
+const {
+  restrictTo,
+  isLoggedIn,
+  protect,
+} = require('../controller/auth.controller');
 
 const router = express.Router();
-
+router.use(isLoggedIn);
 router.get(
   '/portfolio/create-portfolio',
   restrictTo('admin'),
   getPortfolioForm
 );
+// PAYMENT ROUTE
+router.post('/payment/:id', protect, updatePayment);
+router.get('/payment/:id', protect, getPayment);
+//////////////////user routes ////////////
+router.post('/buy-portfolio/:id', protect, postBuyPortfolio);
+router.get('/buy-portfolio/:id', protect, getBuyPortfolioForm);
+// router.get('/buy-portfolio', buyPortfolioForm);
 
-router.get('/create-portfolio', getPortfolioForm);
-router.get('/', getPortfolioIndex);
+router.get('/create-portfolio', protect, getPortfolioForm);
+router.get('/', protect, getPortfolioIndex);
 // router.get('/portfolio', getPortfolioIndex);
-router.post('/create-portfolio', createPortfolio);
+router.post('/create-portfolio', uploadPortfolioPhoto, createPortfolio);
 // router.put('/:id', updatePortfolio);
-router.delete('/:id', deletePortfolio);
+router.delete('/:id', protect, deletePortfolio);
 
 // Route to render the edit form
-router.get('/edit-portfolio/:id', getEditPortfolioForm);
+router.get('/edit-portfolio/:id', protect, getEditPortfolioForm);
 
 // Route to handle the update request
-router.post('/update-portfolio/:id', updatePortfolio);
+router.post('/update-portfolio/:id', protect, updatePortfolio);
 // View single portfolio
-router.get('/view/:id', viewPortfolio);
+router.get('/:id', protect, viewPortfolio);
 
 module.exports = router;
