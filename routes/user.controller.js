@@ -38,7 +38,7 @@ const updateProfile = catchAsync(async (req, res, next) => {
 
   try {
     // Retrieve the user profile data from the database based on the logged-in user
-    const userProfile = await Profile.findOne({ user: req.user._id });
+    const userProfile = await Profile.findOne({ _id: req.user._id });
 
     // Check if the user profile exists
     if (!userProfile) {

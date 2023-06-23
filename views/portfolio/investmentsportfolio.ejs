@@ -86,7 +86,8 @@
 <div class="right__image">
   <img src="/portfolio/chartbasic.png" class="card-img image__right__img" alt="...">
 </div>
-<% if (userProfile && userProfile.phone === '0800000000000' && userProfile.user.toString() === req.user._id.toString()) { %>
+<% if (userProfile.
+phoneNumber === '0800000000000' ) { %>
   <div class="port_locked">
     <p>Complete your profile to access portfolio fund details, webinar, fund document, and more</p>
     <i data-feather="lock" class="locked__class"></i><br>

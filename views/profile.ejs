@@ -46,8 +46,6 @@ onclick="document.getElementById('profilePicture').click()"
 Upload Photo
 </button>
 
-
-
 <div class="text-start mt-3">
 <p class="text-muted mb-2">
 <strong class="text-dark">Full Name :</strong>
@@ -59,7 +57,7 @@ Upload Photo
 </p>
 <p class="text-muted mb-2">
 <strong class="text-dark">Email :</strong>
-<span class="ms-2"><%= user.email %></span>
+<span class="ms-2"><%= email %></span> <!-- Assuming the email is present in the userProfile object -->
 </p>
 </div>
 </div>
@@ -99,7 +97,7 @@ name="fullName"
 type="email"
 class="form-control"
 id="useremail"
-value="<%= user.email %>"
+value="<%= email %>"
 disabled
 />
 </div>
