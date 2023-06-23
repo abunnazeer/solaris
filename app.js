@@ -98,9 +98,9 @@ app.use(express.static(path.join(__dirname + '/public/')));
 // app.use(logoutUser);
 // Default route
 
-app.get('/dashboard', protect, (req, res) => {
-  res.status(200).render('dashboard', { logoutUser: 'Dashboard' });
-});
+// app.get('/dashboard', protect, (req, res) => {
+//   res.status(200).render('dashboard', { title: 'Dashboard' });
+// });
 
 app.use(userRouter);
 // app.use(portRouter);

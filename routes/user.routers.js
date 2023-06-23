@@ -26,6 +26,7 @@ const {
   // withdrawal
   getWithdrawalRequest,
   getwithdrawalHistory,
+  dashboard,
 } = require('../controller/view.controller');
 
 const {
@@ -56,7 +57,7 @@ router.patch(
   updateProfile
 );
 // api end point routes
-
+router.get('/dashboard', protect, dashboard);
 router.post('/user/register', register);
 router.post('/user/login', login);
 //  this is a api baised url

@@ -5,6 +5,7 @@ const Profile = require('../models/user/profile.model');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const Portfolio = require('../models/portfolio/portfolio.model');
+const byPortfolio = require('../models/portfolio/buyportfolio.model');
 
 // const AppError = require('../utils/appError');
 
@@ -36,6 +37,20 @@ const createSendToken = (user, profile, statusCode, res) => {
     },
   });
 };
+
+// //////////////Dashboard ////////////
+
+// const dashboard = (req, res) => {
+//   res.status(200).render('dashboard', { title: 'Dashboard' });
+// };
+
+const dashboard = catchAsync(async (req, res) => {
+  const user = req.user.id; // Assuming the authenticated user ID is available in req.user.id
+  const portfolios = await byPortfolio.find({ userId: user }); // Find all portfolios with matching user ID
+  res.status(200).render('dashboard', { title: 'Dashboard', portfolios });
+});
+
+module.exports = dashboard;
 
 // Registration endpoint
 
@@ -247,4 +262,5 @@ module.exports = {
   //Withdrawal
   getWithdrawalRequest,
   getwithdrawalHistory,
+  dashboard,
 };
