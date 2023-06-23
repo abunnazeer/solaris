@@ -62,7 +62,7 @@
 }
 
 .image__right__img {
-  height: 300px;
+  height: 250px;
   width: 300px !important;
 }
 .port_locked {
@@ -70,12 +70,31 @@
   top: 50px;
   left: 1000px;
 
-  height: 300px;
+  height: 250px;
   width: 300px !important;
   background-color: #e3e3e3c3;
   display: block;
 }
 
+.port_unlocked {
+  position: absolute;
+  top: 50px;
+  left: 1000px;
+
+  height: 250px;
+  width: 300px !important;
+  background-color: #f9f9f99f;
+  display: block;
+  text-align: center;
+}
+
+.port_unlocked a {
+  margin-top: 119px;
+  font-size: 15px;
+  top: 0px;
+  position: absolute;
+  left: 75px;
+}
 .port_locked p {
   margin-top: 100px;
 

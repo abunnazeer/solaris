@@ -4,6 +4,9 @@ const User = require('../models/user/user.model');
 const Profile = require('../models/user/profile.model');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
+const Portfolio = require('../models/portfolio/portfolio.model');
+
+// const AppError = require('../utils/appError');
 
 // Function for JWT
 const signToken = id => {
@@ -150,11 +153,21 @@ const getTransfer = (req, res) => {
 
 // INVESTMENT PORTFOLIO
 
-const getInvestPortfolio = (req, res) => {
+// const getInvestPortfolio = (req, res) => {
+//   res.status(200).render('portfolio/investmentsportfolio', {
+//     title: 'Investment Portfolio',
+//   });
+// };
+
+const getInvestPortfolio = catchAsync(async (req, res) => {
+  const portfolios = await Portfolio.find();
+  const userProfile = await Profile.findOne({ user: req.user._id });
   res.status(200).render('portfolio/investmentsportfolio', {
     title: 'Investment Portfolio',
+    portfolios: portfolios,
+    userProfile: userProfile,
   });
-};
+});
 
 const getUSerInvest = (req, res) => {
   res

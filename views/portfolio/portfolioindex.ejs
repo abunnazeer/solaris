@@ -27,6 +27,15 @@
                 <div class="card-header">
                   <h5 class="card-title"><%=title%></h5>
                 </div>
+                <div>
+                  <a
+                    href="/portfolio/create-portfolio"
+                    type="button"
+                    class="waves-effect waves-light btn mb-5 bg-gradient-warning m-10"
+                  >
+                    <i class="fa fa-plus"></i> Add new
+                  </a>
+                </div>
                 <div class="card-body">
                   <table class="table table-striped">
                     <thead>
@@ -43,7 +52,7 @@
                         <td><%= item.title %></td>
                         <td class="table-action min-w-100">
                           <a
-                            href="/portfolio/view/<%= item._id %>"
+                            href="/portfolio/<%= item._id %>"
                             class="text-fade hover-primary"
                           >
                             <i data-feather="eye" style="color: #308345"></i>
