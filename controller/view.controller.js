@@ -127,11 +127,12 @@ const getTwoFactor = (req, res) => {
 const getProfile = catchAsync(async (req, res) => {
   try {
     // Retrieve the user profile data from the database or any other source
-    const userProfile = await Profile.findOne({ user: req.user._id });
-
+    const userProfile = await Profile.findOne({ _id: req.user._id });
+    const { email } = req.user;
     res.status(200).render('profile', {
       title: 'Profile',
-      userProfile: userProfile,
+      userProfile,
+      email,
     });
   } catch (error) {
     // Handle error if profile retrieval fails
@@ -165,14 +166,6 @@ const getTransfer = (req, res) => {
     title: 'Transfer',
   });
 };
-
-// INVESTMENT PORTFOLIO
-
-// const getInvestPortfolio = (req, res) => {
-//   res.status(200).render('portfolio/investmentsportfolio', {
-//     title: 'Investment Portfolio',
-//   });
-// };
 
 const getInvestPortfolio = catchAsync(async (req, res) => {
   const portfolios = await Portfolio.find();
