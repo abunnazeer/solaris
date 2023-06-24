@@ -129,6 +129,7 @@ const getProfile = catchAsync(async (req, res) => {
     // Retrieve the user profile data from the database or any other source
     const userProfile = await Profile.findOne({ _id: req.user._id });
     const { email } = req.user;
+
     res.status(200).render('profile', {
       title: 'Profile',
       userProfile,
@@ -167,20 +168,45 @@ const getTransfer = (req, res) => {
   });
 };
 
+// //////////// THIS RENDER PORTFOLIO LIST TO BUY//////////
+
 const getInvestPortfolio = catchAsync(async (req, res) => {
   const portfolios = await Portfolio.find();
-  const userProfile = await Profile.findOne({ user: req.user._id });
+  const userProfile = await Profile.findOne({ _id: req.user._id });
+
+  const defaultProfile = {
+    profilePicture: '../../../images/avatar/avatar-13.png',
+    phoneNumber: '0800000000000',
+    address: {
+      street: 'your street',
+      city: 'your city',
+      state: 'your state',
+      country: 'your country',
+      zipCode: 'your zip',
+    },
+  };
+
+  const isProfileComplete =
+    userProfile.profilePicture !== defaultProfile.profilePicture &&
+    userProfile.phoneNumber !== defaultProfile.phoneNumber &&
+    userProfile.address.street !== defaultProfile.address.street &&
+    userProfile.address.city !== defaultProfile.address.city &&
+    userProfile.address.state !== defaultProfile.address.state &&
+    userProfile.address.country !== defaultProfile.address.country &&
+    userProfile.address.zipCode !== defaultProfile.address.zipCode;
+
   res.status(200).render('portfolio/investmentsportfolio', {
-    title: 'Investment Portfolio',
-    portfolios: portfolios,
-    userProfile: userProfile,
+    title: 'buy Portfolio',
+    portfolios,
+    userProfile,
+    isProfileComplete,
   });
 });
 
 const getUSerInvest = (req, res) => {
   res
     .status(200)
-    .render('portfolio/userinvestment', { title: 'User investment' });
+    .render('portfolio/activeportfolio', { title: 'Active Portfolio' });
 };
 
 const getInvestHistory = (req, res) => {

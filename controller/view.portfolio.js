@@ -201,15 +201,22 @@ const viewPortfolio = catchAsync(async (req, res) => {
       return res.status(404).json({ message: 'Portfolio not found' });
     }
 
+    const buyPortfolio = await BuyPortfolio.findOne({ _id: id });
+
+    const user = req.user;
+
     res.status(200).render('portfolio/portfoliodetail', {
       title: 'Portfolio Detail',
-      portfolio: portfolio,
+      portfolio,
+      user,
+      buyPortfolio,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch portfoliox' });
+    res.status(500).json({ message: 'Failed to fetch portfolio' });
   }
 });
 
+// //////////////////////// UPDATE PAYMENT
 const updatePayment = catchAsync(async (req, res) => {
   const { id } = req.params;
   const { walletAddress, cryptoAmount } = req.body;

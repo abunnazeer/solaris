@@ -43,7 +43,12 @@ router.get('/buy-portfolio/:id', protect, getBuyPortfolioForm);
 router.get('/create-portfolio', protect, getPortfolioForm);
 router.get('/', protect, getPortfolioIndex);
 // router.get('/portfolio', getPortfolioIndex);
-router.post('/create-portfolio', uploadPortfolioPhoto, createPortfolio);
+router.post(
+  '/create-portfolio',
+  protect,
+  uploadPortfolioPhoto,
+  createPortfolio
+);
 // router.put('/:id', updatePortfolio);
 router.delete('/:id', protect, deletePortfolio);
 
