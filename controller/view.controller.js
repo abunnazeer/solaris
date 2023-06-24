@@ -5,7 +5,7 @@ const Profile = require('../models/user/profile.model');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const Portfolio = require('../models/portfolio/portfolio.model');
-const byPortfolio = require('../models/portfolio/buyportfolio.model');
+const buyPortfolio = require('../models/portfolio/buyportfolio.model');
 
 // const AppError = require('../utils/appError');
 
@@ -46,7 +46,7 @@ const createSendToken = (user, profile, statusCode, res) => {
 
 const dashboard = catchAsync(async (req, res) => {
   const user = req.user.id; // Assuming the authenticated user ID is available in req.user.id
-  const portfolios = await byPortfolio.find({ userId: user }); // Find all portfolios with matching user ID
+  const portfolios = await buyPortfolio.find({ userId: user }); // Find all portfolios with matching user ID
   res.status(200).render('dashboard', { title: 'Dashboard', portfolios });
 });
 
@@ -203,11 +203,18 @@ const getInvestPortfolio = catchAsync(async (req, res) => {
   });
 });
 
-const getUSerInvest = (req, res) => {
-  res
-    .status(200)
-    .render('portfolio/activeportfolio', { title: 'Active Portfolio' });
-};
+///////////////Get Active Portfolio//////////////////////////////
+//////////////////////////////////////
+//////////////
+const getActivePortfolio = catchAsync(async (req, res) => {
+  const userId = req.user.id; // Assuming the user ID is stored in req.user.id
+  const buyPortfolios = await buyPortfolio.find({ userId: userId });
+
+  res.status(200).render('portfolio/activeportfolio', {
+    title: 'Active Portfolio',
+    buyPortfolios,
+  });
+});
 
 const getInvestHistory = (req, res) => {
   res
@@ -269,7 +276,7 @@ module.exports = {
   getTransfer,
   // PORTFOLIO
   getInvestPortfolio,
-  getUSerInvest,
+  getActivePortfolio,
   getInvestHistory,
   getShortTermForm,
   getDetailsPage,
