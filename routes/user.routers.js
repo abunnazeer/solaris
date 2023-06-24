@@ -16,7 +16,7 @@ const {
   getTransfer,
   // PORTFOLIO
   getInvestPortfolio,
-  getUSerInvest,
+  getActivePortfolio,
   getInvestHistory,
   getShortTermForm,
   getDetailsPage,
@@ -96,7 +96,7 @@ router.get('/user/transfer', protect, getTransfer);
 
 // PORTFOLIO
 router.get('/user/view-investments-portfolio', protect, getInvestPortfolio);
-router.get('/user/user-investments', protect, getUSerInvest);
+router.get('/user/user-investments', protect, getActivePortfolio);
 router.get('/user/investment-history', protect, getInvestHistory);
 router.get('/user/short-term-funds', protect, getShortTermForm);
 router.get('/user/portfolio-details', protect, getDetailsPage);
