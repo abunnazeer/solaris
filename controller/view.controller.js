@@ -5,7 +5,7 @@ const Profile = require('../models/user/profile.model');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const Portfolio = require('../models/portfolio/portfolio.model');
-const byPortfolio = require('../models/portfolio/buyportfolio.model');
+const buyPortfolio = require('../models/portfolio/buyportfolio.model');
 
 // const AppError = require('../utils/appError');
 
@@ -46,7 +46,7 @@ const createSendToken = (user, profile, statusCode, res) => {
 
 const dashboard = catchAsync(async (req, res) => {
   const user = req.user.id; // Assuming the authenticated user ID is available in req.user.id
-  const portfolios = await byPortfolio.find({ userId: user }); // Find all portfolios with matching user ID
+  const portfolios = await buyPortfolio.find({ userId: user }); // Find all portfolios with matching user ID
   res.status(200).render('dashboard', { title: 'Dashboard', portfolios });
 });
 
@@ -129,6 +129,7 @@ const getProfile = catchAsync(async (req, res) => {
     // Retrieve the user profile data from the database or any other source
     const userProfile = await Profile.findOne({ _id: req.user._id });
     const { email } = req.user;
+
     res.status(200).render('profile', {
       title: 'Profile',
       userProfile,
@@ -167,21 +168,53 @@ const getTransfer = (req, res) => {
   });
 };
 
+// //////////// THIS RENDER PORTFOLIO LIST TO BUY//////////
+
 const getInvestPortfolio = catchAsync(async (req, res) => {
   const portfolios = await Portfolio.find();
-  const userProfile = await Profile.findOne({ user: req.user._id });
+  const userProfile = await Profile.findOne({ _id: req.user._id });
+
+  const defaultProfile = {
+    profilePicture: '../../../images/avatar/avatar-13.png',
+    phoneNumber: '0800000000000',
+    address: {
+      street: 'your street',
+      city: 'your city',
+      state: 'your state',
+      country: 'your country',
+      zipCode: 'your zip',
+    },
+  };
+
+  const isProfileComplete =
+    userProfile.profilePicture !== defaultProfile.profilePicture &&
+    userProfile.phoneNumber !== defaultProfile.phoneNumber &&
+    userProfile.address.street !== defaultProfile.address.street &&
+    userProfile.address.city !== defaultProfile.address.city &&
+    userProfile.address.state !== defaultProfile.address.state &&
+    userProfile.address.country !== defaultProfile.address.country &&
+    userProfile.address.zipCode !== defaultProfile.address.zipCode;
+
   res.status(200).render('portfolio/investmentsportfolio', {
-    title: 'Investment Portfolio',
-    portfolios: portfolios,
-    userProfile: userProfile,
+    title: 'buy Portfolio',
+    portfolios,
+    userProfile,
+    isProfileComplete,
   });
 });
 
-const getUSerInvest = (req, res) => {
-  res
-    .status(200)
-    .render('portfolio/userinvestment', { title: 'User investment' });
-};
+///////////////Get Active Portfolio//////////////////////////////
+//////////////////////////////////////
+//////////////
+const getActivePortfolio = catchAsync(async (req, res) => {
+  const userId = req.user.id; // Assuming the user ID is stored in req.user.id
+  const buyPortfolios = await buyPortfolio.find({ userId: userId });
+
+  res.status(200).render('portfolio/activeportfolio', {
+    title: 'Active Portfolio',
+    buyPortfolios,
+  });
+});
 
 const getInvestHistory = (req, res) => {
   res
@@ -243,7 +276,7 @@ module.exports = {
   getTransfer,
   // PORTFOLIO
   getInvestPortfolio,
-  getUSerInvest,
+  getActivePortfolio,
   getInvestHistory,
   getShortTermForm,
   getDetailsPage,

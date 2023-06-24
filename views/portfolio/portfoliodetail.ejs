@@ -111,6 +111,20 @@
                             <h4>Reimbursement:</h4>
                             <p><%= portfolio.reimbursement %></p>
                           </div>
+
+                          <% if (user && buyPortfolio && user.id ===
+                          buyPortfolio.userId.toString() && portfolio.title ===
+                          buyPortfolio.portfolioName) { %>
+                          <a
+                            href="/user/user-investments"
+                            type="button"
+                            id="buyButton"
+                            class="waves-effect waves-light btn btn-outline btn-warning mb-5"
+                          >
+                            Go to Active Portfolio
+                          </a>
+
+                          <% } else { %>
                           <button
                             type="button"
                             id="buyButton"
@@ -118,15 +132,9 @@
                           >
                             Buy now
                           </button>
-                          <!-- <a
-                            href="/buy-portfolio/<%= portfolio._id %>"
-                            type="button"
-                            id="buyButton"
-                            class="waves-effect waves-light btn btn-outline btn-warning mb-5"
-                          >
-                            Buy now
-                          </a> -->
+                          <% } %>
                         </div>
+
                         <!-- end card-->
                       </div>
                       <!-- end col-->
