@@ -44,15 +44,149 @@ const createSendToken = (user, profile, statusCode, res) => {
 //   res.status(200).render('dashboard', { title: 'Dashboard' });
 // };
 
+// const dashboard = catchAsync(async (req, res) => {
+//   const user = req.user.id; // Assuming the authenticated user ID is available in req.user.id
+//   const portfolios = await buyPortfolio.find({ userId: user }); // Find all portfolios with matching user ID
+//   res.status(200).render('dashboard', { title: 'Dashboard', portfolios });
+// });
+
 const dashboard = catchAsync(async (req, res) => {
-  const user = req.user.id; // Assuming the authenticated user ID is available in req.user.id
-  const portfolios = await buyPortfolio.find({ userId: user }); // Find all portfolios with matching user ID
-  res.status(200).render('dashboard', { title: 'Dashboard', portfolios });
+  const user = req.user.id;
+  const portfolios = await buyPortfolio.find({ userId: user });
+
+  // Retrieve the previously stored portfolios from the session (assuming you're using express-session)
+  const previousPortfolios = req.session.portfolios || [];
+
+  // Check if there is new data by comparing the current and previous portfolios
+  const newData = hasNewData(portfolios, previousPortfolios);
+
+  // Update the session with the current portfolios
+  req.session.portfolios = portfolios;
+
+  // Stop incrementing the balance after 20 seconds
+  const terminationTime = Date.now() + 20000;
+  const intervals = [];
+
+  // Iterate over each portfolio
+  for (const portfolio of portfolios) {
+    if (portfolio.payout === portfolio.payoutName[portfolio.payout]) {
+      const amount = portfolio.amount;
+      let balance = portfolio.balance;
+
+      // const interval = portfolio.portConfig[portfolio.payout];
+      const interval = portfolio.portConfig[portfolio.payout];
+      intervals.push(interval); // Store the interval
+
+      const intervalId = setInterval(() => {
+        const currentTime = Date.now();
+        if (currentTime >= terminationTime) {
+          clearInterval(intervalId);
+          return;
+        }
+        // console.log(interval);
+        const newBalance = balance + 0.04 * amount;
+        buyPortfolio
+          .findByIdAndUpdate(
+            portfolio._id,
+            { balance: newBalance },
+            { new: true }
+          )
+          .then(updatedPortfolio => {
+            // Update the portfolio in the array of portfolios
+            const index = portfolios.findIndex(
+              p => p._id === updatedPortfolio._id
+            );
+            portfolios[index] = updatedPortfolio;
+          })
+          .catch(err => {
+            console.error(err);
+            return res
+              .status(500)
+              .send('An error occurred while updating the portfolio.');
+          });
+
+        balance = newBalance;
+      }, interval);
+    }
+  }
+
+  // Render the response with the initial portfolios and newData flag
+  res.status(200).render('dashboard', {
+    title: 'Dashboard',
+    portfolios,
+    newData,
+    intervals,
+  });
 });
 
-module.exports = dashboard;
+// Helper function to check if there is new data
+function hasNewData(currentPortfolios, previousPortfolios) {
+  if (currentPortfolios.length !== previousPortfolios.length) {
+    return true;
+  }
 
-// Registration endpoint
+  // Compare each portfolio to check for differences
+  for (let i = 0; i < currentPortfolios.length; i++) {
+    if (currentPortfolios[i].balance !== previousPortfolios[i].balance) {
+      return true;
+    }
+    // Perform additional checks for other fields if necessary
+  }
+
+  return false;
+}
+
+// const dashboard = catchAsync(async (req, res) => {
+//   const user = req.user.id;
+//   const portfolios = await buyPortfolio.find({ userId: user });
+
+//   // Stop incrementing the balance after 20 seconds
+//   const terminationTime = Date.now() + 20000;
+
+//   // Iterate over each portfolio
+//   for (const portfolio of portfolios) {
+//     if (portfolio.payout === portfolio.payoutName[portfolio.payout]) {
+//       const amount = portfolio.amount;
+//       let balance = portfolio.balance;
+
+//       const interval = portfolio.portConfig[portfolio.payout];
+
+//       const intervalId = setInterval(() => {
+//         const currentTime = Date.now();
+//         if (currentTime >= terminationTime) {
+//           clearInterval(intervalId);
+//           return;
+//         }
+
+//         const newBalance = balance + 0.04 * amount;
+//         buyPortfolio
+//           .findByIdAndUpdate(
+//             portfolio._id,
+//             { balance: newBalance },
+//             { new: true }
+//           )
+//           .then(updatedPortfolio => {
+//             // Update the portfolio in the array of portfolios
+//             const index = portfolios.findIndex(
+//               p => p._id === updatedPortfolio._id
+//             );
+//             portfolios[index] = updatedPortfolio;
+//           })
+//           .catch(err => {
+//             console.error(err);
+//             return res
+//               .status(500)
+//               .send('An error occurred while updating the portfolio.');
+//           });
+
+//         balance = newBalance;
+//       }, interval);
+//     }
+//   }
+
+//   // Render the response with the initial portfolios
+//   res.status(200).render('dashboard', { title: 'Dashboard', portfolios });
+// });
 
 const getRegistrationForm = (req, res, next) => {
   // const { email, password, passwordConfirm, role } = req.body;
@@ -128,12 +262,31 @@ const getProfile = catchAsync(async (req, res) => {
   try {
     // Retrieve the user profile data from the database or any other source
     const userProfile = await Profile.findOne({ _id: req.user._id });
-    const { email } = req.user;
+    const user = req.user;
+    //  const user = await User.findOne({ _id: id });
 
+    if (!userProfile || !user) {
+      // Handle case when user profile or user is not found
+      return res.status(404).json({ message: 'User profile not found' });
+    }
+
+    const userWithProfile = {
+      _id: user._id,
+      fullName: userProfile.fullName,
+      profilePicture: userProfile.profilePicture,
+      phoneNumber: userProfile.phoneNumber,
+      email: user.email,
+      street: userProfile.address.street,
+      state: userProfile.address.state,
+      city: userProfile.address.city,
+      zip: userProfile.address.zipCode,
+      country: userProfile.address.country,
+      role: user.role,
+      isActive: user.isActive,
+    };
     res.status(200).render('profile', {
       title: 'Profile',
-      userProfile,
-      email,
+      userProfile: userWithProfile,
     });
   } catch (error) {
     // Handle error if profile retrieval fails

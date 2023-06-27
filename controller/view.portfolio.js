@@ -1,5 +1,6 @@
 const Portfolio = require('../models/portfolio/portfolio.model');
 const BuyPortfolio = require('../models/portfolio/buyportfolio.model');
+const User = require('../models/user/user.model');
 
 const Profile = require('../models/user/profile.model');
 const catchAsync = require('../utils/catchAsync');
@@ -129,23 +130,55 @@ const postBuyPortfolio = catchAsync(async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: 'Failed to fetch portfolio' });
   }
+
   const userId = req.user._id;
-  const buyPortfolio = new BuyPortfolio({
+
+  // Check if a BuyPortfolio instance already exists for the given userId and portfolioId
+  const existingBuyPortfolio = await BuyPortfolio.findOne({
     userId,
-    amount,
-    portfolioName: portfolio.title,
-    payout,
-    currency,
     _id: portfolio._id,
   });
 
-  try {
-    const savedPortfolio = await buyPortfolio.save();
+  if (existingBuyPortfolio) {
+    // Update the status field of the existing BuyPortfolio instance
+    existingBuyPortfolio.status =
+      existingBuyPortfolio.status === 'active' ? 'inactive' : 'active';
 
-    // Redirect to the active-portfolio page
-    res.redirect(`/portfolio/payment/${savedPortfolio._id}`);
-  } catch (error) {
-    return res.status(500).json({ message: 'Failed to save portfolio' });
+    try {
+      const updatedPortfolio = await existingBuyPortfolio.save();
+
+      return res.json({
+        message: 'Status updated successfully',
+        portfolio: updatedPortfolio,
+      });
+    } catch (error) {
+      return res.status(500).json({ message: 'Failed to update status' });
+    }
+  } else {
+    // Create a new BuyPortfolio instance
+    const currentDate = new Date();
+    const dateOfExpiry = new Date(currentDate);
+    dateOfExpiry.setMonth(dateOfExpiry.getMonth() + 12);
+
+    const buyPortfolio = new BuyPortfolio({
+      userId,
+      amount,
+      portfolioName: portfolio.title,
+      payout,
+      currency,
+      _id: portfolio._id,
+      dateOfPurchase: currentDate,
+      dateOfExpiry: dateOfExpiry,
+    });
+
+    try {
+      const savedPortfolio = await buyPortfolio.save();
+
+      // Redirect to the active-portfolio page
+      return res.redirect(`/portfolio/payment/${savedPortfolio._id}`);
+    } catch (error) {
+      return res.status(500).json({ message: 'Failed to save portfolio' });
+    }
   }
 });
 
@@ -186,6 +219,30 @@ const getPortfolioIndex = catchAsync(async (req, res) => {
   res.render('portfolio/portfolioindex', {
     title: 'Manage Portfolio',
     portfolio: portfolio,
+    currentPage: page,
+    totalPages: totalPages,
+  });
+});
+
+// PORTFOLIO STATUS
+
+const getStatusIndex = catchAsync(async (req, res) => {
+  const page = parseInt(req.query.page) || 1; // Get the page number from the query parameters (default: page 1)
+  const limit = 10; // Number of items per page
+  const skip = (page - 1) * limit; // Calculate the number of items to skip
+
+  const buyPortfolioCount = await BuyPortfolio.countDocuments();
+  const totalPages = Math.ceil(buyPortfolioCount / limit);
+
+  const userDetails = await BuyPortfolio.find()
+    .skip(skip)
+    .limit(limit)
+    .populate('userId') // Populate the 'user' field to retrieve the associated user data
+    .exec();
+  console.log(userDetails);
+  res.render('portfolio/statusindex', {
+    title: 'Portfolio Status',
+    userDetails: userDetails,
     currentPage: page,
     totalPages: totalPages,
   });
@@ -268,4 +325,5 @@ module.exports = {
   postBuyPortfolio,
   getPayment,
   updatePayment,
+  getStatusIndex,
 };

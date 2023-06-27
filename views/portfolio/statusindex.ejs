@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('../layouts/head') %>
+  </head>
+
+  <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
+    <div class="wrapper">
+      <!-- <div id="loader"></div> -->
+
+      <header class="main-header">
+        <!-- header-->
+        <%- include('../layouts/header') %>
+      </header>
+
+      <aside class="main-sidebar">
+        <!-- sidebar-->
+        <%- include('../layouts/aside') %>
+      </aside>
+
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <div class="container-full">
+          <section class="content">
+            <div class="col-9 col-xl-9">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title"><%=title%></h5>
+                </div>
+
+                <div class="card-body">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th style="width: 30%">User Name</th>
+                        <th style="width: 30%">Portfolio Name</th>
+                        <th style="width: 30%">Date of Purchase</th>
+
+                        <th style="width: 10%">Status</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      <% userDetails.forEach((item) => { %>
+                      <tr>
+                        <td><%= item.email %></td>
+                        <td><%= item.portfolioName %></td>
+                        <td>
+                          <%= item.dateOfPurchase.toLocaleDateString('en-US', {
+                          month: 'short', day: 'numeric', year: 'numeric' }) %>
+                        </td>
+                        <td class="table-action min-w-100">
+                          <button
+                            id="<%= item._id %>"
+                            type="button"
+                            class="btn btn-sm btn-toggle <%= item.status === 'active' ? 'btn-success active' : 'btn-warning-light' %>"
+                            data-bs-toggle="button"
+                            aria-pressed="<%= item.status === 'active' ? 'true' : 'false' %>"
+                            onclick="toggleStatus('<%= item._id %>', '<%= item.status %>')"
+                          >
+                            <span class="handle"></span>
+                          </button>
+                        </td>
+                      </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+
+                  <div
+                    class="dataTables_paginate paging_simple_numbers align-right"
+                    id="example_paginate"
+                  >
+                    <ul class="pagination">
+                      <li
+                        class="paginate_button page-item previous <%= currentPage === 1 ? 'disabled' : '' %>"
+                        id="example_previous"
+                      >
+                        <a
+                          href="?page=<%= currentPage - 1 %>"
+                          aria-controls="example"
+                          tabindex="0"
+                          class="page-link"
+                          >Previous</a
+                        >
+                      </li>
+
+                      <% for (let i = 1; i <= totalPages; i++) { %>
+                      <li
+                        class="paginate_button page-item <%= i === currentPage ? 'active' : '' %>"
+                      >
+                        <a
+                          href="?page=<%= i %>"
+                          aria-controls="example"
+                          tabindex="0"
+                          class="page-link"
+                          ><%= i %></a
+                        >
+                      </li>
+                      <% } %>
+
+                      <li
+                        class="paginate_button page-item next <%= currentPage === totalPages ? 'disabled' : '' %>"
+                        id="example_next"
+                      >
+                        <a
+                          href="?page=<%= currentPage + 1 %>"
+                          aria-controls="example"
+                          tabindex="0"
+                          class="page-link"
+                          >Next</a
+                        >
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+      <footer class="main-footer">
+        <!-- footer-->
+        <%- include('../layouts/footer') %>
+      </footer>
+      <!-- Side panel -->
+      <!-- quick_user_toggle -->
+      <div class="modal modal-right fade" id="quick_user_toggle" tabindex="-1">
+        <!-- user profile -->
+        <%- include('../layouts/right') %>
+      </div>
+      <!-- /quick_user_toggle -->
+
+      <!-- Control Sidebar -->
+      <%- include('../layouts/sidebar') %>
+    </div>
+
+    <script>
+      // function toggleStatus(userId, currentStatus) {
+      //   const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+
+      //   fetch(`/portfolio/buyportfolio/${userId}`, {
+      //     method: 'PUT',
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //     },
+      //     body: JSON.stringify({ status: newStatus }),
+      //   })
+      //     .then(response => response.json())
+      //     .then(data => {
+      //       // Handle the response or perform any necessary actions
+      //       console.log(data);
+      //       console.log(`Status before update: ${currentStatus}`);
+      //       console.log(`Status after update: ${data.portfolio.status}`);
+      //       // Check if the status was changed successfully
+      //       if (data.message === 'Status updated successfully') {
+      //         // Get the current date and set it as the date of purchase
+      //         const currentDate = new Date().toISOString();
+
+      //         // Calculate the date of expiry as current date plus twelve months
+      //         const dateOfExpiry = new Date();
+      //         dateOfExpiry.setMonth(dateOfExpiry.getMonth() + 12);
+      //         const formattedDateOfExpiry = dateOfExpiry.toISOString();
+
+      //         // Log the values before the update
+      //         console.log('Before update:');
+      //         console.log('Date of Purchase:', data.portfolio.dateOfPurchase);
+      //         console.log('Date of Expiry:', data.portfolio.dateOfExpiry);
+
+      //         // Make a separate request to update the dateOfPurchase and dateOfExpiry
+      //         fetch(`/portfolio/buyportfolio/${userId}`, {
+      //           method: 'PUT',
+      //           headers: {
+      //             'Content-Type': 'application/json',
+      //           },
+      //           body: JSON.stringify({
+      //             dateOfPurchase: currentDate,
+      //             dateOfExpiry: formattedDateOfExpiry,
+      //           }),
+      //         })
+      //           .then(response => response.json())
+      //           .then(data => {
+      //             // Handle the response or perform any necessary actions
+      //             console.log(data);
+
+      //             // Log the values after the update
+      //             console.log('After update:');
+      //             console.log(
+      //               'Date of Purchase:',
+      //               data.portfolio.dateOfPurchase
+      //             );
+      //             console.log('Date of Expiry:', data.portfolio.dateOfExpiry);
+      //             console.log(`Status before update: ${currentStatus}`);
+      //             console.log(`Status after update: ${data.portfolio.status}`);
+      //             // location.reload(); // Refresh the page after updating the status and dates
+      //           })
+      //           .catch(error => {
+      //             // Handle the error or display an error message
+      //             console.error(error);
+      //           });
+      //       } else {
+      //         // location.reload(); // Refresh the page after updating the status
+      //       }
+      //     })
+      //     .catch(error => {
+      //       // Handle the error or display an error message
+      //       console.error(error);
+      //     });
+      // }
+
+      function toggleStatus(userId, currentStatus) {
+        const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+
+        fetch(`/portfolio/buyportfolio/${userId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status: newStatus }),
+        })
+          .then(response => response.json())
+          .then(data => {
+            // Handle the response or perform any necessary actions
+            console.log(data);
+            console.log(`Status before update: ${currentStatus}`);
+            console.log(`Status after update: ${data.portfolio.status}`);
+            // Check if the status was changed successfully
+            if (data.message === 'Status updated successfully') {
+              // Update the UI to reflect the new status
+              location.reload();
+
+              // Reload the page after updating the status
+            } else {
+              // Handle the error or display an error message
+              console.error('Failed to update status');
+            }
+          })
+          .catch(error => {
+            // Handle the error or display an error message
+            console.error(error);
+          });
+      }
+    </script>
+  </body>
+</html>
