@@ -54,15 +54,16 @@ const buyPortfolioSchema = new mongoose.Schema({
   portConfig: {
     threesecond: {
       type: Number,
-      default: 1000,
+      default: 6000,
     },
     halfhour: {
       type: Number,
-      default: 30 * 60 * 1000,
+      default: 50000,
+      // default: 30 * 60 * 1000,
     },
     hourly: {
       type: Number,
-      default: 60 * 60 * 1000,
+      default: 10 * 60 * 1000,
     },
     daily: {
       type: Number,
@@ -77,6 +78,10 @@ const buyPortfolioSchema = new mongoose.Schema({
     threesecond: {
       type: String,
       default: 'threesecond',
+    },
+    halfhour: {
+      type: String,
+      default: 'halfhour',
     },
     hourly: {
       type: String,
