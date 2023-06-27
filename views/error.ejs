@@ -20,9 +20,9 @@
               <div class="my-30">
                 <button
                   class="waves-effect waves-light btn mb-5 bg-gradient-warning"
-                  onclick="goBack()"
+                  onclick="reloadAndRedirect()"
                 >
-                  Go back
+                  Login
                 </button>
               </div>
             </div>
@@ -32,8 +32,8 @@
     </section>
 
     <script>
-      function goBack() {
-        window.history.back();
+      function reloadAndRedirect() {
+        window.location.href = '/user/login';
       }
     </script>
 

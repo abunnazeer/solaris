@@ -19,6 +19,7 @@ const AppError = require('./utils/appError');
 const userRouter = require('./routes/user.routers');
 const portfolioRouter = require('./routes/portfolio.routers');
 const { protect } = require('./controller/auth.controller');
+const { dashboard } = require('./controller/view.controller');
 
 const app = express();
 
@@ -98,11 +99,9 @@ app.use(express.static(path.join(__dirname + '/public/')));
 // app.use(logoutUser);
 // Default route
 
-// app.get('/dashboard', protect, (req, res) => {
-//   res.status(200).render('dashboard', { title: 'Dashboard' });
-// });
-
-app.use(userRouter);
+app.get('/dashboard', protect, dashboard);
+app.use('/user', userRouter);
+// app.use('/dashboard', userRouter);
 // app.use(portRouter);
 app.use('/portfolio', portfolioRouter);
 

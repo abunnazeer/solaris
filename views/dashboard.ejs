@@ -6,7 +6,10 @@
     <%- include('layouts/head') %>
   </head>
 
-  <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
+  <body
+    class="hold-transition light-skin sidebar-mini theme-primary fixed"
+    data-intervals="<%- JSON.stringify(intervals) %>"
+  >
     <div class="wrapper">
       <!-- <div id="loader"></div> -->
 
@@ -2788,14 +2791,12 @@
                       <div class="text-center">
                         <% let totalBalance = 0; %>
                         <!-- Initialize a variable to keep track of the total amount -->
-
-                        <% portfolios.forEach(function(portfolio) { %> <%
+                        <% portfolios.forEach(function(portfolio, index) { %> <%
                         totalBalance += portfolio.balance; %>
                         <!-- Add the amount of each portfolio to the total amount -->
                         <% }) %>
 
                         <h1>$<%= totalBalance.toLocaleString() %></h1>
-
                         <hr style="margin: 2px 77px 3px 77px" />
                         <p class="text-fade">Would have given a return of</p>
                       </div>
@@ -2838,6 +2839,23 @@
 
     <!-- end chatbody -->
     <!-- Page Content overlay -->
+    <script>
+      // Retrieve the intervals from the server-side script
+      const intervals = <%- JSON.stringify(intervals) %>;
+
+      // Function to reload the browser
+      function reloadBrowser() {
+        location.reload();
+      }
+
+      // Function to set the interval for each duration
+      function setReloadInterval(duration) {
+        setInterval(reloadBrowser, duration);
+      }
+
+      // Iterate over each interval and set the reload interval
+      intervals.forEach(setReloadInterval);
+    </script>
 
     <!-- Vendor JS -->
   </body>
