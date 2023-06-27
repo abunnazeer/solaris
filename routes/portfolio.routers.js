@@ -17,6 +17,7 @@ const {
   postBuyPortfolio,
   getPayment,
   updatePayment,
+  getStatusIndex,
 } = require('../controller/view.portfolio');
 
 const {
@@ -42,7 +43,9 @@ router.get('/buy-portfolio/:id', protect, getBuyPortfolioForm);
 
 router.get('/create-portfolio', protect, getPortfolioForm);
 router.get('/', protect, getPortfolioIndex);
+router.get('/index', protect, restrictTo('admin'), getStatusIndex);
 // router.get('/portfolio', getPortfolioIndex);
+router.put('/buyportfolio/:id', protect, restrictTo('admin'), postBuyPortfolio);
 router.post(
   '/create-portfolio',
   protect,

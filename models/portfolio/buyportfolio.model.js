@@ -25,12 +25,12 @@ const buyPortfolioSchema = new mongoose.Schema({
   },
   payout: {
     type: String,
-    enum: ['daily payout', '12 month compounding'],
+    enum: ['threeseconds', 'hourly', 'daily', 'weekly', 'annualy'],
     required: true,
   },
   currency: {
     type: String,
-    enum: ['Bitcoin', 'Ethereum', 'Tether USD TRC20', 'Tether USD ERC20'],
+    enum: ['Bitcoin', 'Ethereum', 'usdt'],
     required: true,
   },
   balance: {
@@ -42,9 +42,58 @@ const buyPortfolioSchema = new mongoose.Schema({
     required: true,
     default: new Date(),
   },
+  dateOfExpiry: {
+    type: Date,
+    required: true,
+    default: new Date(),
+  },
   walletAddress: {
     type: String,
     default: 0,
+  },
+  portConfig: {
+    threesecond: {
+      type: Number,
+      default: 1000,
+    },
+    halfhour: {
+      type: Number,
+      default: 30 * 60 * 1000,
+    },
+    hourly: {
+      type: Number,
+      default: 60 * 60 * 1000,
+    },
+    daily: {
+      type: Number,
+      default: 24 * 60 * 60 * 1000,
+    },
+    weekly: {
+      type: Number,
+      default: 7 * 24 * 60 * 60 * 1000,
+    },
+  },
+  payoutName: {
+    threesecond: {
+      type: String,
+      default: 'threesecond',
+    },
+    hourly: {
+      type: String,
+      default: 'hourly',
+    },
+    daily: {
+      type: String,
+      default: 'daily',
+    },
+    weekly: {
+      type: String,
+      default: 'weekly',
+    },
+    annualy: {
+      type: String,
+      default: 'annualy',
+    },
   },
 });
 

@@ -57,7 +57,7 @@ Upload Photo
 </p>
 <p class="text-muted mb-2">
 <strong class="text-dark">Email :</strong>
-<span class="ms-2"><%= email %></span> <!-- Assuming the email is present in the userProfile object -->
+<span class="ms-2"><%= userProfile.email %></span> <!-- Assuming the email is present in the userProfile object -->
 </p>
 </div>
 </div>
@@ -97,7 +97,7 @@ name="fullName"
 type="email"
 class="form-control"
 id="useremail"
-value="<%= email %>"
+value="<%= userProfile.email %>"
 disabled
 />
 </div>
@@ -123,7 +123,7 @@ name="phoneNumber"
 type="text"
 class="form-control"
 id="street"
-value="<%= userProfile.address.street %>"
+value="<%= userProfile.street %>"
 name="street"
 />
 </div>
@@ -136,7 +136,7 @@ name="street"
 type="text"
 class="form-control"
 id="city"
-value="<%= userProfile.address.city %>"
+value="<%= userProfile.city %>"
 name="city"
 />
 </div>
@@ -149,7 +149,7 @@ name="city"
 type="text"
 class="form-control"
 id="state"
-value="<%= userProfile.address.state %>"
+value="<%= userProfile.state %>"
 name="state"
 />
 </div>
@@ -163,24 +163,43 @@ name="state"
 type="text"
 class="form-control"
 id="country"
-value="<%= userProfile.address.country %>"
+value="<%= userProfile.country %>"
 name="country"
 />
 </div>
 </div>
 
 <div class="col-md-6">
-<div class="mb-3">
-<label for="zipCode" class="form-label">Zip Code</label>
-<input
-type="text"
-class="form-control"
-id="zipCode"
-value="<%= userProfile.address.zipCode %>"
-name="zipCode"
-/>
+  <% if (user.role === "admin") { %>
+    <div class="mb-3">
+      <label for="role" class="form-label">Role</label>
+      <select class="form-select" id="role" name="role">
+        <option value="" disabled selected><%= userProfile.role %></option>
+        <option value="Personal" <%= userProfile.role === "Personal" ? "selected" : "" %>>Personal</option>
+        <option value="Business" <%= userProfile.role === "Business" ? "selected" : "" %>>Business</option>
+        <option value="Admin" <%= userProfile.role === "Admin" ? "selected" : "" %>>Admin</option>
+        <option value="Moderator" <%= userProfile.role === "Moderator" ? "selected" : "" %>>Moderator</option>
+      </select>
+    </div>
+    </div>
+  <% } else { %>
+    <input type="hidden" name="role" value="<%= userProfile.role %>">
+  <% } %>
+  <div class="col-md-6">
+  <div class="mb-3">
+    <label for="zipCode" class="form-label">Zip Code</label>
+    <input
+      type="text"
+      class="form-control"
+      id="zipCode"
+      value="<%= userProfile.zip %>"
+      name="zipCode"
+    />
+  </div>
 </div>
-</div>
+
+
+
 </div>
 
 <input

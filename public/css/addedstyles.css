@@ -67,23 +67,22 @@
 }
 .port_locked {
   position: absolute;
-  top: 50px;
-  left: 1000px;
-
-  height: 250px;
-  width: 300px !important;
-  background-color: #e3e3e3c3;
+  top: 42px;
+  left: 950px;
+  height: 200px;
+  width: 270px !important;
+  background-color: #8a89899f;
   display: block;
+  text-align: center;
 }
 
 .port_unlocked {
   position: absolute;
-  top: 50px;
-  left: 1000px;
-
-  height: 250px;
-  width: 300px !important;
-  background-color: #f9f9f99f;
+  top: 42px;
+  left: 950px;
+  height: 200px;
+  width: 270px !important;
+  background-color: #f3f3f39f;
   display: block;
   text-align: center;
 }
@@ -93,7 +92,7 @@
   font-size: 15px;
   top: 0px;
   position: absolute;
-  left: 75px;
+  left: 50px;
 }
 .port_locked p {
   margin-top: 100px;
