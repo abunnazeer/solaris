@@ -66,7 +66,9 @@ router.patch(
   updateProfile
 );
 
-router.post('/register', register);
+// router.post('/register', register);
+router.post('/register/:reCode?', register);
+
 router.post('/login', login);
 //  this is a api baised url
 router.post('/forget-password', forgetPassword);
@@ -91,7 +93,7 @@ router.post(
 );
 
 // router.get('/user/users', protect, restrictTo('admin'), getUserIndex);
-router.get('/register', getRegistrationForm);
+router.get('/register/:reCode?', getRegistrationForm);
 // router.get('/biz-register', getBizForm);
 
 router.get('/login', getLoginForm);

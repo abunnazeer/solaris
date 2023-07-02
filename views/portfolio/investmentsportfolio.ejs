@@ -26,10 +26,23 @@
           <section class="content">
             <div class="row">
               <h1>The Defensive Portfolio</h1>
-              <% portfolios.forEach((portfolio) => { %>
+              <% if (portfolios.length === 0) { %>
+              <div class="col-lg-11">
+                <div class="card force__position">
+                  <h1 style="padding: 20px">
+                    No Portfolio has been created yet
+                  </h1>
+                </div>
+              </div>
+              <% } else { %> <% portfolios.forEach((portfolio) => { %>
 
               <div class="col-lg-11">
                 <div class="card force__position">
+                  <% if(portfolio.length >= 0){ %>
+                  <div class="card force__position">
+                    <h1>No Portfolio has been created yet</h1>
+                  </div>
+                  <% } else { %>
                   <div class="row g-0 align-items-center">
                     <div class="col-md-2">
                       <img
@@ -45,7 +58,7 @@
                           class="card-title fs-40 fw-500 mb-5"
                           style="width: 70%"
                         >
-                          <%= portfolio.title %>
+                          <%= portfolio.portfolioTitle %>
                           <hr />
                         </h1>
                         <p
@@ -64,10 +77,9 @@
                             <div
                               class="col-md-3"
                               style="border-right: 1px solid #808080"
-                              ;
                             >
                               <h2>
-                                <%= portfolio.portfolioDuration %><br />
+                                <%= portfolio.duration %><br />
                                 <small>Duration</small>
                               </h2>
                             </div>
@@ -76,8 +88,11 @@
                               style="border-right: 1px solid #b4b4b4"
                             >
                               <h2>
-                                <%= portfolio.returnOnInvestment %><br />
-                                <small>Return on investment</small>
+                                <%= portfolio.returnOnInvestment.rioPText %><br />
+                                <small>
+                                  <%= portfolio.returnOnInvestment.name
+                                  %></small
+                                >
                               </h2>
                             </div>
                             <div
@@ -94,8 +109,10 @@
                               style="border-right: 1px solid #b4b4b4"
                             >
                               <h2>
-                                <%= portfolio.targetSize %><br />
-                                <small>Compounding</small>
+                                <%= portfolio.compounding.cPText %><br />
+                                <small>
+                                  <%= portfolio.compounding.name %></small
+                                >
                               </h2>
                             </div>
                           </div>
@@ -133,10 +150,11 @@
                     <!-- end col -->
                   </div>
                   <!-- end row-->
+                  <% } %>
                 </div>
                 <!-- end card-->
               </div>
-              <% }) %>
+              <% }) %> <% } %>
             </div>
             <!-- end row-->
           </section>

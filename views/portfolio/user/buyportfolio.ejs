@@ -50,11 +50,11 @@
                           </li>
                           <li class="list-group-item">
                             <h5>Return On Investment:</h5>
-                            <%= portfolio.returnOnInvestment %>
+                            <%= portfolio.returnOnInvestment.rioPText %>
                           </li>
                           <li class="list-group-item">
                             <h5>Portfolio Duration:</h5>
-                            <%= portfolio.portfolioDuration %>
+                            <%= portfolio.duration %>
                           </li>
                         </ul>
                       </div>
@@ -95,8 +95,8 @@
                                 <option value="" selected="selected">
                                   Select Payout
                                 </option>
-                                <option value="weekly">Weekly Payout</option>
-                                <option value="annually">
+                                <option value="daily">Daily Payout</option>
+                                <option value="compounding">
                                   12 Months Compounding
                                 </option>
                               </select>

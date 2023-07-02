@@ -112,7 +112,7 @@ const getPayment = catchAsync(async (req, res) => {
       cryptoDetails: convertedAmounts,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch portfolio' });
+    res.status(500).json({ message: 'Failed to buy portfolio' });
   }
 });
 
@@ -164,7 +164,7 @@ const postBuyPortfolio = catchAsync(async (req, res) => {
       userId,
       amount,
 
-      portfolioName: portfolio.title,
+      portfolioName: portfolio.portfolioTitle,
       payout,
       currency,
       _id: portfolio._id,

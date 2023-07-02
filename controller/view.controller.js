@@ -185,6 +185,143 @@ function sendBalanceUpdate(portfolioId, balance, compBalance) {
 //     res.status(500).send('An error occurred while fetching the portfolios.');
 //   }
 // };
+// const dashboard = async (req, res) => {
+//   try {
+//     const user = req.user.id; // Get the user ID from the request object
+//     const portfolios = await buyPortfolio.find({ userId: user }); // Find portfolios associated with the user
+
+//     // Iterate over each portfolio
+//     for (const portfolio of portfolios) {
+//       // Check if the portfolio has specific conditions for weekly payout
+//       if (
+//         portfolio.payout === portfolio.payoutName[portfolio.payout] && // Check if payout type matches the payout name
+//         portfolio.payout !== 'compounding' && // Check if payout is not 'annually'
+//         portfolio.status === 'active' // Check if portfolio status is 'active'
+//       ) {
+//         const amount = portfolio.amount; // Get the portfolio amount
+//         let balance = portfolio.balance; // Get the current balance of the portfolio
+//         const dailyPercentage = portfolio.dailyPercentage; // Get the current balance of the portfolio
+
+//         const interval = portfolio.portConfig[portfolio.payout]; // Get the interval for the payout (12 months in milliseconds)
+//         // this is the starting date and time 2023-07-02T19:14:56.661+00:00
+//         let currentTime = new Date(portfolio.dateOfPurchase).getTime(); // Get the timestamp of the portfolio's date of purchase
+//         // this is the ending date time 2024-07-02T19:14:56.661+00:00
+//         const terminationTime = new Date(portfolio.dateOfExpiry).getTime(); // Get the timestamp of the portfolio's date of expiry
+
+//         const dailyInterval = interval; /// 52; // Calculate the weekly interval by dividing the 12-month interval by 52 weeks
+
+//         // Set up an interval that runs weekly
+//         const intervalId = setInterval(async () => {
+//           if (portfolio.status === 'inactive') {
+//             // If the portfolio status is 'inactive', clear the interval and return
+//             clearInterval(intervalId);
+//             return;
+//           }
+
+//           if (currentTime >= terminationTime) {
+//             // If the current time exceeds the termination time, clear the interval and update the portfolio status
+//             clearInterval(intervalId);
+//             await buyPortfolio.findByIdAndUpdate(portfolio._id, {
+//               status: 'inactive',
+//             });
+//             return;
+//           }
+
+//           const newBalance = balance + dailyPercentage * amount; // Calculate the new balance with 4% interest
+//           // const newBalance = balance + 0.04 * amount; // Calculate the new balance with 4% interest
+//           const updatedPortfolio = await buyPortfolio.findByIdAndUpdate(
+//             portfolio._id, // Find the portfolio by its ID
+//             { balance: newBalance }, // Update the balance with the new balance
+//             { new: true } // Return the updated portfolio after the update
+//           );
+
+//           const index = portfolios.findIndex(
+//             p => p._id === updatedPortfolio._id
+//           ); // Find the index of the updated portfolio in the portfolios array
+//           portfolios[index] = updatedPortfolio; // Replace the old portfolio with the updated portfolio
+
+//           sendBalanceUpdate(
+//             updatedPortfolio._id,
+//             updatedPortfolio.balance,
+//             updatedPortfolio.compBalance
+//           ); // Call a function to send balance update notification
+
+//           balance = newBalance; // Update the balance variable with the new balance
+//           currentTime += 24 * 60 * 60 * 1000; // Increment currentTime by 1 day in milliseconds
+//         }, dailyInterval);
+//       }
+
+//       // Check if the portfolio has specific conditions for compounding payout
+//       if (
+//         portfolio.payout === portfolio.payoutName['compounding'] && // Check if payout type is 'annually'
+//         portfolio.payout !== 'daily' && // Check if payout is not 'weekly'
+//         portfolio.status === 'active' // Check if portfolio status is 'active'
+//       ) {
+//         const amount = portfolio.amount; // Get the portfolio amount
+//         let compBalance = portfolio.compBalance; // Get the current compounded balance of the portfolio
+//         const compPercentage = portfolio.compPercentage; // Get the current balance of the portfolio
+
+//         const interval = portfolio.portConfig[portfolio.payout]; // Get the interval for the payout (12 months in milliseconds)
+
+//         let currentTime = new Date(portfolio.dateOfPurchase).getTime(); // Get the timestamp of the portfolio's date of purchase
+//         const terminationTime = new Date(portfolio.dateOfExpiry).getTime(); // Get the timestamp of the portfolio's date of expiry
+
+//         const dailyInterval = interval; // Calculate the weekly interval by dividing the 12-month interval by 52 weeks
+
+//         const intervalId = setInterval(async () => {
+//           if (portfolio.status === 'inactive') {
+//             // If the portfolio status is 'inactive', clear the interval and return
+//             clearInterval(intervalId);
+//             return;
+//           }
+
+//           if (currentTime >= terminationTime) {
+//             // If the current time exceeds the termination time, clear the interval and update the portfolio status
+//             clearInterval(intervalId);
+//             await buyPortfolio.findByIdAndUpdate(portfolio._id, {
+//               status: 'inactive',
+//             });
+//             return;
+//           }
+
+//           const newCompBalance = compBalance + compPercentage * amount;
+//           const updatedPortfolios = await buyPortfolio.findByIdAndUpdate(
+//             portfolio._id,
+//             {
+//               compBalance: newCompBalance,
+//               compAmount: newCompBalance + amount,
+//             },
+//             { new: true }
+//           );
+
+//           const index = portfolios.findIndex(
+//             p => p._id === updatedPortfolios._id
+//           );
+//           portfolios[index] = updatedPortfolios;
+
+//           sendBalanceUpdate(
+//             updatedPortfolios._id,
+//             updatedPortfolios.balance,
+//             updatedPortfolios.compBalance
+//           );
+
+//           compBalance = newCompBalance;
+
+//           currentTime += 24 * 60 * 60 * 1000;
+//         }, dailyInterval);
+//       }
+//     }
+
+//     res.status(200).render('dashboard', {
+//       title: 'Dashboard',
+//       portfolios,
+//     }); // Render the dashboard view with the portfolios data
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send('An error occurred while fetching the portfolios.');
+//   }
+// };
+
 const dashboard = async (req, res) => {
   try {
     const user = req.user.id; // Get the user ID from the request object
@@ -195,21 +332,46 @@ const dashboard = async (req, res) => {
       // Check if the portfolio has specific conditions for weekly payout
       if (
         portfolio.payout === portfolio.payoutName[portfolio.payout] && // Check if payout type matches the payout name
-        portfolio.payout !== 'annually' && // Check if payout is not 'annually'
+        portfolio.payout !== 'compounding' && // Check if payout is not 'annually'
         portfolio.status === 'active' // Check if portfolio status is 'active'
       ) {
         const amount = portfolio.amount; // Get the portfolio amount
         let balance = portfolio.balance; // Get the current balance of the portfolio
+        const dailyPercentage = portfolio.dailyPercentage; // Get the current balance of the portfolio
 
         const interval = portfolio.portConfig[portfolio.payout]; // Get the interval for the payout (12 months in milliseconds)
+        // this is the starting date and time 2023-07-02T19:14:56.661+00:00
 
-        let currentTime = new Date(portfolio.dateOfPurchase).getTime(); // Get the timestamp of the portfolio's date of purchase
-        const terminationTime = new Date(portfolio.dateOfExpiry).getTime(); // Get the timestamp of the portfolio's date of expiry
+        let currentTime = Date.parse(portfolio.dateOfPurchase); // Get the timestamp of the portfolio's date of purchase
+        // let currentTime = new Date(portfolio.dateOfPurchase).getTime(); // Get the timestamp of the portfolio's date of purchase
+        // this is the ending date time 2024-07-02T19:14:56.661+00:00
+        const terminationTime = Date.parse(portfolio.dateOfExpiry); // Get the timestamp of the portfolio's date of expiry
+        // const terminationTime = new Date(portfolio.dateOfExpiry).getTime(); // Get the timestamp of the portfolio's date of expiry
 
-        const weeklyInterval = interval / 52; // Calculate the weekly interval by dividing the 12-month interval by 52 weeks
+        // Calculate the number of milliseconds in a day
+        const millisecondsInDay = 24 * 60 * 60 * 1000;
 
-        // Set up an interval that runs weekly
+        // Calculate the number of days between the starting and ending dates
+        const totalDays = Math.ceil(
+          (terminationTime - currentTime) / millisecondsInDay
+        );
+
+        // Calculate the daily interval for the payout
+        const dailyInterval = interval / totalDays;
+        console.log('Interval:', interval);
+        console.log('Termination Time:', terminationTime);
+        console.log('Total Days:', totalDays);
+        console.log('Daily Interval:', dailyInterval);
+        console.log('current time', currentTime);
+
+        // Set up an interval that runs daily
         const intervalId = setInterval(async () => {
+          if (portfolio.status === 'inactive') {
+            // If the portfolio status is 'inactive', clear the interval and return
+            clearInterval(intervalId);
+            return;
+          }
+
           if (currentTime >= terminationTime) {
             // If the current time exceeds the termination time, clear the interval and update the portfolio status
             clearInterval(intervalId);
@@ -219,7 +381,8 @@ const dashboard = async (req, res) => {
             return;
           }
 
-          const newBalance = balance + 0.04 * amount; // Calculate the new balance with 4% interest
+          const newBalance = balance + dailyPercentage * amount; // Calculate the new balance with 4% interest
+
           const updatedPortfolio = await buyPortfolio.findByIdAndUpdate(
             portfolio._id, // Find the portfolio by its ID
             { balance: newBalance }, // Update the balance with the new balance
@@ -238,27 +401,43 @@ const dashboard = async (req, res) => {
           ); // Call a function to send balance update notification
 
           balance = newBalance; // Update the balance variable with the new balance
-          currentTime += 7 * 24 * 60 * 60 * 1000; // Increment currentTime by 1 week in milliseconds
-        }, weeklyInterval);
+          currentTime += millisecondsInDay; // Increment currentTime by 1 day in milliseconds
+        }, dailyInterval);
       }
 
       // Check if the portfolio has specific conditions for compounding payout
       if (
-        portfolio.payout === portfolio.payoutName['annually'] && // Check if payout type is 'annually'
-        portfolio.payout !== 'weekly' && // Check if payout is not 'weekly'
+        portfolio.payout === portfolio.payoutName['compounding'] && // Check if payout type is 'annually'
+        portfolio.payout !== 'daily' && // Check if payout is not 'weekly'
         portfolio.status === 'active' // Check if portfolio status is 'active'
       ) {
         const amount = portfolio.amount; // Get the portfolio amount
         let compBalance = portfolio.compBalance; // Get the current compounded balance of the portfolio
+        const compPercentage = portfolio.compPercentage; // Get the current balance of the portfolio
 
         const interval = portfolio.portConfig[portfolio.payout]; // Get the interval for the payout (12 months in milliseconds)
 
-        let currentTime = new Date(portfolio.dateOfPurchase).getTime(); // Get the timestamp of the portfolio's date of purchase
-        const terminationTime = new Date(portfolio.dateOfExpiry).getTime(); // Get the timestamp of the portfolio's date of expiry
+        let currentTime = Date.parse(portfolio.dateOfPurchase); // Get the timestamp of the portfolio's date of purchase
+        const terminationTime = Date.parse(portfolio.dateOfExpiry); // Get the timestamp of the portfolio's date of expiry
 
-        const weeklyInterval = interval / 52; // Calculate the weekly interval by dividing the 12-month interval by 52 weeks
+        // Calculate the number of milliseconds in a day
+        const millisecondsInDay = 24 * 60 * 60 * 1000;
+
+        // Calculate the number of days between the starting and ending dates
+        const totalDays = Math.ceil(
+          (terminationTime - currentTime) / millisecondsInDay
+        );
+
+        // Calculate the daily interval for the payout
+        const dailyInterval = interval / totalDays;
 
         const intervalId = setInterval(async () => {
+          if (portfolio.status === 'inactive') {
+            // If the portfolio status is 'inactive', clear the interval and return
+            clearInterval(intervalId);
+            return;
+          }
+
           if (currentTime >= terminationTime) {
             // If the current time exceeds the termination time, clear the interval and update the portfolio status
             clearInterval(intervalId);
@@ -268,7 +447,8 @@ const dashboard = async (req, res) => {
             return;
           }
 
-          const newCompBalance = compBalance + 0.04 * amount;
+          const newCompBalance = compBalance + compPercentage * amount;
+
           const updatedPortfolios = await buyPortfolio.findByIdAndUpdate(
             portfolio._id,
             {
@@ -291,8 +471,8 @@ const dashboard = async (req, res) => {
 
           compBalance = newCompBalance;
 
-          currentTime += 7 * 24 * 60 * 60 * 1000; // Increment currentTime by 1 week in milliseconds
-        }, weeklyInterval);
+          currentTime += millisecondsInDay;
+        }, dailyInterval);
       }
     }
 
@@ -399,10 +579,15 @@ const getProfile = catchAsync(async (req, res) => {
       country: userProfile.address.country,
       role: user.role,
       isActive: user.isActive,
+      referralCode: user.referralCode,
     };
+    const protocol = req.protocol;
+    const host = req.get('host');
+    const url = `${protocol}://${host}/user/register`;
     res.status(200).render('profile', {
       title: 'Profile',
       userProfile: userWithProfile,
+      url,
     });
   } catch (error) {
     // Handle error if profile retrieval fails
