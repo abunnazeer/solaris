@@ -34,8 +34,21 @@ const createSendToken = (user, profile, statusCode, res, redirectUrl) => {
 //////////////////////////////////////////////////////
 //////////// REGISTERING  ENDPOINT //////////////////
 /////////////////////////////////////////////////////
+function generateRandomNumber() {
+  const randomNumber = Math.floor(Math.random() * 100000000);
+  const paddedNumber = randomNumber.toString().padStart(8, '0');
+  return paddedNumber;
+}
+
 const register = catchAsync(async (req, res, next) => {
+  const referMe = req.params.reCode;
   const { email, password, passwordConfirm, role } = req.body;
+
+  // Check if the email already exists in the database
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    return res.status(400).json({ error: 'Email address already exists.' });
+  }
 
   // Validate password and password confirmation
   if (password !== passwordConfirm) {
@@ -52,13 +65,21 @@ const register = catchAsync(async (req, res, next) => {
       )
     );
   }
+  // Check if a user has referred the new user
+  const referredBy = await User.findOne({ referralCode: referMe });
 
+  // If referral code provided but no user found with that referral code
+  if (referMe && !referredBy) {
+    return next(new AppError('Invalid referral code.', 400));
+  }
   // Create a new user
   const newUser = await User.create({
     email,
     password,
     passwordConfirm,
     role,
+    referralCode: generateRandomNumber(),
+    referredMe: referredBy ? referredBy._id : null,
   });
   //Create user profile while creating user
   const newProfile = await Profile.create({
@@ -94,80 +115,6 @@ const register = catchAsync(async (req, res, next) => {
   const redirectUrl = '/user/success';
   createSendToken(user, profile, statusCode, res, redirectUrl);
 });
-
-// const register = catchAsync(async (req, res, next) => {
-//   const { email, password, passwordConfirm } = req.body;
-//   const role = req.user.role; // Retrieve the role from req.user
-
-//   // Validate password and password confirmation
-//   if (password !== passwordConfirm) {
-//     return next(new AppError('Passwords do not match.', 400));
-//   }
-
-//   // Password validation: at least 8 characters, alphanumeric combination
-//   const isAlphanumeric = /^[0-9a-zA-Z]+$/;
-//   if (password.length < 8 || isAlphanumeric.test(password)) {
-//     return next(
-//       new AppError(
-//         'Password must be at least 8 characters long and contain only alphanumeric characters.',
-//         400
-//       )
-//     );
-//   }
-
-//   // Create a new user
-//   const newUser = await User.create({
-//     email,
-//     password,
-//     passwordConfirm,
-//     role,
-//   });
-
-//   // Create user profile while creating user
-//   const newProfile = await Profile.create({
-//     // Assigning user id to profile id
-//     _id: newUser._id,
-//     fullName: req.body.fullName,
-//     role: newUser.role,
-//   });
-
-//   // Generate email verification token
-//   const emailVerificationToken = newUser.generateEmailVerificationToken();
-//   await newUser.save({ validateBeforeSave: false });
-
-//   // Email verification URL
-//   const emailVerificationURL = `${req.protocol}://${req.get(
-//     'host'
-//   )}/user/verify-email/${emailVerificationToken}`;
-
-//   // Send verification email
-//   const message = `Please click on the following link to verify your email: ${emailVerificationURL}`;
-//   await sendEmail({
-//     email: newUser.email,
-//     subject: 'Email Verification',
-//     message,
-//   });
-
-//   // Remove password from the response
-//   newUser.password = undefined;
-
-//   if (role === 'admin') {
-//     // Send email to the new user with the password
-//     const adminMessage = `Your account has been created by an admin. You can login with this password: ${password}`;
-//     await sendEmail({
-//       email,
-//       subject: 'Account Created by Admin',
-//       message: adminMessage,
-//     });
-//   }
-
-//   const user = newUser;
-//   const profile = newProfile;
-//   const statusCode = 201;
-//   const redirectUrl = role === 'admin' ? '/user/users' : '/user/success';
-
-//   createSendToken(user, profile, statusCode, res, redirectUrl);
-// });
 
 // Email verification endpoint
 const verifyEmail = catchAsync(async (req, res, next) => {

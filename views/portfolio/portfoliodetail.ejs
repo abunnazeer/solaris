@@ -84,12 +84,12 @@
                             <p><%= portfolio.minimumCapital %></p>
                           </div>
                           <div class="p__card">
-                            <h4>Return On Investment:</h4>
-                            <p><%= portfolio.returnOnInvestment %></p>
+                            <h4><%= portfolio.returnOnInvestment.name %>:</h4>
+                            <p><%= portfolio.returnOnInvestment.rioPText %></p>
                           </div>
                           <div class="p__card">
                             <h4>Portfolio Duration:</h4>
-                            <p><%= portfolio.portfolioDuration %></p>
+                            <p><%= portfolio.duration %></p>
                           </div>
                         </div>
 
@@ -100,16 +100,8 @@
                       <div class="col-md-4">
                         <div class="card p-10">
                           <div>
-                            <h4>Weekly Earnings:</h4>
-                            <p><%= portfolio.weeklyEarnings %></p>
-                          </div>
-                          <div>
-                            <h4>Target Size:</h4>
-                            <p><%= portfolio.targetSize %></p>
-                          </div>
-                          <div>
-                            <h4>Reimbursement:</h4>
-                            <p><%= portfolio.reimbursement %></p>
+                            <h4><%= portfolio.compounding.name %> :</h4>
+                            <p><%= portfolio.compounding.cPText %></p>
                           </div>
 
                           <% if (user && buyPortfolio && user.id ===
@@ -139,126 +131,7 @@
                       </div>
                       <!-- end col-->
                       <div>
-                        <p><%= portfolio.description %></p>
-                      </div>
-                      <div class="col-md-8">
-                        <div class="tab-content">
-                          <div
-                            class="tab-pane show active"
-                            id="bordered-tabs-preview"
-                          >
-                            <ul class="nav nav-tabs nav-bordered mb-3">
-                              <li class="nav-item">
-                                <a
-                                  href="#home-b1"
-                                  data-bs-toggle="tab"
-                                  aria-expanded="false"
-                                  class="nav-link active"
-                                >
-                                  <span class="d-none d-md-block"
-                                    >WHY WE INVEST</span
-                                  >
-                                </a>
-                              </li>
-                              <li class="nav-item">
-                                <a
-                                  href="#profile-b1"
-                                  data-bs-toggle="tab"
-                                  aria-expanded="true"
-                                  class="nav-link"
-                                >
-                                  <span class="d-none d-md-block"
-                                    >ABOUT THE MANAGER</span
-                                  >
-                                </a>
-                              </li>
-                              <li class="nav-item">
-                                <a
-                                  href="#settings-b1"
-                                  data-bs-toggle="tab"
-                                  aria-expanded="false"
-                                  class="nav-link"
-                                >
-                                  <span class="d-none d-md-block"
-                                    >HOW IT WORKS</span
-                                  >
-                                </a>
-                              </li>
-                            </ul>
-
-                            <div class="tab-content px-20">
-                              <div class="tab-pane active" id="home-b1">
-                                <p class="text-fade">
-                                  Leggings occaecat dolor sit amet, consectetuer
-                                  adipiscing elit. Aenean commodo ligula eget
-                                  dolor. Aenean massa. Cum sociis natoque
-                                  penatibus et magnis dis parturient montes,
-                                  nascetur ridiculus mus. Donec quam felis,
-                                  ultricies nec, pellentesque eu, pretium quis,
-                                  sem. Nulla consequat massa quis enim.
-                                </p>
-                                <p class="mb-0 text-fade">
-                                  Donec pede justo, fringilla vel, aliquet nec,
-                                  vulputate eget, arcu. In enim justo, rhoncus
-                                  ut, imperdiet a, venenatis vitae, justo.
-                                  Nullam dictum felis eu pede mollis pretium.
-                                  Integer tincidunt.Cras dapibus. Vivamus
-                                  elementum semper nisi. Aenean vulputate
-                                  eleifend tellus. Aenean leo ligula, porttitor
-                                  eu, consequat vitae, eleifend ac, enim.
-                                </p>
-                              </div>
-                              <div class="tab-pane show" id="profile-b1">
-                                <p class="text-fade">
-                                  Donec pede justo, fringilla vel, aliquet nec,
-                                  vulputate eget, arcu. In enim justo, rhoncus
-                                  ut, imperdiet a, venenatis vitae, justo.
-                                  Nullam dictum felis eu pede mollis pretium.
-                                  Integer tincidunt.Cras dapibus. Vivamus
-                                  elementum semper nisi. Aenean vulputate
-                                  eleifend tellus. Aenean leo ligula, porttitor
-                                  eu, consequat vitae, eleifend ac, enim.
-                                </p>
-                                <p class="mb-0 text-fade">
-                                  Leggings occaecat dolor sit amet, consectetuer
-                                  adipiscing elit. Aenean commodo ligula eget
-                                  dolor. Aenean massa. Cum sociis natoque
-                                  penatibus et magnis dis parturient montes,
-                                  nascetur ridiculus mus. Donec quam felis,
-                                  ultricies nec, pellentesque eu, pretium quis,
-                                  sem. Nulla consequat massa quis enim.
-                                </p>
-                              </div>
-                              <div class="tab-pane" id="settings-b1">
-                                <p class="text-fade">
-                                  Food truck quinoa dolor sit amet, consectetuer
-                                  adipiscing elit. Aenean commodo ligula eget
-                                  dolor. Aenean massa. Cum sociis natoque
-                                  penatibus et magnis dis parturient montes,
-                                  nascetur ridiculus mus. Donec quam felis,
-                                  ultricies nec, pellentesque eu, pretium quis,
-                                  sem. Nulla consequat massa quis enim.
-                                </p>
-                                <p class="mb-0 text-fade">
-                                  Donec pede justo, fringilla vel, aliquet nec,
-                                  vulputate eget, arcu. In enim justo, rhoncus
-                                  ut, imperdiet a, venenatis vitae, justo.
-                                  Nullam dictum felis eu pede mollis pretium.
-                                  Integer tincidunt.Cras dapibus. Vivamus
-                                  elementum semper nisi. Aenean vulputate
-                                  eleifend tellus. Aenean leo ligula, porttitor
-                                  eu, consequat vitae, eleifend ac, enim.
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                          <!-- end preview-->
-
-                          <div class="tab-pane" id="bordered-tabs-code">
-                            <!-- end highlight-->
-                          </div>
-                          <!-- end preview code-->
-                        </div>
+                        <p style="width: 70%"><%= portfolio.description %></p>
                       </div>
                     </div>
 
@@ -299,7 +172,18 @@
     </script>
     <!-- <%- include('../layouts/script') %> -->
     <script src="js/pages/data-table.js"></script>
+    <!-- Vendor JS -->
+    <script src="/js/vendors.min.js"></script>
+    <script src="/js/pages/chat-popup.js"></script>
+    <script src="/assets/icons/feather-icons/feather.min.js"></script>
+    <script src="/assets/vendor_components/apexcharts-bundle/dist/apexcharts.js"></script>
 
+    <!-- InvestX App -->
+    <script src="js/demo.js"></script>
+    <script src="/js/template.js"></script>
+    <script src="/js/pages/dashboard.js"></script>
+
+    <script src="js/pages/chart-widgets.js"></script>
     <!-- JavaScript code for deleting a portfolio -->
   </body>
 </html>
