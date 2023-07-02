@@ -84,12 +84,12 @@
                             <p><%= portfolio.minimumCapital %></p>
                           </div>
                           <div class="p__card">
-                            <h4>Return On Investment:</h4>
-                            <p><%= portfolio.returnOnInvestment %></p>
+                            <h4><%= portfolio.returnOnInvestment.name %>:</h4>
+                            <p><%= portfolio.returnOnInvestment.rioPText %></p>
                           </div>
                           <div class="p__card">
                             <h4>Portfolio Duration:</h4>
-                            <p><%= portfolio.portfolioDuration %></p>
+                            <p><%= portfolio.duration %></p>
                           </div>
                         </div>
 
@@ -100,16 +100,8 @@
                       <div class="col-md-4">
                         <div class="card p-10">
                           <div>
-                            <h4>Weekly Earnings:</h4>
-                            <p><%= portfolio.weeklyEarnings %></p>
-                          </div>
-                          <div>
-                            <h4>Compounding Percentage :</h4>
-                            <p><%= portfolio.targetSize %></p>
-                          </div>
-                          <div>
-                            <h4>Reimbursement:</h4>
-                            <p><%= portfolio.reimbursement %></p>
+                            <h4><%= portfolio.compounding.name %> :</h4>
+                            <p><%= portfolio.compounding.cPText %></p>
                           </div>
 
                           <% if (user && buyPortfolio && user.id ===

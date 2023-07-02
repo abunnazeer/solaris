@@ -47,9 +47,12 @@
                     </thead>
 
                     <tbody>
-                      <% portfolio.forEach((item) => { %>
+                      <% if (portfolio.length === 0) { %>
+                      <td>No record found</td>
+
+                      <% } else { %> <% portfolio.forEach((item) => { %>
                       <tr>
-                        <td><%= item.title %></td>
+                        <td><%= item.portfolioTitle %></td>
                         <td class="table-action min-w-100">
                           <a
                             href="/portfolio/<%= item._id %>"
@@ -72,10 +75,12 @@
                           </a>
                         </td>
                       </tr>
-                      <% }) %>
+                      <% }) %> <% } %>
                     </tbody>
                   </table>
-
+                  <% if (portfolio.length === 0) { %>
+                  <div></div>
+                  <% } else { %>
                   <div
                     class="dataTables_paginate paging_simple_numbers align-right"
                     id="example_paginate"
@@ -122,6 +127,7 @@
                       </li>
                     </ul>
                   </div>
+                  <% } %>
                 </div>
               </div>
             </div>

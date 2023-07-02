@@ -156,6 +156,16 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  referredMe: {
+    type: String,
+    lowercase: true,
+  },
+  referralCode: {
+    type: String,
+    lowercase: true,
+    minlength: 6,
+    maxlength: 10,
+  },
 });
 
 userSchema.pre('save', async function (next) {
@@ -201,6 +211,22 @@ userSchema.methods.createPasswordResetToken = function () {
 };
 
 userSchema.methods.generateEmailVerificationToken = function () {
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+  this.emailVerificationToken = crypto
+    .createHash('sha256')
+    .update(verificationToken)
+    .digest('hex');
+  this.emailVerificationExpires = Date.now() + 24 * 60 * 60 * 1000; // Token expires in 24 hours
+  return verificationToken;
+};
+
+userSchema.methods.generateReferralCode = function () {
+  const referralCode = crypto.randomBytes(4).toString('hex').toUpperCase();
+  this.referralCode = referralCode;
+  return referralCode;
+};
+
+userSchema.methods.generateReferralEmailVerificationToken = function () {
   const verificationToken = crypto.randomBytes(32).toString('hex');
   this.emailVerificationToken = crypto
     .createHash('sha256')

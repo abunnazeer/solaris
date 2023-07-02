@@ -29,7 +29,7 @@ const buyPortfolioSchema = new mongoose.Schema({
   },
   payout: {
     type: String,
-    enum: ['weekly', 'annually'],
+    enum: ['daily', 'compounding'],
     required: true,
   },
   currency: {
@@ -60,24 +60,32 @@ const buyPortfolioSchema = new mongoose.Schema({
     default: 0,
   },
   portConfig: {
-    weekly: {
+    daily: {
       type: Number,
-      default: 7 * 24 * 60 * 60 * 1000,
+      default: 12 * 30 * 24 * 60 * 60 * 1000, // Changed to represent 1 day (daily)
     },
-    annually: {
+    compounding: {
       type: Number,
-      default: 7 * 24 * 60 * 60 * 1000,
+      default: 12 * 30 * 24 * 60 * 60 * 1000,
     },
   },
   payoutName: {
-    weekly: {
+    daily: {
       type: String,
-      default: 'weekly',
+      default: 'daily',
     },
-    annually: {
+    compounding: {
       type: String,
-      default: 'annually',
+      default: 'compounding',
     },
+  },
+  dailyPercentage: {
+    type: Number,
+    default: 0.4,
+  },
+  compPercentage: {
+    type: Number,
+    default: 0.4,
   },
 });
 

@@ -37,15 +37,36 @@ const getPortfolio = catchAsync(async (req, res) => {
 const createPortfolio = catchAsync(async (req, res, next) => {
   try {
     const portfolioData = {
-      ...req.body,
-      imageName: req.file.filename, // Access the uploaded file's filename
+      portfolioTitle: req.body.portfolioTitle,
+      description: req.body.description,
+      minimumCapital: req.body.minimumCapital,
+      returnOnInvestment: {
+        name: req.body.rioName,
+        rioPText: req.body.rioPText,
+        rioPercentage: req.body.rioPercentage,
+      },
+      compounding: {
+        name: req.body.cName,
+        cPText: req.body.cPText,
+        cPercentage: req.body.cPercentage,
+      },
+      duration: req.body.duration,
+
+      imageName: req.file.filename,
     };
+
+    console.log('Portfolio Data:', portfolioData);
+
     const portfolio = await Portfolio.create(portfolioData);
+
+    console.log('Created Portfolio:', portfolio);
+
     res.status(201).render('msg/succeed', {
       message: 'Portfolio created successfully',
       portfolio,
     });
   } catch (error) {
+    console.log('Error:', error);
     return next(new AppError('Failed to create portfolio', 500));
   }
 });

@@ -6,7 +6,17 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
-    <link rel="stylesheet" href="/css/validation.css" />
+    <link rel="stylesheet" href="css/validation.css" />
+    <style>
+      .password-toggle {
+        position: absolute;
+        left: 95%;
+      }
+      .passwordConfirm-toggle {
+        position: absolute;
+        left: 95%;
+      }
+    </style>
   </head>
 
   <body
@@ -14,6 +24,11 @@
     style="background-image: url(../../../images/auth-bg/bg-16.jpg)"
   >
     <div class="container h-p100">
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
       <div class="row align-items-center justify-content-md-center h-p100">
         <div class="col-12">
           <div class="row justify-content-center g-0">
@@ -25,13 +40,14 @@
                 <div class="p-40">
                   <form class="rform__modified" action="" method="post">
                     <div class="form-group">
-                      <div class="input-group mb-3" id="type__error">
-                        <span class="input-group-text bg-transparent">
+                      <div class="input-group mb-20" id="type__error">
+                        <span class="input-group-text">
                           <i class="text-fade ti-briefcase"></i>
                         </span>
                         <select
                           name="role"
-                          class="form-control ps-15 bg-transparent"
+                          class="form-control select2 p-10"
+                          style="width: 92%"
                           id="role"
                         >
                           <option value="">Select Registration type</option>
@@ -44,13 +60,14 @@
 
                     <div class="form-group">
                       <div class="input-group mb-3" id="name__error">
-                        <span class="input-group-text bg-transparent"
+                        <span class="input-group-text"
                           ><i class="text-fade ti-user"></i
                         ></span>
                         <input
                           type="text"
+                          style="width: 92%"
                           name="fullName"
-                          class="form-control ps-15 bg-transparent"
+                          class="form-control ps-15 p-10"
                           placeholder="Full Name"
                           id="fullName"
                         />
@@ -59,28 +76,31 @@
                     </div>
                     <div class="form-group">
                       <div class="input-group mb-3" id="email__error">
-                        <span class="input-group-text bg-transparent"
+                        <span class="input-group-text"
                           ><i class="text-fade ti-email"></i
                         ></span>
                         <input
                           type="email"
                           name="email"
-                          class="form-control ps-15 bg-transparent"
+                          style="width: 92%"
+                          class="form-control ps-15 p-10"
                           placeholder="Email"
                           id="email"
                           required
+                          onblur="checkEmailExistence()"
                         />
                       </div>
                       <span class="error" id="emailError"></span>
                     </div>
                     <div class="form-group">
                       <div class="input-group mb-3" id="password__error">
-                        <span class="input-group-text bg-transparent"
+                        <span class="input-group-text"
                           ><i class="text-fade ti-lock"></i
                         ></span>
                         <input
                           type="password"
-                          class="form-control ps-15 bg-transparent"
+                          style="width: 92%"
+                          class="form-control ps-15 p-10"
                           placeholder="Password"
                           id="password"
                           name="password"
@@ -95,12 +115,13 @@
                     </div>
                     <div class="form-group">
                       <div class="input-group mb-3" id="password__c__error">
-                        <span class="input-group-text bg-transparent"
+                        <span class="input-group-text"
                           ><i class="text-fade ti-lock"></i
                         ></span>
                         <input
                           type="password"
-                          class="form-control ps-15 bg-transparent"
+                          style="width: 92%"
+                          class="form-control ps-15 p-10"
                           placeholder="Retype Password"
                           id="passwordConfirm"
                           name="passwordConfirm"
@@ -112,6 +133,23 @@
                         ></i>
                       </div>
                       <span class="error" id="passwordConfirmError"></span>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="input-group mb-3" id="rcode__error">
+                        <span class="input-group-text"
+                          ><i class="text-fade ti-user"></i
+                        ></span>
+                        <input
+                          type="text"
+                          name="rCode"
+                          style="width: 50%"
+                          class="form-control ps-15 p-10"
+                          placeholder="Enter Referral code (Optional)"
+                          id="rCode"
+                        />
+                      </div>
+                      <span class="error" id="nameError"></span>
                     </div>
                     <div class="row">
                       <div class="col-12">
@@ -161,10 +199,46 @@
     </div>
 
     <!-- Vendor JS -->
-    <script src="/js/registerval.js"></script>
+    <script>
+      function checkEmailExistence() {
+        const emailInput = document.getElementById('email');
+        const emailError = document.getElementById('emailError');
 
-    <script src="/js/vendors.min.js"></script>
-    <script src="/js/pages/chat-popup.js"></script>
-    <script src="/assets/icons/feather-icons/feather.min.js"></script>
+        // Get the email value from the input field
+        const email = emailInput.value;
+
+        // Get the current protocol and host from window.location
+        const protocol = window.location.protocol;
+        const host = window.location.host;
+
+        // Construct the dynamic URL
+        const url = `${protocol}//${host}/user/register`;
+
+        // Send a request to the server to check if the email exists
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email }),
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.error) {
+              // Email exists, display error message
+              emailError.textContent = data.error;
+            } else {
+              // Email doesn't exist, clear error message
+              emailError.textContent = '';
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      }
+    </script>
+
+    <script src="/js/registerval.js"></script>
+    <%- include('layouts/formscript') %>
   </body>
 </html>
