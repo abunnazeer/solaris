@@ -3,6 +3,10 @@
   <head>
     <title><%=portfolio.title%></title>
     <%- include('../../layouts/head') %>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css"
+    />
   </head>
 
   <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
@@ -91,17 +95,9 @@
                                 <option value="" selected="selected">
                                   Select Payout
                                 </option>
-                                <option value="threesecond">
-                                  Three seconds
-                                </option>
-                                <option value="halfhour">
-                                  Half Hour Payout
-                                </option>
-                                <option value="hourly">hourly Payout</option>
-                                <option value="daily">Daily Payout</option>
                                 <option value="weekly">Weekly Payout</option>
                                 <option value="annually">
-                                  12 Month Compounding
+                                  12 Months Compounding
                                 </option>
                               </select>
                             </div>
@@ -122,14 +118,21 @@
                                 <option value="" selected="selected">
                                   Select Currency
                                 </option>
-                                <option value="Bitcoin">Bitcoin</option>
-                                <option value="Ethereum">Ethereum</option>
-                                <option value="usdt">Tether USD TRC20</option>
-                                <option value="usdt">Tether USD ERC20</option>
+                                <option value="Bitcoin" data-icon="BTC">
+                                  Bitcoin
+                                </option>
+                                <option value="Ethereum" data-icon="ETH">
+                                  Ethereum
+                                </option>
+                                <option value="usdt" data-icon="USDT">
+                                  Tether USD TRC20
+                                </option>
+                                <option value="usdt" data-icon="USDT">
+                                  Tether USD ERC20
+                                </option>
                               </select>
                             </div>
                           </div>
-
                           <div class="form-group">
                             <div class="input-group mb-3">
                               <button
@@ -164,6 +167,33 @@
       <!-- Vendor JS -->
       <%- include('../../layouts/formscript') %>
     </div>
-    <!-- <script src="/js/bundle.js"></script> -->
+
+    <!-- Include Select2 JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+    <script>
+      // Initialize Select2
+      $(document).ready(function () {
+        $('.select2').select2({
+          templateResult: function (data, container) {
+            if (!data.id || !data.element) {
+              return data.text;
+            }
+
+            var icon = data.element.dataset.icon;
+            var $result = $(
+              '<span><i class="cc ' + icon + '"></i> ' + data.text + '</span>'
+            );
+
+            if (data.id === '') {
+              // Add class to the initial "Select Currency" option
+              $result.addClass('select2-placeholder');
+            }
+
+            return $result;
+          },
+        });
+      });
+    </script>
   </body>
 </html>

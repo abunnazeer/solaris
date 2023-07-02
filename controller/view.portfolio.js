@@ -163,6 +163,7 @@ const postBuyPortfolio = catchAsync(async (req, res) => {
     const buyPortfolio = new BuyPortfolio({
       userId,
       amount,
+
       portfolioName: portfolio.title,
       payout,
       currency,

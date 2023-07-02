@@ -216,7 +216,7 @@ const login = catchAsync(async (req, res, next) => {
 
   // If everything is ok, send token to client
   const statusCode = 201;
-  const redirectUrl = '/dashboard';
+  const redirectUrl = '/dashboard/';
   createSendToken(user, null, statusCode, res, redirectUrl);
 });
 

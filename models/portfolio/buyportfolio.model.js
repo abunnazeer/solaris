@@ -19,13 +19,17 @@ const buyPortfolioSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  compAmount: {
+    type: Number,
+    default: 0,
+  },
   portfolioName: {
     type: String,
     required: true,
   },
   payout: {
     type: String,
-    enum: ['threeseconds', 'hourly', 'daily', 'weekly', 'annualy'],
+    enum: ['weekly', 'annually'],
     required: true,
   },
   currency: {
@@ -34,6 +38,10 @@ const buyPortfolioSchema = new mongoose.Schema({
     required: true,
   },
   balance: {
+    type: Number,
+    default: 0,
+  },
+  compBalance: {
     type: Number,
     default: 0,
   },
@@ -52,52 +60,23 @@ const buyPortfolioSchema = new mongoose.Schema({
     default: 0,
   },
   portConfig: {
-    threesecond: {
-      type: Number,
-      default: 6000,
-    },
-    halfhour: {
-      type: Number,
-      default: 50000,
-      // default: 30 * 60 * 1000,
-    },
-    hourly: {
-      type: Number,
-      default: 10 * 60 * 1000,
-    },
-    daily: {
-      type: Number,
-      default: 24 * 60 * 60 * 1000,
-    },
     weekly: {
+      type: Number,
+      default: 7 * 24 * 60 * 60 * 1000,
+    },
+    annually: {
       type: Number,
       default: 7 * 24 * 60 * 60 * 1000,
     },
   },
   payoutName: {
-    threesecond: {
-      type: String,
-      default: 'threesecond',
-    },
-    halfhour: {
-      type: String,
-      default: 'halfhour',
-    },
-    hourly: {
-      type: String,
-      default: 'hourly',
-    },
-    daily: {
-      type: String,
-      default: 'daily',
-    },
     weekly: {
       type: String,
       default: 'weekly',
     },
-    annualy: {
+    annually: {
       type: String,
-      default: 'annualy',
+      default: 'annually',
     },
   },
 });

@@ -29,7 +29,7 @@
               <% portfolios.forEach((portfolio) => { %>
 
               <div class="col-lg-11">
-                <div class="card">
+                <div class="card force__position">
                   <div class="row g-0 align-items-center">
                     <div class="col-md-2">
                       <img
@@ -38,59 +38,75 @@
                         alt="<%= portfolio.imageName %>"
                       />
                     </div>
-                    <div class="col-md-7">
+
+                    <div class="col-md-9 col-sm-6">
                       <div class="card-body">
-                        <h1 class="card-title fs-40 fw-500 mb-5">
+                        <h1
+                          class="card-title fs-40 fw-500 mb-5"
+                          style="width: 70%"
+                        >
                           <%= portfolio.title %>
+                          <hr />
                         </h1>
                         <p
                           class="card-text text-gray-600 mt-20"
-                          style="width: 85%"
+                          style="width: 70%"
                         >
                           <%= portfolio.description %>
                         </p>
-                        <ul class="card-text text-gray-600 fs-15">
-                          <li class="m-2">
-                            Variable returns dependant on market performance
-                          </li>
-                          <li class="m-2">
-                            You earn the above percentage every Friday
-                          </li>
-                          <li class="m-2">Compounding Percentage 16.75%</li>
-                        </ul>
+                        <br />
+                        <br />
+                        <br />
+                        <br />
 
                         <div class="col-lg-12">
-                          <div class="row">
+                          <div class="row" style="text-align: center">
                             <div
-                              class="col-md-4"
-                              style="border: 1px solid #d5d5d5"
+                              class="col-md-3"
+                              style="border-right: 1px solid #808080"
+                              ;
                             >
-                              <h3>Portfolio Duration</h3>
-
-                              <span><%= portfolio.portfolioDuration %></span>
+                              <h2>
+                                <%= portfolio.portfolioDuration %><br />
+                                <small>Duration</small>
+                              </h2>
                             </div>
                             <div
-                              class="col-md-4"
-                              style="border: 1px solid #d5d5d5"
+                              class="col-md-3"
+                              style="border-right: 1px solid #b4b4b4"
                             >
-                              <h3>Return on investment</h3>
-
-                              <span><%= portfolio.returnOnInvestment %></span>
+                              <h2>
+                                <%= portfolio.returnOnInvestment %><br />
+                                <small>Return on investment</small>
+                              </h2>
                             </div>
                             <div
-                              class="col-md-4"
-                              style="border: 1px solid #d5d5d5"
+                              class="col-md-3"
+                              style="border-right: 1px solid #b4b4b4"
                             >
-                              <h3>Minimum Capital</h3>
-
-                              <span><%= portfolio.minimumCapital %></span>
+                              <h2>
+                                <%= portfolio.minimumCapital %><br />
+                                <small>Min Capital</small>
+                              </h2>
+                            </div>
+                            <div
+                              class="col-md-3"
+                              style="border-right: 1px solid #b4b4b4"
+                            >
+                              <h2>
+                                <%= portfolio.targetSize %><br />
+                                <small>Compounding</small>
+                              </h2>
                             </div>
                           </div>
                         </div>
                       </div>
                       <!-- end card-body-->
                     </div>
-                    <div class="col-md-1">
+
+                    <div
+                      class="<%= isProfileComplete ? 'port_unlocked' : 'port_locked' %>"
+                    >
                       <img
                         src="/portfolio/chartbasic.png"
                         alt="..."
@@ -113,6 +129,7 @@
                       <a href="/user/profile">Complete your profile</a>
                       <% } %>
                     </div>
+
                     <!-- end col -->
                   </div>
                   <!-- end row-->
@@ -134,8 +151,17 @@
       </footer>
 
       <!-- Vendor JS -->
-      <%- include('../layouts/script') %>
-      <script src="/js/bundle.js"></script>
+      <script src="/js/vendors.min.js"></script>
+      <script src="/js/pages/chat-popup.js"></script>
+      <script src="/assets/icons/feather-icons/feather.min.js"></script>
+      <script src="/assets/vendor_components/apexcharts-bundle/dist/apexcharts.js"></script>
+
+      <!-- InvestX App -->
+      <script src="js/demo.js"></script>
+      <script src="/js/template.js"></script>
+      <script src="/js/pages/dashboard.js"></script>
+
+      <script src="js/pages/chart-widgets.js"></script>
     </div>
   </body>
 </html>

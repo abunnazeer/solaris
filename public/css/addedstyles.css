@@ -65,10 +65,13 @@
   height: 250px;
   width: 300px !important;
 }
+.force__position {
+  position: relative !important;
+}
 .port_locked {
   position: absolute;
-  top: 42px;
-  left: 950px;
+  top: 40px;
+  left: 900px;
   height: 200px;
   width: 270px !important;
   background-color: #8a89899f;
@@ -78,8 +81,8 @@
 
 .port_unlocked {
   position: absolute;
-  top: 42px;
-  left: 950px;
+  top: 40px;
+  left: 900px;
   height: 200px;
   width: 270px !important;
   background-color: #f3f3f39f;
