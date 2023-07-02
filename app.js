@@ -83,9 +83,9 @@ app.use(xss());
 
 // );
 
-app.get('/', (req, res) => {
-  res.redirect('/user/login');
-});
+// app.get('/', (req, res) => {
+//   res.redirect('/user/login');
+// });
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname + '/public/')));
 

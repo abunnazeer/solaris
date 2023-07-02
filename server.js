@@ -1,9 +1,11 @@
+// Import required packages
 const http = require('http');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 
+// Error handling for uncaught exceptions
 process.on('uncaughtException', err => {
   console.log('UNCAUGHT EXCEPTION! server is shutting down now');
   console.log(err.name, err.message);
@@ -11,9 +13,13 @@ process.on('uncaughtException', err => {
   process.exit(1);
 });
 
+// Load environment variables from .env file
 dotenv.config({ path: './config.env' });
+
+// Import Express app
 const app = require('./app');
 
+// Connect to MongoDB database
 const DB = process.env.DATABASE.replace(
   '<PASSWORD>',
   process.env.DATABASE_PASSWORD
@@ -23,9 +29,11 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(con => {
-    // console.log(con.connections);
+  .then(() => {
     console.log('DB Connection Successful!');
+  })
+  .catch(err => {
+    console.error('DB Connection Error:', err);
   });
 
 const PORT = process.env.PORT || 9000;
@@ -33,23 +41,25 @@ const PORT = process.env.PORT || 9000;
 // Session configuration
 app.use(
   session({
-    secret: process.env.SESSION_SECRET, // Use your session secret key from the .env file
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: DB, // Use the MongoDB URL
-      ttl: 7 * 24 * 60 * 60, // Session TTL (7 days in seconds)
+    store: new MongoStore({
+      mongoUrl: DB,
+      ttl: 7 * 24 * 60 * 60,
     }),
   })
 );
 
+// Create HTTP server using the Express app
 const server = http.createServer(app);
 server.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
 });
 
+// Error handling for unhandled rejections
 process.on('unhandledRejection', err => {
-  console.log('UNHANDLE REJECTTION! server is shutting down now');
+  console.log('UNHANDLED REJECTION! server is shutting down now');
   console.log(err.name, err.message);
   server.close(() => {
     process.exit(1);
