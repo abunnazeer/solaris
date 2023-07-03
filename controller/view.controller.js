@@ -71,6 +71,7 @@ function sendBalanceUpdate(portfolioId, balance, compBalance) {
 }
 /// Dashboaed
 
+
 const dashboard = async (req, res) => {
   try {
     const user = req.user.id; // Get the user ID from the request object
@@ -406,12 +407,23 @@ const getInvestPortfolio = catchAsync(async (req, res) => {
   });
 });
 
+
 ///////////////Get Active Portfolio//////////////////////////////
 //////////////////////////////////////
 //////////////
 const getActivePortfolio = catchAsync(async (req, res) => {
   const userId = req.user.id; // Assuming the user ID is stored in req.user.id
   const buyPortfolios = await buyPortfolio.find({ userId: userId });
+
+
+
+///////////////Get Active Portfolio//////////////////////////////
+//////////////////////////////////////
+//////////////
+const getActivePortfolio = catchAsync(async (req, res) => {
+  const userId = req.user.id; // Assuming the user ID is stored in req.user.id
+  const buyPortfolios = await buyPortfolio.find({ userId: userId });
+
 
   res.status(200).render('portfolio/activeportfolio', {
     title: 'Active Portfolio',
