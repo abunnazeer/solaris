@@ -589,40 +589,40 @@
     <%- include('layouts/script') %>
     <script>
       // Establish a WebSocket connection
-      const socket = new WebSocket('ws://localhost:9500');
+      // const socket = new WebSocket('ws://localhost:9500');
 
-      // Handle WebSocket connection open event
-      socket.addEventListener('open', () => {
-        console.log('WebSocket connection established');
-      });
+      // // Handle WebSocket connection open event
+      // socket.addEventListener('open', () => {
+      //   console.log('WebSocket connection established');
+      // });
 
-      // Handle WebSocket message event
-      socket.addEventListener('message', event => {
-        const { portfolioId, balance, compBalance } = JSON.parse(event.data);
-        // Update the corresponding balance element on the page
-        const balanceElement = document.getElementById(
-          `balance-${portfolioId}`
-        );
-        const compBalanceElement = document.getElementById(
-          `compBalance-${portfolioId}`
-        );
-        if (balanceElement) {
-          balanceElement.textContent = balance;
-        }
-        if (compBalanceElement) {
-          compBalanceElement.textContent = compBalance;
-        }
-      });
+      // // Handle WebSocket message event
+      // socket.addEventListener('message', event => {
+      //   const { portfolioId, balance, compBalance } = JSON.parse(event.data);
+      //   // Update the corresponding balance element on the page
+      //   const balanceElement = document.getElementById(
+      //     `balance-${portfolioId}`
+      //   );
+      //   const compBalanceElement = document.getElementById(
+      //     `compBalance-${portfolioId}`
+      //   );
+      //   if (balanceElement) {
+      //     balanceElement.textContent = balance;
+      //   }
+      //   if (compBalanceElement) {
+      //     compBalanceElement.textContent = compBalance;
+      //   }
+      // });
 
-      // Handle WebSocket connection close event
-      socket.addEventListener('close', () => {
-        console.log('WebSocket connection closed');
-      });
+      // // Handle WebSocket connection close event
+      // socket.addEventListener('close', () => {
+      //   console.log('WebSocket connection closed');
+      // });
 
-      // Handle WebSocket connection error event
-      socket.addEventListener('error', error => {
-        console.error('WebSocket connection error:', error);
-      });
+      // // Handle WebSocket connection error event
+      // socket.addEventListener('error', error => {
+      //   console.error('WebSocket connection error:', error);
+      // });
     </script>
   </body>
 </html>

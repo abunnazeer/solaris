@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- head and meta-->
+    <!-- head and meta -->
     <%- include('../layouts/head') %>
   </head>
 
@@ -10,12 +10,12 @@
       <!-- <div id="loader"></div> -->
 
       <header class="main-header">
-        <!-- header-->
+        <!-- header -->
         <%- include('../layouts/header') %>
       </header>
 
       <aside class="main-sidebar">
-        <!-- sidebar-->
+        <!-- sidebar -->
         <%- include('../layouts/aside') %>
       </aside>
 
@@ -38,25 +38,27 @@
                         <!-- Form fields for editing the portfolio details -->
                         <!-- Replace the input values with the corresponding portfolio data -->
                         <div class="form-group">
+                          <label for="title">Title</label>
                           <div class="input-group mb-3">
                             <input
                               id="title"
                               type="text"
-                              class="form-control ps-15 bg-transparent"
+                              class="form-control ps-15"
                               placeholder="Title"
                               name="title"
-                              value="<%= portfolio.title %>"
+                              value="<%= portfolio.portfolioTitle %>"
                               required
                             />
                           </div>
                         </div>
 
                         <div class="form-group">
+                          <label for="description">Description</label>
                           <div class="input-group mb-3">
                             <input
                               id="description"
                               type="text"
-                              class="form-control ps-15 bg-transparent"
+                              class="form-control ps-15"
                               placeholder="Description"
                               name="description"
                               value="<%= portfolio.description %>"
@@ -65,11 +67,12 @@
                           </div>
                         </div>
                         <div class="form-group">
+                          <label for="minimumCapital">Minimum Capital</label>
                           <div class="input-group mb-3">
                             <input
                               id="minimumCapital"
                               type="text"
-                              class="form-control ps-15 bg-transparent"
+                              class="form-control ps-15"
                               placeholder="Minimum Capital"
                               name="minimumCapital"
                               value="<%= portfolio.minimumCapital %>"
@@ -78,66 +81,115 @@
                           </div>
                         </div>
                         <div class="form-group">
+                          <label for="returnOnInvestment"
+                            >Return on Investment Name</label
+                          >
                           <div class="input-group mb-3">
                             <input
                               id="returnOnInvestment"
                               type="text"
-                              class="form-control ps-15 bg-transparent"
+                              class="form-control ps-15"
                               placeholder="Return on Investment"
                               name="returnOnInvestment"
-                              value="<%= portfolio.returnOnInvestment %>"
+                              value="<%= portfolio.returnOnInvestment.rioName %>"
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="returnOnPercentage"
+                            >Return on Percentage Text</label
+                          >
+                          <div class="input-group mb-3">
+                            <input
+                              id="returnOnPercentage"
+                              type="text"
+                              class="form-control ps-15"
+                              placeholder="Return on Percentage"
+                              name="returnOnInvestment"
+                              value="<%= portfolio.returnOnInvestment.rioPText %>"
                               required
                             />
                           </div>
                         </div>
                         <div class="form-group">
+                          <label for="returnOnPercentageNum"
+                            >Return on Percentage Number</label
+                          >
+                          <div class="input-group mb-3">
+                            <input
+                              id="returnOnPercentageNum"
+                              type="text"
+                              class="form-control ps-15"
+                              placeholder="Return on Percentage"
+                              name="returnOnInvestment"
+                              value="<%= portfolio.returnOnInvestment.rioPercentage %>"
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="compoundingName">Compounding Name</label>
+                          <div class="input-group mb-3">
+                            <input
+                              id="compoundingName"
+                              type="text"
+                              class="form-control ps-15"
+                              placeholder="Compounding"
+                              name="returnOnInvestment"
+                              value="<%= portfolio.compounding.cName %>"
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="compoundingPercentage"
+                            >Compounding Percentage Text</label
+                          >
+                          <div class="input-group mb-3">
+                            <input
+                              id="compoundingPercentage"
+                              type="text"
+                              class="form-control ps-15"
+                              placeholder="Percentage in text"
+                              name="returnOnInvestment"
+                              value="<%= portfolio.compounding.cPText %>"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="compoundingPercentageNum"
+                            >Compounding Percentage Number</label
+                          >
+                          <div class="input-group mb-3">
+                            <input
+                              id="compoundingPercentageNum"
+                              type="text"
+                              class="form-control ps-15"
+                              placeholder="Compounding Percentage in Number"
+                              name="returnOnInvestment"
+                              value="<%= portfolio.compounding.cPercentage %>"
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="portfolioDuration"
+                            >Portfolio Duration</label
+                          >
                           <div class="input-group mb-3">
                             <input
                               id="portfolioDuration"
                               type="text"
-                              class="form-control ps-15 bg-transparent"
+                              class="form-control ps-15"
                               placeholder="Portfolio Duration"
                               name="portfolioDuration"
-                              value="<%= portfolio.portfolioDuration %>"
-                            />
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <div class="input-group mb-3">
-                            <input
-                              id="weeklyEarnings"
-                              type="text"
-                              class="form-control ps-15 bg-transparent"
-                              placeholder="Weekly Earnings"
-                              name="weeklyEarnings"
-                              value="<%= portfolio.weeklyEarnings %>"
-                              required
-                            />
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <div class="input-group mb-3">
-                            <input
-                              id="targetSize"
-                              type="text"
-                              class="form-control ps-15 bg-transparent"
-                              placeholder="Target Size"
-                              name="targetSize"
-                              value="<%= portfolio.targetSize %>"
-                              required
-                            />
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <div class="input-group mb-3">
-                            <input
-                              id="reimbursement"
-                              type="text"
-                              class="form-control ps-15 bg-transparent"
-                              placeholder="Reimbursement"
-                              name="reimbursement"
-                              value="<%= portfolio.reimbursement %>"
-                              required
+                              value="<%= portfolio.duration %>"
                             />
                           </div>
                         </div>
@@ -167,7 +219,7 @@
       <!-- /.content-wrapper -->
 
       <footer class="main-footer">
-        <!-- footer-->
+        <!-- footer -->
         <%- include('../layouts/footer') %>
       </footer>
       <!-- Side panel -->
@@ -180,19 +232,29 @@
 
       <!-- Control Sidebar -->
       <%- include('../layouts/sidebar') %>
-
-      <!-- /.control-sidebar -->
-
-      <!-- Add the sidebar's background. This div must be placed immediately after the control sidebar -->
-      <!-- <div class="control-sidebar-bg"></div> -->
     </div>
-    <!-- ./wrapper -->
 
-    <!-- chatbody -->
-
-    <!-- end chatbody -->
-    <!-- Page Content overlay -->
-
-    <%- include('../layouts/script') %>
+    <script src="/js/vendors.min.js"></script>
+    <script src="/js/pages/chat-popup.js"></script>
+    <script src="/assets/icons/feather-icons/feather.min.js"></script>
+    <script src="/assets/icons/feather-icons/feather.min.js"></script>
+    <script src="/assets/icons/feather-icons/feather.min.js"></script>
+    <script src="/assets/vendor_components/bootstrap-select/dist/js/bootstrap-select.js"></script>
+    <script src="/assets/vendor_components/bootstrap-tagsinput/dist/bootstrap-tagsinput.js"></script>
+    <script src="/assets/vendor_components/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.js"></script>
+    <script src="/assets/vendor_components/select2/dist/js/select2.full.js"></script>
+    <script src="/assets/vendor_plugins/input-mask/jquery.inputmask.js"></script>
+    <script src="/assets/vendor_plugins/input-mask/jquery.inputmask.date.extensions.js"></script>
+    <script src="/assets/vendor_plugins/input-mask/jquery.inputmask.extensions.js"></script>
+    <script src="/assets/vendor_components/moment/min/moment.min.js"></script>
+    <script src="/assets/vendor_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+    <script src="/assets/vendor_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+    <script src="/assets/vendor_components/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js"></script>
+    <script src="/assets/vendor_plugins/timepicker/bootstrap-timepicker.min.js"></script>
+    <script src="/assets/vendor_plugins/iCheck/icheck.min.js"></script>
+    <!-- InvestX pp -->
+    <script src="/js/demo.js"></script>
+    <script src="/js/template.js"></script>
+    <script src="/js/pages/advanced-form-element.js"></script>
   </body>
 </html>

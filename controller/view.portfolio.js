@@ -213,7 +213,7 @@ const getPortfolioIndex = catchAsync(async (req, res) => {
   const totalPages = Math.ceil(portfolioCount / limit);
 
   const portfolio = await Portfolio.find()
-    .select('title')
+    .select('portfolioTitle')
     .skip(skip)
     .limit(limit);
 
