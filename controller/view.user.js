@@ -103,11 +103,15 @@ const viewUser = catchAsync(async (req, res) => {
       country: userProfile.address.country,
       role: user.role,
       isActive: user.isActive,
+      referralCode: user.referralCode,
     };
-
+    const protocol = req.protocol;
+    const host = req.get('host');
+    const url = `${protocol}://${host}/user/register`;
     res.status(200).render('user/updateprofile', {
       title: 'User Profile Detail',
       userProfile: userWithProfile,
+      url,
     });
   } catch (error) {
     res.status(500).json({ message: 'Failed to display user' });
