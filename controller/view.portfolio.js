@@ -6,8 +6,10 @@ const Profile = require('../models/user/profile.model');
 const catchAsync = require('../utils/catchAsync');
 const sendEmail = require('../utils/email');
 const axios = require('axios');
-
+const { Plisio } = require('@plisio/api-client');
 // const AppError = require('../utils/appError');
+const secretKey =
+  '84aaoal2XcwHDHgZe2TfgtbPVUXbX-IqBWTFwAsf2uKkbgNSTbrOgR7ikq_KsrrP';
 
 const getPortfolioForm = (req, res) => {
   res.status(200).render('portfolio/portfolioform', {
@@ -56,64 +58,310 @@ const fetchCryptoPrices = async (cryptocurrencies, targetCurrency) => {
   }
 };
 // /////// PAYMENT VIEW/////////
+// const getPayment = catchAsync(async (req, res) => {
+//   const { id } = req.params;
+
+//   const targetCurrency = 'USD';
+//   try {
+//     const portfolio = await BuyPortfolio.findById(id);
+
+//     if (!portfolio) {
+//       return res.status(404).json({ message: 'Portfolio not found' });
+//     }
+//     const walletAddress = [
+//       {
+//         name: 'Bitcoin',
+//         symbol: 'BTC',
+//         url: '/qr/btcoin.png',
+//         address: '1D9oZnNG6uLNCYpW1nxcz77dnvVyg8WuSR',
+//         price: portfolio.amount,
+//       },
+
+//       {
+//         name: 'Ethereum',
+//         symbol: 'ETH',
+//         url: '/qr/ethereum.png',
+//         address: '0xc59f6f9f34222f743d88d17edaea6fb80f7fc29e',
+//         price: portfolio.amount,
+//       },
+//       {
+//         name: 'Tether',
+//         symbol: 'USDT',
+//         url: '/qr/usdt.png',
+//         address: 'TFd3j345JyAbZvZPzziRY9tQjFHth6ho8B',
+//         price: portfolio.amount,
+//       },
+//     ];
+//     const cryptocurrencies = walletAddress.map(crypto => crypto.symbol);
+
+//     const response = await fetchCryptoPrices(cryptocurrencies, targetCurrency);
+//     const cryptoPrices = response.data.data;
+
+//     const walletAddressWithPrices = walletAddress.map((crypto, id) => {
+//       const price =
+//         cryptoPrices[walletAddress[id].symbol].quote[targetCurrency].price;
+//       return { ...crypto, price };
+//     });
+
+//     const convertedAmounts = walletAddressWithPrices.map(crypto => {
+//       const cryptoAmount = (portfolio.amount / crypto.price).toFixed(6);
+//       return { ...crypto, cryptoAmount };
+//     });
+
+//     res.status(200).render('portfolio/user/payment', {
+//       title: 'Payment page',
+//       portfolio,
+//       cryptoDetails: convertedAmounts,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: 'Failed to buy portfolio' });
+//   }
+// });
+
+// const getPayment = catchAsync(async (req, res) => {
+//   const { id } = req.params;
+
+//   const plisio = new Plisio(
+//     '6C0-0DVUxLblgkhe7ViRCGI1DslhOjErhaoeuWkLRTrm4cIHEqwkHhSOkN9ywVhj'
+//   );
+
+//   try {
+//     // Create a new invoice using Plisio
+//     const invoice = await plisio.invoices.create({
+//       amount: 100, // Set the amount for the payment
+//       currency: 'USD', // Set the currency for the payment
+//       success_url: 'https://app.solarisfinance.com/user/investment-history', // Set the success URL
+//       failed_url: '/buy-portfolio/failed', // Set the failed URL
+//     });
+
+//     // Get the payment URL from the invoice response
+//     const paymentUrl = invoice.url;
+
+//     // Render the payment page with the payment URL
+//     res.status(200).render('portfolio/user/payment', {
+//       title: 'Payment page',
+//       paymentUrl,
+//     });
+//   } catch (error) {
+//     // Handle any errors that occurred during the Plisio API call
+//     console.error('Error creating Plisio invoice:', error);
+//     res.status(500).send('Error creating payment invoice');
+//   }
+// });
+
+// const getPayment = catchAsync(async (req, res) => {
+//   const { id } = req.params;
+
+//   const axios = require('axios');
+//   const portfolio = await BuyPortfolio.findById(id);
+//   const url = 'https://plisio.net/api/v1/invoices/new';
+
+//   const params = {
+//     source_currency: 'USD',
+//     source_amount: portfolio.amount,
+//     order_number: 2,
+//     currency: portfolio.currency,
+//     email: 'customeXs4@plisio.net',
+//     order_name: portfolio.portfolioName,
+//     callback_url: 'http://test.com/callback',
+//     api_key: secretKey,
+//   };
+
+//   axios
+//     .get(url, { params })
+//     .then(response => {
+//       console.log(response.data);
+//     })
+//     .catch(error => {
+//       console.error(error);
+//     });
+// });
+
+// const getPayment = catchAsync(async (req, res) => {
+//   const { id } = req.params;
+
+//   const axios = require('axios');
+//   const portfolio = await BuyPortfolio.findById(id);
+//   const url = 'https://plisio.net/api/v1/invoices/new';
+
+//   const params = {
+//     source_currency: 'USD',
+//     source_amount: portfolio.amount,
+//     order_number: 10,
+//     currency: portfolio.currency,
+//     email: 'customeXs4@plisio.net',
+//     order_name: portfolio.portfolioName,
+//     callback_url: '/user/user-investments',
+//     api_key: secretKey,
+//   };
+
+//   axios
+//     .get(url, { params })
+//     .then(response => {
+//       // const { invoice_url } = response;
+
+//       console.log(response);
+//       // console.log(invoice_url);
+//       // res.redirect(invoice_url);
+//     })
+//     .catch(error => {
+//       console.error(error);
+//       // Handle the error response here
+//       res.status(500).send('An error occurred');
+//     });
+// });
+// const getPayment = catchAsync(async (req, res) => {
+//   const { id } = req.params;
+
+//   const axios = require('axios');
+//   const portfolio = await BuyPortfolio.findById(id);
+//   const url = 'https://plisio.net/api/v1/invoices/new';
+
+//   const params = {
+//     source_currency: 'USD',
+//     source_amount: portfolio.amount,
+//     order_number: 19,
+//     currency: portfolio.currency,
+//     email: 'customer@plisio.net',
+//     order_name: portfolio.portfolioName,
+//     callback_url: 'http://test.com/callback',
+//     api_key: secretKey,
+//   };
+
+//   axios
+//     .get(url, { params })
+//     .then(response => {
+//       console.log(response.data);
+
+//       if (
+//         response.data.status === 'success' &&
+//         response.data.data.invoice_url
+//       ) {
+//         res.redirect(response.data.data.invoice_url);
+//       } else {
+//         res.status(500).send('Failed to generate invoice.');
+//       }
+//     })
+//     .catch(error => {
+//       console.error(error);
+//       res.status(500).send('An error occurred while generating invoice.');
+//     });
+// });
+function generateOrderNumber() {
+  const randomNumber = Math.floor(Math.random() * 100000000);
+  const paddedNumber = randomNumber.toString().padStart(8, '0');
+  return paddedNumber;
+}
+
+// const getPayment = catchAsync(async (req, res) => {
+//   const { id } = req.params;
+
+//   const protocol = req.protocol;
+//   const host = req.get('host');
+//   const successUrl = `${protocol}://${host}/user/payment-completed`;
+//   const portfolio = await BuyPortfolio.findById(id);
+//   const { userId } = portfolio;
+//   const user = await User.findOne({ _id: userId });
+//   const url = 'https://plisio.net/api/v1/invoices/new';
+
+//   const params = {
+//     source_currency: 'USD',
+//     source_amount: portfolio.amount,
+//     order_number: generateOrderNumber(),
+//     currency: portfolio.currency,
+//     email: user.email,
+//     order_name: portfolio.portfolioName,
+//     callback_url: 'http://test.com/callback',
+//     success_callback_url: successUrl,
+//     api_key: secretKey,
+//     redirect_to_invoice: true,
+//   };
+
+//   const config = {
+//     params,
+//     maxRedirects: 0, // Disable Axios redirect handling
+//     validateStatus: status => status >= 200 && status < 303,
+//     headers: {
+//       'User-Agent': req.headers['user-agent'],
+//     },
+//   };
+
+//   try {
+//     const response = await axios.get(url, config);
+//     const { invoice_url, txn_id } = response.data.data;
+//     // Update portfolio.walletAddress with this txn_id before redirecting
+
+//     res.redirect(invoice_url); // Perform the redirect to the invoice URL
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send('An error occurred while generating invoice.');
+//   }
+// });
+
 const getPayment = catchAsync(async (req, res) => {
   const { id } = req.params;
 
-  const targetCurrency = 'USD';
+  const protocol = req.protocol;
+  const host = req.get('host');
+  const successUrl = `${protocol}://${host}/portfolio/payment-completed`;
+  const portfolio = await BuyPortfolio.findById(id);
+  const { userId } = portfolio;
+  const user = await User.findOne({ _id: userId });
+  const url = 'https://plisio.net/api/v1/invoices/new';
+
+  const params = {
+    source_currency: 'USD',
+    source_amount: portfolio.amount,
+    order_number: generateOrderNumber(),
+    currency: portfolio.currency,
+    email: user.email,
+    order_name: portfolio.portfolioName,
+    callback_url: 'http://test.com/callback',
+    success_callback_url: successUrl,
+    api_key: secretKey,
+    redirect_to_invoice: true,
+  };
+
+  const config = {
+    params,
+    maxRedirects: 0, // Disable Axios redirect handling
+    validateStatus: status => status >= 200 && status < 303,
+    headers: {
+      'User-Agent': req.headers['user-agent'],
+    },
+  };
+
   try {
-    const portfolio = await BuyPortfolio.findById(id);
+    const response = await axios.get(url, config);
+    const { invoice_url, txn_id } = response.data.data;
 
-    if (!portfolio) {
-      return res.status(404).json({ message: 'Portfolio not found' });
-    }
-    const walletAddress = [
-      {
-        name: 'Bitcoin',
-        symbol: 'BTC',
-        url: '/qr/btcoin.png',
-        address: '1D9oZnNG6uLNCYpW1nxcz77dnvVyg8WuSR',
-        price: portfolio.amount,
-      },
+    // Update portfolio.walletAddress with the txn_id before redirecting
+    portfolio.walletAddress = txn_id;
+    await portfolio.save();
 
-      {
-        name: 'Ethereum',
-        symbol: 'ETH',
-        url: '/qr/ethereum.png',
-        address: '0xc59f6f9f34222f743d88d17edaea6fb80f7fc29e',
-        price: portfolio.amount,
-      },
-      {
-        name: 'Tether',
-        symbol: 'USDT',
-        url: '/qr/usdt.png',
-        address: 'TFd3j345JyAbZvZPzziRY9tQjFHth6ho8B',
-        price: portfolio.amount,
-      },
-    ];
-    const cryptocurrencies = walletAddress.map(crypto => crypto.symbol);
-
-    const response = await fetchCryptoPrices(cryptocurrencies, targetCurrency);
-    const cryptoPrices = response.data.data;
-
-    const walletAddressWithPrices = walletAddress.map((crypto, id) => {
-      const price =
-        cryptoPrices[walletAddress[id].symbol].quote[targetCurrency].price;
-      return { ...crypto, price };
-    });
-
-    const convertedAmounts = walletAddressWithPrices.map(crypto => {
-      const cryptoAmount = (portfolio.amount / crypto.price).toFixed(6);
-      return { ...crypto, cryptoAmount };
-    });
-
-    res.status(200).render('portfolio/user/payment', {
-      title: 'Payment page',
-      portfolio,
-      cryptoDetails: convertedAmounts,
-    });
+    res.redirect(invoice_url); // Perform the redirect to the invoice URL
   } catch (error) {
-    res.status(500).json({ message: 'Failed to buy portfolio' });
+    console.error(error);
+    res.status(500).send('An error occurred while generating invoice.');
   }
+});
+
+// payment successful
+
+const paymentSucceeded = catchAsync(async (req, res) => {
+  const { id, sum } = req.params;
+
+  const portfolio = await BuyPortfolio.findOne({ walletAddress: id });
+
+  if (portfolio) {
+    portfolio.status = 'active';
+    portfolio.portfolioCryptoAmount = sum;
+    await portfolio.save();
+  }
+
+  // Add any additional logic or response handling as needed
+
+  res.status(200).send('Payment succeeded');
 });
 
 const postBuyPortfolio = catchAsync(async (req, res) => {
@@ -327,4 +575,5 @@ module.exports = {
   getPayment,
   updatePayment,
   getStatusIndex,
+  paymentSucceeded,
 };

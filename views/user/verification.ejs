@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('../layouts/head') %>
+  </head>
+  <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
+    <div class="wrapper">
+      <!-- <div id="loader"></div> -->
+
+      <header class="main-header">
+        <!-- header -->
+        <%- include('../layouts/header') %>
+      </header>
+
+      <!-- Left side column. contains the logo and sidebar -->
+      <aside class="main-sidebar">
+        <!-- sidebar-->
+        <%- include('../layouts/aside') %>
+      </aside>
+
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <div class="container-full">
+          <!-- Main content -->
+          <section class="content">
+            <div class="row">
+              <div class="col-xl-6 col-lg-6">
+                <div class="card text-center">
+                 
+                </div>
+
+               
+                <!-- end card -->
+              </div>
+              <!-- end col -->
+            </div>
+            <!-- end row -->
+          </section>
+          <!-- /.content -->
+        </div>
+      </div>
+      <!-- /.content-wrapper -->
+
+      <footer class="main-footer">
+        <!-- footer -->
+        <%- include('../layouts/footer') %>
+      </footer>
+
+      <!-- Vendor JS -->
+      <script src="/js/vendors.min.js"></script>
+      <script src="/js/pages/chat-popup.js"></script>
+      <script src="/assets/icons/feather-icons/feather.min.js"></script>
+      <script src="/assets/vendor_components/apexcharts-bundle/dist/apexcharts.js"></script>
+
+      <!-- InvestX App -->
+      <script src="/js/demo.js"></script>
+      <script src="/js/template.js"></script>
+      <script src="/js/pages/dashboard.js"></script>
+
+      <script src="/js/pages/chart-widgets.js"></script>
+
+      <script>
+        function handleFileSelection(event) {
+          const fileInput = event.target;
+          const file = fileInput.files[0];
+          const button = document.getElementById('uploadButton');
+          if (button) {
+            if (file) {
+              button.textContent = `Selected: ${file.name}`;
+            } else {
+              button.textContent = 'Upload Photo';
+            }
+          }
+        }
+
+        const fileInput = document.getElementById('profilePicture');
+        fileInput.addEventListener('change', handleFileSelection);
+
+        function previewProfileImage(event) {
+          const reader = new FileReader();
+          reader.onload = function () {
+            const previewImage = document.getElementById('profileImagePreview');
+            previewImage.src = reader.result;
+          };
+          if (event.target.files && event.target.files[0]) {
+            reader.readAsDataURL(event.target.files[0]);
+          } else {
+            const previewImage = document.getElementById('profileImagePreview');
+            previewImage.src = '../../../images/avatar/avatar-13.png'; // Default image URL
+          }
+        }
+
+        function copyReferralLink() {
+          const referralLink = document.getElementById('referralLink');
+          const range = document.createRange();
+          range.selectNode(referralLink);
+          window.getSelection().removeAllRanges();
+          window.getSelection().addRange(range);
+          document.execCommand('copy');
+          window.getSelection().removeAllRanges();
+        }
+
+        function copyReferralCode() {
+          const referralLink = document.getElementById('referralCode');
+          const range = document.createRange();
+          range.selectNode(referralLink);
+          window.getSelection().removeAllRanges();
+          window.getSelection().addRange(range);
+          document.execCommand('copy');
+          window.getSelection().removeAllRanges();
+        }
+      </script>
+
+    </body>
+</html>
