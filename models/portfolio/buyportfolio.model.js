@@ -34,7 +34,7 @@ const buyPortfolioSchema = new mongoose.Schema({
   },
   currency: {
     type: String,
-    enum: ['Bitcoin', 'Ethereum', 'usdt'],
+    enum: ['BTC', 'ETH', 'USDT', 'DASH', 'BCH', 'BNB'],
     required: true,
   },
   balance: {

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title><%=portfolio.title%></title>
+    <title><%=portfolio.portfolioTitle%></title>
     <%- include('../../layouts/head') %>
     <link
       rel="stylesheet"
@@ -118,18 +118,23 @@
                                 <option value="" selected="selected">
                                   Select Currency
                                 </option>
-                                <option value="Bitcoin" data-icon="BTC">
+                                <option value="BTC" data-icon="BTC">
                                   Bitcoin
                                 </option>
-                                <option value="Ethereum" data-icon="ETH">
+                                <option value="ETH" data-icon="ETH">
                                   Ethereum
                                 </option>
-                                <option value="usdt" data-icon="USDT">
+                                <option value="USDT" data-icon="USDT">
                                   Tether USD TRC20
                                 </option>
                                 <option value="usdt" data-icon="USDT">
                                   Tether USD ERC20
                                 </option>
+                                <option value="DASH" data-icon="DASH">
+                                  DASH
+                                </option>
+                                <option value="BCH" data-icon="BCH">BCH</option>
+                                <option value="BNB" data-icon="BNB">BNB</option>
                               </select>
                             </div>
                           </div>

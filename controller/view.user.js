@@ -366,6 +366,13 @@ const createUsers = catchAsync(async (req, res, next) => {
   createSendToken(user, profile, statusCode, res, redirectUrl);
 });
 
+const getVerification = (req, res) => {
+  res.status(201).render('user/verification', {
+    title: 'User Verification',
+  });
+  res.redirect('/user/profile');
+};
+
 module.exports = {
   getUserIndex,
   viewUser,
@@ -374,4 +381,5 @@ module.exports = {
   createUsers,
   adminUpdateProfile,
   uploadPicture,
+  getVerification,
 };

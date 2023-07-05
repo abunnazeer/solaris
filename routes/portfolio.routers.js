@@ -18,6 +18,7 @@ const {
   getPayment,
   updatePayment,
   getStatusIndex,
+  paymentSucceeded,
 } = require('../controller/view.portfolio');
 
 const {
@@ -35,6 +36,8 @@ router.get(
 );
 // PAYMENT ROUTE
 router.post('/payment/:id', protect, updatePayment);
+router.post('/payment-completed/:id', protect, paymentSucceeded);
+// router.get('/payment', protect, getPayment);
 router.get('/payment/:id', protect, getPayment);
 //////////////////user routes ////////////
 router.post('/buy-portfolio/:id', protect, postBuyPortfolio);

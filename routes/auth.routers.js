@@ -27,7 +27,7 @@ const {
   getWithdrawalRequest,
   getwithdrawalHistory,
   dashboard,
-} = require('../controller/view.controller');
+} = require('../controller/auth.view');
 
 const {
   register,
@@ -49,12 +49,11 @@ const {
   getUserIndex,
   viewUser,
   deleteUser,
-  createUser,
+
   createUsersForm,
   createUsers,
   adminUpdateProfile,
   uploadPicture,
-  getVerification,
 } = require('../controller/view.user');
 const router = express();
 
@@ -103,7 +102,6 @@ router.get('/logout', logout);
 // router.get()
 // GET ME ROUTE
 router.get('/profile', protect, getProfile);
-router.get('/verification', protect, getVerification);
 
 router.get('/forget-password', getForgetPasswordForm);
 // Route to display the change password form
@@ -115,23 +113,5 @@ router.get('/registration', getRegOption);
 
 router.get('/reset-password/:token', getResetPasswordForm);
 router.get('/verify-email/:token', verifyEmail);
-
-// activty routes
-router.get('/activity', protect, getActivity);
-router.get('/transfer', protect, getTransfer);
-
-// PORTFOLIO
-router.get('/view-investments-portfolio', protect, getInvestPortfolio);
-router.get('/user-investments', protect, getActivePortfolio);
-router.get('/investment-history', protect, getInvestHistory);
-router.get('/short-term-funds', protect, getShortTermForm);
-router.get('/portfolio-details', protect, getDetailsPage);
-// REFERRAL VIEW
-router.get('/referred-users', protect, getReferral);
-router.get('/referral-bonus', protect, getReferralBunus);
-// Withdrawal Routes
-router.get('/withdrawal-request', protect, getWithdrawalRequest);
-router.get('/withdrawal-history', protect, getwithdrawalHistory);
-// router.delete('/update-profile/:id', protect, updateProfile);
 
 module.exports = router;
