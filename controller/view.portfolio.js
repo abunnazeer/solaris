@@ -37,266 +37,11 @@ const getEditPortfolioForm = catchAsync(async (req, res) => {
   }
 });
 
-const fetchCryptoPrices = async (cryptocurrencies, targetCurrency) => {
-  try {
-    const response = await axios.get(
-      `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest`,
-      {
-        headers: {
-          'X-CMC_PRO_API_KEY': '53e53396-66c2-41bc-8531-8b45d59eb2d9',
-        },
-        params: {
-          symbol: cryptocurrencies.join(','),
-          convert: targetCurrency,
-        },
-      }
-    );
-    return response; // Return the entire response
-  } catch (error) {
-    console.error('Error fetching crypto prices:', error);
-    return {}; // Return an empty object on error
-  }
-};
-// /////// PAYMENT VIEW/////////
-// const getPayment = catchAsync(async (req, res) => {
-//   const { id } = req.params;
-
-//   const targetCurrency = 'USD';
-//   try {
-//     const portfolio = await BuyPortfolio.findById(id);
-
-//     if (!portfolio) {
-//       return res.status(404).json({ message: 'Portfolio not found' });
-//     }
-//     const walletAddress = [
-//       {
-//         name: 'Bitcoin',
-//         symbol: 'BTC',
-//         url: '/qr/btcoin.png',
-//         address: '1D9oZnNG6uLNCYpW1nxcz77dnvVyg8WuSR',
-//         price: portfolio.amount,
-//       },
-
-//       {
-//         name: 'Ethereum',
-//         symbol: 'ETH',
-//         url: '/qr/ethereum.png',
-//         address: '0xc59f6f9f34222f743d88d17edaea6fb80f7fc29e',
-//         price: portfolio.amount,
-//       },
-//       {
-//         name: 'Tether',
-//         symbol: 'USDT',
-//         url: '/qr/usdt.png',
-//         address: 'TFd3j345JyAbZvZPzziRY9tQjFHth6ho8B',
-//         price: portfolio.amount,
-//       },
-//     ];
-//     const cryptocurrencies = walletAddress.map(crypto => crypto.symbol);
-
-//     const response = await fetchCryptoPrices(cryptocurrencies, targetCurrency);
-//     const cryptoPrices = response.data.data;
-
-//     const walletAddressWithPrices = walletAddress.map((crypto, id) => {
-//       const price =
-//         cryptoPrices[walletAddress[id].symbol].quote[targetCurrency].price;
-//       return { ...crypto, price };
-//     });
-
-//     const convertedAmounts = walletAddressWithPrices.map(crypto => {
-//       const cryptoAmount = (portfolio.amount / crypto.price).toFixed(6);
-//       return { ...crypto, cryptoAmount };
-//     });
-
-//     res.status(200).render('portfolio/user/payment', {
-//       title: 'Payment page',
-//       portfolio,
-//       cryptoDetails: convertedAmounts,
-//     });
-//   } catch (error) {
-//     res.status(500).json({ message: 'Failed to buy portfolio' });
-//   }
-// });
-
-// const getPayment = catchAsync(async (req, res) => {
-//   const { id } = req.params;
-
-//   const plisio = new Plisio(
-//     '6C0-0DVUxLblgkhe7ViRCGI1DslhOjErhaoeuWkLRTrm4cIHEqwkHhSOkN9ywVhj'
-//   );
-
-//   try {
-//     // Create a new invoice using Plisio
-//     const invoice = await plisio.invoices.create({
-//       amount: 100, // Set the amount for the payment
-//       currency: 'USD', // Set the currency for the payment
-//       success_url: 'https://app.solarisfinance.com/user/investment-history', // Set the success URL
-//       failed_url: '/buy-portfolio/failed', // Set the failed URL
-//     });
-
-//     // Get the payment URL from the invoice response
-//     const paymentUrl = invoice.url;
-
-//     // Render the payment page with the payment URL
-//     res.status(200).render('portfolio/user/payment', {
-//       title: 'Payment page',
-//       paymentUrl,
-//     });
-//   } catch (error) {
-//     // Handle any errors that occurred during the Plisio API call
-//     console.error('Error creating Plisio invoice:', error);
-//     res.status(500).send('Error creating payment invoice');
-//   }
-// });
-
-// const getPayment = catchAsync(async (req, res) => {
-//   const { id } = req.params;
-
-//   const axios = require('axios');
-//   const portfolio = await BuyPortfolio.findById(id);
-//   const url = 'https://plisio.net/api/v1/invoices/new';
-
-//   const params = {
-//     source_currency: 'USD',
-//     source_amount: portfolio.amount,
-//     order_number: 2,
-//     currency: portfolio.currency,
-//     email: 'customeXs4@plisio.net',
-//     order_name: portfolio.portfolioName,
-//     callback_url: 'http://test.com/callback',
-//     api_key: secretKey,
-//   };
-
-//   axios
-//     .get(url, { params })
-//     .then(response => {
-//       console.log(response.data);
-//     })
-//     .catch(error => {
-//       console.error(error);
-//     });
-// });
-
-// const getPayment = catchAsync(async (req, res) => {
-//   const { id } = req.params;
-
-//   const axios = require('axios');
-//   const portfolio = await BuyPortfolio.findById(id);
-//   const url = 'https://plisio.net/api/v1/invoices/new';
-
-//   const params = {
-//     source_currency: 'USD',
-//     source_amount: portfolio.amount,
-//     order_number: 10,
-//     currency: portfolio.currency,
-//     email: 'customeXs4@plisio.net',
-//     order_name: portfolio.portfolioName,
-//     callback_url: '/user/user-investments',
-//     api_key: secretKey,
-//   };
-
-//   axios
-//     .get(url, { params })
-//     .then(response => {
-//       // const { invoice_url } = response;
-
-//       console.log(response);
-//       // console.log(invoice_url);
-//       // res.redirect(invoice_url);
-//     })
-//     .catch(error => {
-//       console.error(error);
-//       // Handle the error response here
-//       res.status(500).send('An error occurred');
-//     });
-// });
-// const getPayment = catchAsync(async (req, res) => {
-//   const { id } = req.params;
-
-//   const axios = require('axios');
-//   const portfolio = await BuyPortfolio.findById(id);
-//   const url = 'https://plisio.net/api/v1/invoices/new';
-
-//   const params = {
-//     source_currency: 'USD',
-//     source_amount: portfolio.amount,
-//     order_number: 19,
-//     currency: portfolio.currency,
-//     email: 'customer@plisio.net',
-//     order_name: portfolio.portfolioName,
-//     callback_url: 'http://test.com/callback',
-//     api_key: secretKey,
-//   };
-
-//   axios
-//     .get(url, { params })
-//     .then(response => {
-//       console.log(response.data);
-
-//       if (
-//         response.data.status === 'success' &&
-//         response.data.data.invoice_url
-//       ) {
-//         res.redirect(response.data.data.invoice_url);
-//       } else {
-//         res.status(500).send('Failed to generate invoice.');
-//       }
-//     })
-//     .catch(error => {
-//       console.error(error);
-//       res.status(500).send('An error occurred while generating invoice.');
-//     });
-// });
 function generateOrderNumber() {
   const randomNumber = Math.floor(Math.random() * 100000000);
   const paddedNumber = randomNumber.toString().padStart(8, '0');
   return paddedNumber;
 }
-
-// const getPayment = catchAsync(async (req, res) => {
-//   const { id } = req.params;
-
-//   const protocol = req.protocol;
-//   const host = req.get('host');
-//   const successUrl = `${protocol}://${host}/user/payment-completed`;
-//   const portfolio = await BuyPortfolio.findById(id);
-//   const { userId } = portfolio;
-//   const user = await User.findOne({ _id: userId });
-//   const url = 'https://plisio.net/api/v1/invoices/new';
-
-//   const params = {
-//     source_currency: 'USD',
-//     source_amount: portfolio.amount,
-//     order_number: generateOrderNumber(),
-//     currency: portfolio.currency,
-//     email: user.email,
-//     order_name: portfolio.portfolioName,
-//     callback_url: 'http://test.com/callback',
-//     success_callback_url: successUrl,
-//     api_key: secretKey,
-//     redirect_to_invoice: true,
-//   };
-
-//   const config = {
-//     params,
-//     maxRedirects: 0, // Disable Axios redirect handling
-//     validateStatus: status => status >= 200 && status < 303,
-//     headers: {
-//       'User-Agent': req.headers['user-agent'],
-//     },
-//   };
-
-//   try {
-//     const response = await axios.get(url, config);
-//     const { invoice_url, txn_id } = response.data.data;
-//     // Update portfolio.walletAddress with this txn_id before redirecting
-
-//     res.redirect(invoice_url); // Perform the redirect to the invoice URL
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send('An error occurred while generating invoice.');
-//   }
-// });
 
 const getPayment = catchAsync(async (req, res) => {
   const { id } = req.params;
@@ -364,6 +109,151 @@ const paymentSucceeded = catchAsync(async (req, res) => {
   res.status(200).send('Payment succeeded');
 });
 
+// const postBuyPortfolio = catchAsync(async (req, res) => {
+//   const { amount, payout, currency } = req.body;
+//   const { id } = req.params;
+//   let portfolio;
+
+//   try {
+//     portfolio = await Portfolio.findById(id);
+
+//     if (!portfolio) {
+//       return res.status(404).json({ message: 'Portfolio not found' });
+//     }
+//   } catch (error) {
+//     return res.status(500).json({ message: 'Failed to fetch portfolio' });
+//   }
+
+//   const userId = req.user._id;
+
+//   // Check if a BuyPortfolio instance already exists for the given userId and portfolioId
+//   const existingBuyPortfolio = await BuyPortfolio.findOne({
+//     userId,
+//     _id: portfolio._id,
+//   });
+
+//   if (existingBuyPortfolio) {
+//     // Update the status field of the existing BuyPortfolio instance
+//     existingBuyPortfolio.status =
+//       existingBuyPortfolio.status === 'active' ? 'inactive' : 'active';
+
+//     try {
+//       const updatedPortfolio = await existingBuyPortfolio.save();
+
+//       return res.json({
+//         message: 'Status updated successfully',
+//         portfolio: updatedPortfolio,
+//       });
+//     } catch (error) {
+//       return res.status(500).json({ message: 'Failed to update status' });
+//     }
+//   } else {
+//     // Create a new BuyPortfolio instance
+//     const currentDate = new Date();
+//     const dateOfExpiry = new Date(currentDate);
+//     dateOfExpiry.setMonth(dateOfExpiry.getMonth() + 12);
+
+//     const buyPortfolio = new BuyPortfolio({
+//       userId,
+//       amount,
+//       portfolioName: portfolio.portfolioTitle,
+//       payout,
+//       currency,
+//       _id: portfolio._id,
+//       dateOfPurchase: currentDate,
+//       dateOfExpiry: dateOfExpiry,
+//     });
+//     console.log(id);
+//     console.log(userId);
+
+//     try {
+//       const savedPortfolio = await buyPortfolio.save();
+
+//       // Redirect to the active-portfolio page
+//       return res.redirect(`/portfolio/payment/${savedPortfolio._id}`);
+//     } catch (error) {
+//       return res.status(500).json({ message: 'Failed to save  the portfolio' });
+//     }
+//   }
+// });
+
+// Fetches the buy portfolio form
+
+// const postBuyPortfolio = catchAsync(async (req, res) => {
+//   const { amount, payout, currency } = req.body;
+//   const { id } = req.params;
+//   let portfolio;
+
+//   try {
+//     portfolio = await Portfolio.findById(id);
+
+//     if (!portfolio) {
+//       return res.status(404).json({ message: 'Portfolio not found' });
+//     }
+//   } catch (error) {
+//     return res.status(500).json({ message: 'Failed to fetch portfolio' });
+//   }
+
+//   const userId = req.user._id;
+
+//   // Check if a BuyPortfolio instance already exists for the given userId and portfolioId
+//   const existingBuyPortfolio = await BuyPortfolio.findOne({
+//     userId,
+//     _id: portfolio._id,
+//   });
+
+//   if (existingBuyPortfolio) {
+//     // Update the status field of the existing BuyPortfolio instance
+//     existingBuyPortfolio.status =
+//       existingBuyPortfolio.status === 'active' ? 'inactive' : 'active';
+
+//     try {
+//       const updatedPortfolio = await existingBuyPortfolio.save();
+
+//       return res.json({
+//         message: 'Status updated successfully',
+//         portfolio: updatedPortfolio,
+//       });
+//     } catch (error) {
+//       return res.status(500).json({ message: 'Failed to update status' });
+//     }
+//   } else {
+//     // Check if the user id exists in any BuyPortfolio instance
+//     const userBuyPortfolio = await BuyPortfolio.findOne({ userId });
+
+//     if (userBuyPortfolio) {
+//       return res
+//         .status(400)
+//         .json({ message: 'User already has a BuyPortfolio' });
+//     }
+
+//     // Create a new BuyPortfolio instance
+//     const currentDate = new Date();
+//     const dateOfExpiry = new Date(currentDate);
+//     dateOfExpiry.setMonth(dateOfExpiry.getMonth() + 12);
+
+//     const buyPortfolio = new BuyPortfolio({
+//       userId,
+//       amount,
+//       portfolioName: portfolio.portfolioTitle,
+//       payout,
+//       currency,
+//       _id: portfolio._id,
+//       dateOfPurchase: currentDate,
+//       dateOfExpiry: dateOfExpiry,
+//     });
+
+//     try {
+//       const savedPortfolio = await buyPortfolio.save();
+
+//       // Redirect to the active-portfolio page
+//       return res.redirect(`/portfolio/payment/${savedPortfolio._id}`);
+//     } catch (error) {
+//       return res.status(500).json({ message: 'Failed to save the portfolio' });
+//     }
+//   }
+// });
+
 const postBuyPortfolio = catchAsync(async (req, res) => {
   const { amount, payout, currency } = req.body;
   const { id } = req.params;
@@ -376,6 +266,7 @@ const postBuyPortfolio = catchAsync(async (req, res) => {
       return res.status(404).json({ message: 'Portfolio not found' });
     }
   } catch (error) {
+    console.error(error);
     return res.status(500).json({ message: 'Failed to fetch portfolio' });
   }
 
@@ -400,9 +291,19 @@ const postBuyPortfolio = catchAsync(async (req, res) => {
         portfolio: updatedPortfolio,
       });
     } catch (error) {
+      console.error(error);
       return res.status(500).json({ message: 'Failed to update status' });
     }
   } else {
+    // Check if the user id exists in any BuyPortfolio instance
+    const userBuyPortfolio = await BuyPortfolio.findOne({ userId });
+
+    if (userBuyPortfolio) {
+      return res
+        .status(400)
+        .json({ message: 'User already has a BuyPortfolio' });
+    }
+
     // Create a new BuyPortfolio instance
     const currentDate = new Date();
     const dateOfExpiry = new Date(currentDate);
@@ -411,11 +312,10 @@ const postBuyPortfolio = catchAsync(async (req, res) => {
     const buyPortfolio = new BuyPortfolio({
       userId,
       amount,
-
       portfolioName: portfolio.portfolioTitle,
       payout,
       currency,
-      _id: portfolio._id,
+      // _id: portfolio._id,
       dateOfPurchase: currentDate,
       dateOfExpiry: dateOfExpiry,
     });
@@ -426,12 +326,12 @@ const postBuyPortfolio = catchAsync(async (req, res) => {
       // Redirect to the active-portfolio page
       return res.redirect(`/portfolio/payment/${savedPortfolio._id}`);
     } catch (error) {
-      return res.status(500).json({ message: 'Failed to save portfolio' });
+      console.error(error);
+      return res.status(500).json({ message: 'Failed to save the portfolio' });
     }
   }
 });
 
-// Fetches the buy portfolio form
 const getBuyPortfolioForm = catchAsync(async (req, res) => {
   const { id } = req.params;
 

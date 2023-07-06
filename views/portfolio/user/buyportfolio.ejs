@@ -37,7 +37,7 @@
                       <div class="col-xl-6 col-12">
                         <div class="card-body">
                           <h5 class="card-title fw-600">
-                            <%=portfolio.title%>
+                            <%=portfolio.portfolioTitle%>
                           </h5>
                           <p class="card-text text-gray-600">
                             <%=portfolio.description%>
@@ -171,10 +171,7 @@
     </div>
 
     <!-- Include Select2 JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-
     <script>
-      // Initialize Select2
       $(document).ready(function () {
         $('.select2').select2({
           templateResult: function (data, container) {
@@ -184,13 +181,32 @@
 
             var icon = data.element.dataset.icon;
             var $result = $(
-              '<span><i class="cc ' + icon + '"></i> ' + data.text + '</span>'
+              '<span><i class="cc ' +
+                icon +
+                '" style="font-size: 1.5rem;"></i> ' +
+                data.text +
+                '</span>'
             );
 
             if (data.id === '') {
-              // Add class to the initial "Select Currency" option
               $result.addClass('select2-placeholder');
             }
+
+            return $result;
+          },
+          templateSelection: function (data, container) {
+            if (!data.id || !data.element) {
+              return data.text;
+            }
+
+            var icon = data.element.dataset.icon;
+            var $result = $(
+              '<span><i class="cc ' +
+                icon +
+                '"  style="font-size: 1.5rem;"></i> ' +
+                data.text +
+                '</span>'
+            );
 
             return $result;
           },
