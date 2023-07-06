@@ -41,12 +41,10 @@ const createPortfolio = catchAsync(async (req, res, next) => {
       description: req.body.description,
       minimumCapital: req.body.minimumCapital,
       returnOnInvestment: {
-        name: req.body.rioName,
         rioPText: req.body.rioPText,
         rioPercentage: req.body.rioPercentage,
       },
       compounding: {
-        name: req.body.cName,
         cPText: req.body.cPText,
         cPercentage: req.body.cPercentage,
       },
