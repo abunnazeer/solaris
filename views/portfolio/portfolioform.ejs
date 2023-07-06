@@ -35,7 +35,8 @@
                         enctype="multipart/form-data"
                       >
                         <div class="form-group">
-                          <div class="input-group mb-3">
+                          <div class="mb-3">
+                            <label for="title" class="form-label">Title:</label>
                             <input
                               id="title"
                               type="text"
@@ -47,7 +48,10 @@
                           </div>
                         </div>
                         <div class="form-group">
-                          <div class="input-group mb-3">
+                          <div class="mb-3">
+                            <label for="description" class="form-label"
+                              >Description:</label
+                            >
                             <input
                               id="description"
                               type="text"
@@ -60,7 +64,8 @@
                         </div>
                         <!-- Add the file input field for image upload -->
                         <div class="form-group">
-                          <div class="input-group mb-3">
+                          <div class="mb-3">
+                            <label for="image" class="form-label">Image:</label>
                             <input
                               id="image"
                               type="file"
@@ -71,7 +76,10 @@
                           </div>
                         </div>
                         <div class="form-group">
-                          <div class="input-group mb-3">
+                          <div class="mb-3">
+                            <label for="minimumCapital" class="form-label"
+                              >Minimum Capital:</label
+                            >
                             <input
                               id="minimumCapital"
                               type="text"
@@ -82,21 +90,11 @@
                             />
                           </div>
                         </div>
-
                         <div class="form-group">
-                          <div class="input-group mb-3">
-                            <input
-                              id="rioName"
-                              type="text"
-                              class="form-control ps-15"
-                              placeholder="Return on Investment"
-                              name="rioName"
-                              required
-                            />
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <div class="input-group mb-3">
+                          <div class="mb-3">
+                            <label for="rioPText" class="form-label"
+                              >Percentage in Text (Return on Investment):</label
+                            >
                             <input
                               id="rioPText"
                               type="text"
@@ -107,12 +105,16 @@
                             />
                           </div>
                         </div>
-
                         <div class="form-group">
-                          <div class="input-group mb-3">
+                          <div class="mb-3">
+                            <label for="rioPercentage" class="form-label"
+                              >Percentage in Number (Return on
+                              Investment):</label
+                            >
                             <input
                               id="rioPercentage"
                               type="number"
+                              step="any"
                               class="form-control ps-15"
                               placeholder="Percentage in Number"
                               name="rioPercentage"
@@ -120,21 +122,11 @@
                             />
                           </div>
                         </div>
-
                         <div class="form-group">
-                          <div class="input-group mb-3">
-                            <input
-                              id="cName"
-                              type="text"
-                              class="form-control ps-15"
-                              placeholder="Compounding"
-                              name="cName"
-                              required
-                            />
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <div class="input-group mb-3">
+                          <div class="mb-3">
+                            <label for="cPText" class="form-label"
+                              >Percentage in Text (Compounding):</label
+                            >
                             <input
                               id="cPText"
                               type="text"
@@ -145,12 +137,15 @@
                             />
                           </div>
                         </div>
-
                         <div class="form-group">
-                          <div class="input-group mb-3">
+                          <div class="mb-3">
+                            <label for="cPercentage" class="form-label"
+                              >Compounding Percentage in Number:</label
+                            >
                             <input
                               id="cPercentage"
                               type="number"
+                              step="any"
                               class="form-control ps-15"
                               placeholder="Compounding Percentage in Number"
                               name="cPercentage"
@@ -159,7 +154,10 @@
                           </div>
                         </div>
                         <div class="form-group">
-                          <div class="input-group mb-3">
+                          <div class="mb-3">
+                            <label for="duration" class="form-label"
+                              >Portfolio Duration:</label
+                            ><br />
                             <input
                               id="duration"
                               type="text"
@@ -170,7 +168,6 @@
                             />
                           </div>
                         </div>
-
                         <div class="row">
                           <div class="col-12 text-left">
                             <button

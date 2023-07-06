@@ -15,10 +15,6 @@ const portfolioSchema = new mongoose.Schema({
     required: true,
   },
   returnOnInvestment: {
-    name: {
-      type: String,
-      required: true,
-    },
     rioPText: {
       type: String,
       required: true,
@@ -30,10 +26,6 @@ const portfolioSchema = new mongoose.Schema({
   },
 
   compounding: {
-    name: {
-      type: String,
-      required: true,
-    },
     cPText: {
       type: String,
       required: true,
