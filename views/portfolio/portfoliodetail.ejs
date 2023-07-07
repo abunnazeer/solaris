@@ -104,20 +104,6 @@
                             <p><%= portfolio.compounding.cPText %></p>
                           </div>
 
-                          <% if (user && buyPortfolio && user.id ===
-                          buyPortfolio.userId.toString() &&
-                          portfolio.portfolioTitle ===
-                          buyPortfolio.portfolioName) { %>
-                          <a
-                            href="/user/user-investments"
-                            type="button"
-                            id="buyButton"
-                            class="waves-effect waves-light btn btn-outline btn-warning mb-5"
-                          >
-                            Go to Active Portfolio
-                          </a>
-
-                          <% } else { %>
                           <button
                             type="button"
                             id="buyButton"
@@ -125,7 +111,6 @@
                           >
                             Buy now
                           </button>
-                          <% } %>
                         </div>
 
                         <!-- end card-->
@@ -174,15 +159,15 @@
     <!-- <%- include('../layouts/script') %> -->
     <script src="js/pages/data-table.js"></script>
     <!-- Vendor JS -->
-    <script src="/js/vendors.min.js"></script>
-    <script src="/js/pages/chat-popup.js"></script>
-    <script src="/assets/icons/feather-icons/feather.min.js"></script>
-    <script src="/assets/vendor_components/apexcharts-bundle/dist/apexcharts.js"></script>
+    <script src="js/vendors.min.js"></script>
+    <script src="js/pages/chat-popup.js"></script>
+    <script src="assets/icons/feather-icons/feather.min.js"></script>
+    <script src="assets/vendor_components/apexcharts-bundle/dist/apexcharts.js"></script>
 
     <!-- InvestX App -->
     <script src="js/demo.js"></script>
-    <script src="/js/template.js"></script>
-    <script src="/js/pages/dashboard.js"></script>
+    <script src="js/template.js"></script>
+    <script src="js/pages/dashboard.js"></script>
 
     <script src="js/pages/chart-widgets.js"></script>
     <!-- JavaScript code for deleting a portfolio -->

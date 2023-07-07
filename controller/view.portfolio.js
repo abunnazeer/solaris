@@ -9,7 +9,9 @@ const axios = require('axios');
 const { Plisio } = require('@plisio/api-client');
 // const AppError = require('../utils/appError');
 const secretKey =
-  '84aaoal2XcwHDHgZe2TfgtbPVUXbX-IqBWTFwAsf2uKkbgNSTbrOgR7ikq_KsrrP';
+  '6C0-0DVUxLblgkhe7ViRCGI1DslhOjErhaoeuWkLRTrm4cIHEqwkHhSOkN9ywVhj';
+// const secretKey =
+//   '84aaoal2XcwHDHgZe2TfgtbPVUXbX-IqBWTFwAsf2uKkbgNSTbrOgR7ikq_KsrrP';
 
 const getPortfolioForm = (req, res) => {
   res.status(200).render('portfolio/portfolioform', {
@@ -25,7 +27,9 @@ const getEditPortfolioForm = catchAsync(async (req, res) => {
     const portfolio = await Portfolio.findById(id);
 
     if (!portfolio) {
-      return res.status(404).json({ message: 'Portfolio not found' });
+      return res
+        .status(404)
+        .render('response/status', { message: 'Portfolio not found' });
     }
 
     res.status(200).render('portfolio/portfolioedit', {
@@ -33,7 +37,9 @@ const getEditPortfolioForm = catchAsync(async (req, res) => {
       portfolio: portfolio,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch portfolio' });
+    res
+      .status(500)
+      .render('response/status', { message: 'Failed to fetch portfolio' });
   }
 });
 
@@ -48,7 +54,7 @@ const getPayment = catchAsync(async (req, res) => {
 
   const protocol = req.protocol;
   const host = req.get('host');
-  const successUrl = `${protocol}://${host}/portfolio/payment-completed`;
+  const successUrl = `${protocol}://${host}/portfolio/payment-completed?json=true`;
   const portfolio = await BuyPortfolio.findById(id);
   const { userId } = portfolio;
   const user = await User.findOne({ _id: userId });
@@ -61,10 +67,10 @@ const getPayment = catchAsync(async (req, res) => {
     currency: portfolio.currency,
     email: user.email,
     order_name: portfolio.portfolioName,
-    callback_url: 'http://test.com/callback',
-    success_callback_url: successUrl,
+    callback_url: true,
+    success_callback_url: true,
+    fail_callback_url: true,
     api_key: secretKey,
-    redirect_to_invoice: true,
   };
 
   const config = {
@@ -84,20 +90,27 @@ const getPayment = catchAsync(async (req, res) => {
     portfolio.walletAddress = txn_id;
     await portfolio.save();
 
-    res.redirect(invoice_url); // Perform the redirect to the invoice URL
+    // Perform the redirect to the invoice URL
+    return res.redirect(303, invoice_url);
   } catch (error) {
     console.error(error);
-    res.status(500).send('An error occurred while generating invoice.');
+    res.status(500).render('response/status', {
+      message: 'An error occurred while generating invoice.',
+    });
   }
 });
 
-// payment successful
-
 const paymentSucceeded = catchAsync(async (req, res) => {
-  const { id, sum } = req.params;
+  // const { id, sum } = req.params;
 
-  const portfolio = await BuyPortfolio.findOne({ walletAddress: id });
+  // Example code to parse the JSON response
+  const paymentData = req.body;
+  console.log(paymentData);
 
+  const portfolio = await BuyPortfolio.findOne({
+    walletAddress: paymentData.txn_id,
+  });
+  console.log(portfolio);
   if (portfolio) {
     portfolio.status = 'active';
     portfolio.portfolioCryptoAmount = sum;
@@ -109,226 +122,48 @@ const paymentSucceeded = catchAsync(async (req, res) => {
   res.status(200).send('Payment succeeded');
 });
 
-// const postBuyPortfolio = catchAsync(async (req, res) => {
-//   const { amount, payout, currency } = req.body;
-//   const { id } = req.params;
-//   let portfolio;
-
-//   try {
-//     portfolio = await Portfolio.findById(id);
-
-//     if (!portfolio) {
-//       return res.status(404).json({ message: 'Portfolio not found' });
-//     }
-//   } catch (error) {
-//     return res.status(500).json({ message: 'Failed to fetch portfolio' });
-//   }
-
-//   const userId = req.user._id;
-
-//   // Check if a BuyPortfolio instance already exists for the given userId and portfolioId
-//   const existingBuyPortfolio = await BuyPortfolio.findOne({
-//     userId,
-//     _id: portfolio._id,
-//   });
-
-//   if (existingBuyPortfolio) {
-//     // Update the status field of the existing BuyPortfolio instance
-//     existingBuyPortfolio.status =
-//       existingBuyPortfolio.status === 'active' ? 'inactive' : 'active';
-
-//     try {
-//       const updatedPortfolio = await existingBuyPortfolio.save();
-
-//       return res.json({
-//         message: 'Status updated successfully',
-//         portfolio: updatedPortfolio,
-//       });
-//     } catch (error) {
-//       return res.status(500).json({ message: 'Failed to update status' });
-//     }
-//   } else {
-//     // Create a new BuyPortfolio instance
-//     const currentDate = new Date();
-//     const dateOfExpiry = new Date(currentDate);
-//     dateOfExpiry.setMonth(dateOfExpiry.getMonth() + 12);
-
-//     const buyPortfolio = new BuyPortfolio({
-//       userId,
-//       amount,
-//       portfolioName: portfolio.portfolioTitle,
-//       payout,
-//       currency,
-//       _id: portfolio._id,
-//       dateOfPurchase: currentDate,
-//       dateOfExpiry: dateOfExpiry,
-//     });
-//     console.log(id);
-//     console.log(userId);
-
-//     try {
-//       const savedPortfolio = await buyPortfolio.save();
-
-//       // Redirect to the active-portfolio page
-//       return res.redirect(`/portfolio/payment/${savedPortfolio._id}`);
-//     } catch (error) {
-//       return res.status(500).json({ message: 'Failed to save  the portfolio' });
-//     }
-//   }
-// });
-
-// Fetches the buy portfolio form
-
-// const postBuyPortfolio = catchAsync(async (req, res) => {
-//   const { amount, payout, currency } = req.body;
-//   const { id } = req.params;
-//   let portfolio;
-
-//   try {
-//     portfolio = await Portfolio.findById(id);
-
-//     if (!portfolio) {
-//       return res.status(404).json({ message: 'Portfolio not found' });
-//     }
-//   } catch (error) {
-//     return res.status(500).json({ message: 'Failed to fetch portfolio' });
-//   }
-
-//   const userId = req.user._id;
-
-//   // Check if a BuyPortfolio instance already exists for the given userId and portfolioId
-//   const existingBuyPortfolio = await BuyPortfolio.findOne({
-//     userId,
-//     _id: portfolio._id,
-//   });
-
-//   if (existingBuyPortfolio) {
-//     // Update the status field of the existing BuyPortfolio instance
-//     existingBuyPortfolio.status =
-//       existingBuyPortfolio.status === 'active' ? 'inactive' : 'active';
-
-//     try {
-//       const updatedPortfolio = await existingBuyPortfolio.save();
-
-//       return res.json({
-//         message: 'Status updated successfully',
-//         portfolio: updatedPortfolio,
-//       });
-//     } catch (error) {
-//       return res.status(500).json({ message: 'Failed to update status' });
-//     }
-//   } else {
-//     // Check if the user id exists in any BuyPortfolio instance
-//     const userBuyPortfolio = await BuyPortfolio.findOne({ userId });
-
-//     if (userBuyPortfolio) {
-//       return res
-//         .status(400)
-//         .json({ message: 'User already has a BuyPortfolio' });
-//     }
-
-//     // Create a new BuyPortfolio instance
-//     const currentDate = new Date();
-//     const dateOfExpiry = new Date(currentDate);
-//     dateOfExpiry.setMonth(dateOfExpiry.getMonth() + 12);
-
-//     const buyPortfolio = new BuyPortfolio({
-//       userId,
-//       amount,
-//       portfolioName: portfolio.portfolioTitle,
-//       payout,
-//       currency,
-//       _id: portfolio._id,
-//       dateOfPurchase: currentDate,
-//       dateOfExpiry: dateOfExpiry,
-//     });
-
-//     try {
-//       const savedPortfolio = await buyPortfolio.save();
-
-//       // Redirect to the active-portfolio page
-//       return res.redirect(`/portfolio/payment/${savedPortfolio._id}`);
-//     } catch (error) {
-//       return res.status(500).json({ message: 'Failed to save the portfolio' });
-//     }
-//   }
-// });
-
 const postBuyPortfolio = catchAsync(async (req, res) => {
   const { amount, payout, currency } = req.body;
   const { id } = req.params;
-  let portfolio;
 
+  let portfolio;
   try {
     portfolio = await Portfolio.findById(id);
-
     if (!portfolio) {
-      return res.status(404).json({ message: 'Portfolio not found' });
+      return res
+        .status(404)
+        .render('response/status', { message: 'Portfolio not found' });
     }
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Failed to fetch portfolio' });
+    return res
+      .status(500)
+      .render('response/status', { message: 'Failed to fetch portfolio' });
   }
 
   const userId = req.user._id;
 
-  // Check if a BuyPortfolio instance already exists for the given userId and portfolioId
-  const existingBuyPortfolio = await BuyPortfolio.findOne({
+  const currentDate = new Date();
+  const dateOfExpiry = new Date(currentDate);
+  dateOfExpiry.setMonth(dateOfExpiry.getMonth() + 12);
+
+  const buyPortfolio = new BuyPortfolio({
     userId,
-    _id: portfolio._id,
+    amount,
+    portfolioName: portfolio.portfolioTitle,
+    payout,
+    currency,
+    dateOfPurchase: currentDate,
+    dateOfExpiry,
   });
 
-  if (existingBuyPortfolio) {
-    // Update the status field of the existing BuyPortfolio instance
-    existingBuyPortfolio.status =
-      existingBuyPortfolio.status === 'active' ? 'inactive' : 'active';
+  try {
+    const savedPortfolio = await buyPortfolio.save();
 
-    try {
-      const updatedPortfolio = await existingBuyPortfolio.save();
-
-      return res.json({
-        message: 'Status updated successfully',
-        portfolio: updatedPortfolio,
-      });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: 'Failed to update status' });
-    }
-  } else {
-    // Check if the user id exists in any BuyPortfolio instance
-    const userBuyPortfolio = await BuyPortfolio.findOne({ userId });
-
-    if (userBuyPortfolio) {
-      return res
-        .status(400)
-        .json({ message: 'User already has a BuyPortfolio' });
-    }
-
-    // Create a new BuyPortfolio instance
-    const currentDate = new Date();
-    const dateOfExpiry = new Date(currentDate);
-    dateOfExpiry.setMonth(dateOfExpiry.getMonth() + 12);
-
-    const buyPortfolio = new BuyPortfolio({
-      userId,
-      amount,
-      portfolioName: portfolio.portfolioTitle,
-      payout,
-      currency,
-      // _id: portfolio._id,
-      dateOfPurchase: currentDate,
-      dateOfExpiry: dateOfExpiry,
-    });
-
-    try {
-      const savedPortfolio = await buyPortfolio.save();
-
-      // Redirect to the active-portfolio page
-      return res.redirect(`/portfolio/payment/${savedPortfolio._id}`);
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: 'Failed to save the portfolio' });
-    }
+    return res.redirect(`/portfolio/payment/${savedPortfolio._id}`);
+  } catch (error) {
+    return res
+      .status(500)
+      .render('response/status', { message: 'Failed to save the portfolio' });
   }
 });
 
@@ -339,7 +174,9 @@ const getBuyPortfolioForm = catchAsync(async (req, res) => {
     const portfolio = await Portfolio.findById(id);
 
     if (!portfolio) {
-      return res.status(404).json({ message: 'Portfolio not found' });
+      return res
+        .status(404)
+        .render('response/status', { message: 'Portfolio not found' });
     }
 
     // console.log(portfolio);
@@ -348,7 +185,9 @@ const getBuyPortfolioForm = catchAsync(async (req, res) => {
       portfolio: portfolio,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch portfolio' });
+    res
+      .status(500)
+      .render('response/status', { message: 'Failed to fetch portfolio' });
   }
 });
 
@@ -404,7 +243,9 @@ const viewPortfolio = catchAsync(async (req, res) => {
     const portfolio = await Portfolio.findById(id);
 
     if (!portfolio) {
-      return res.status(404).json({ message: 'Portfolio not found' });
+      return res
+        .status(404)
+        .render('response/status', { message: 'Portfolio not found' });
     }
 
     const buyPortfolio = await BuyPortfolio.findOne({ _id: id });
@@ -418,7 +259,9 @@ const viewPortfolio = catchAsync(async (req, res) => {
       buyPortfolio,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch portfolio' });
+    res
+      .status(500)
+      .render('response/status', { message: 'Failed to fetch portfolio' });
   }
 });
 
@@ -435,7 +278,9 @@ const updatePayment = catchAsync(async (req, res) => {
     );
 
     if (!portfolio) {
-      return res.status(404).json({ message: 'Payment not found' });
+      return res
+        .status(404)
+        .render('response/status', { message: 'Payment not found' });
     }
 
     // Get logged-in user email and name
@@ -445,7 +290,9 @@ const updatePayment = catchAsync(async (req, res) => {
     const userProfile = await Profile.findOne({ user: req.user._id });
 
     if (!userProfile) {
-      return res.status(404).json({ message: 'User profile not found' });
+      return res
+        .status(404)
+        .render('response/status', { message: 'User profile not found' });
     }
 
     const { fullName } = userProfile;
@@ -461,7 +308,9 @@ const updatePayment = catchAsync(async (req, res) => {
     // Redirect to /user/user-investments
     res.redirect('/user/user-investments');
   } catch (error) {
-    res.status(500).json({ message: 'Failed to update the payment' });
+    res
+      .status(500)
+      .render('response/status', { message: 'Failed to update the payment' });
   }
 });
 

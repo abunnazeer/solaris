@@ -26,7 +26,6 @@ const {
   // withdrawal
   getWithdrawalRequest,
   getwithdrawalHistory,
-  dashboard,
 } = require('../controller/view.controller');
 
 const {
