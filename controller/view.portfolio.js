@@ -49,79 +49,159 @@ function generateOrderNumber() {
   return paddedNumber;
 }
 
+// const getPayment = catchAsync(async (req, res) => {
+//   const { id } = req.params;
+
+//   const protocol = req.protocol;
+//   const host = req.get('host');
+//   const successUrl = `${protocol}://${host}/portfolio/payment-completed?json=true`;
+//   const portfolio = await BuyPortfolio.findById(id);
+//   const { userId } = portfolio;
+//   const user = await User.findOne({ _id: userId });
+//   const url = 'https://plisio.net/api/v1/invoices/new';
+
+//   const params = {
+//     source_currency: 'USD',
+//     source_amount: portfolio.amount,
+//     order_number: generateOrderNumber(),
+//     currency: portfolio.currency,
+//     email: user.email,
+//     order_name: portfolio.portfolioName,
+//     callback_url: true,
+//     success_callback_url: true,
+//     fail_callback_url: true,
+//     api_key: secretKey,
+//   };
+
+//   const config = {
+//     params,
+//     maxRedirects: 0, // Disable Axios redirect handling
+//     validateStatus: status => status >= 200 && status < 303,
+//     headers: {
+//       'User-Agent': req.headers['user-agent'],
+//     },
+//   };
+
+//   try {
+//     const response = await axios.get(url, config);
+//     const { invoice_url, txn_id } = response.data.data;
+
+//     // Update portfolio.walletAddress with the txn_id before redirecting
+//     portfolio.walletAddress = txn_id;
+//     await portfolio.save();
+
+//     // Perform the redirect to the invoice URL
+//     return res.redirect(303, invoice_url);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).render('response/status', {
+//       message: 'An error occurred while generating invoice.',
+//     });
+//   }
+// });
+
+// const paymentSucceeded = catchAsync(async (req, res) => {
+//   // const { id, sum } = req.params;
+
+//   // Example code to parse the JSON response
+//   const paymentData = req.body;
+//   console.log(paymentData);
+
+//   const portfolio = await BuyPortfolio.findOne({
+//     walletAddress: paymentData.txn_id,
+//   });
+//   console.log(portfolio);
+//   if (portfolio) {
+//     portfolio.status = 'active';
+//     portfolio.portfolioCryptoAmount = sum;
+//     await portfolio.save();
+//   }
+
+//   // Add any additional logic or response handling as needed
+
+//   res.status(200).send('Payment succeeded');
+// });
+
+const fetchCryptoPrices = async (cryptocurrencies, targetCurrency) => {
+  try {
+    const response = await axios.get(
+      `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest`,
+      {
+        headers: {
+          'X-CMC_PRO_API_KEY': '53e53396-66c2-41bc-8531-8b45d59eb2d9',
+        },
+        params: {
+          symbol: cryptocurrencies.join(','),
+          convert: targetCurrency,
+        },
+      }
+    );
+    return response; // Return the entire response
+  } catch (error) {
+    console.error('Error fetching crypto prices:', error);
+    return {}; // Return an empty object on error
+  }
+};
+// /////// PAYMENT VIEW/////////
 const getPayment = catchAsync(async (req, res) => {
   const { id } = req.params;
 
-  const protocol = req.protocol;
-  const host = req.get('host');
-  const successUrl = `${protocol}://${host}/portfolio/payment-completed?json=true`;
-  const portfolio = await BuyPortfolio.findById(id);
-  const { userId } = portfolio;
-  const user = await User.findOne({ _id: userId });
-  const url = 'https://plisio.net/api/v1/invoices/new';
-
-  const params = {
-    source_currency: 'USD',
-    source_amount: portfolio.amount,
-    order_number: generateOrderNumber(),
-    currency: portfolio.currency,
-    email: user.email,
-    order_name: portfolio.portfolioName,
-    callback_url: true,
-    success_callback_url: true,
-    fail_callback_url: true,
-    api_key: secretKey,
-  };
-
-  const config = {
-    params,
-    maxRedirects: 0, // Disable Axios redirect handling
-    validateStatus: status => status >= 200 && status < 303,
-    headers: {
-      'User-Agent': req.headers['user-agent'],
-    },
-  };
-
+  const targetCurrency = 'USD';
   try {
-    const response = await axios.get(url, config);
-    const { invoice_url, txn_id } = response.data.data;
+    const portfolio = await BuyPortfolio.findById(id);
 
-    // Update portfolio.walletAddress with the txn_id before redirecting
-    portfolio.walletAddress = txn_id;
-    await portfolio.save();
+    if (!portfolio) {
+      return res.status(404).json({ message: 'Portfolio not found' });
+    }
+    const walletAddress = [
+      {
+        name: 'BTC',
+        symbol: 'BTC',
+        url: '/qr/btc.jpeg',
+        address: '35fzCfP2rZAUmWyGXUUiBgFBRBarSBBZas',
+        price: portfolio.amount,
+      },
 
-    // Perform the redirect to the invoice URL
-    return res.redirect(303, invoice_url);
-  } catch (error) {
-    console.error(error);
-    res.status(500).render('response/status', {
-      message: 'An error occurred while generating invoice.',
+      {
+        name: 'ETH',
+        symbol: 'ETH',
+        url: '/qr/eth.jpeg',
+        address: '0x457f18b10467340db29c7e72581e5d4650928d78',
+        price: portfolio.amount,
+      },
+      {
+        name: 'Tether',
+        symbol: 'USDT',
+        url: '/qr/usdt.jpeg',
+        address: 'TLyFun55QXxxk8qqtfhwG2wvfhpN1Poh4M',
+        price: portfolio.amount,
+      },
+    ];
+    const cryptocurrencies = walletAddress.map(crypto => crypto.symbol);
+
+    const response = await fetchCryptoPrices(cryptocurrencies, targetCurrency);
+    const cryptoPrices = response.data.data;
+
+    const walletAddressWithPrices = walletAddress.map((crypto, id) => {
+      const price =
+        cryptoPrices[walletAddress[id].symbol].quote[targetCurrency].price;
+      return { ...crypto, price };
     });
+
+    const convertedAmounts = walletAddressWithPrices.map(crypto => {
+      const cryptoAmount = (portfolio.amount / crypto.price).toFixed(6);
+      return { ...crypto, cryptoAmount };
+    });
+
+    res.status(200).render('portfolio/user/payment', {
+      title: 'Payment page',
+      portfolio,
+      cryptoDetails: convertedAmounts,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to buy portfolio' });
   }
 });
-
-const paymentSucceeded = catchAsync(async (req, res) => {
-  // const { id, sum } = req.params;
-
-  // Example code to parse the JSON response
-  const paymentData = req.body;
-  console.log(paymentData);
-
-  const portfolio = await BuyPortfolio.findOne({
-    walletAddress: paymentData.txn_id,
-  });
-  console.log(portfolio);
-  if (portfolio) {
-    portfolio.status = 'active';
-    portfolio.portfolioCryptoAmount = sum;
-    await portfolio.save();
-  }
-
-  // Add any additional logic or response handling as needed
-
-  res.status(200).send('Payment succeeded');
-});
-
 const postBuyPortfolio = catchAsync(async (req, res) => {
   const { amount, payout, currency } = req.body;
   const { id } = req.params;
@@ -167,6 +247,30 @@ const postBuyPortfolio = catchAsync(async (req, res) => {
   }
 });
 
+// const getBuyPortfolioForm = catchAsync(async (req, res) => {
+//   const { id } = req.params;
+
+//   try {
+//     const portfolio = await Portfolio.findById(id);
+
+//     if (!portfolio) {
+//       return res
+//         .status(404)
+//         .render('response/status', { message: 'Portfolio not found' });
+//     }
+
+//     // console.log(portfolio);
+//     res.render('portfolio/user/buyportfolio', {
+//       title: 'Buy Portfolio',
+//       portfolio: portfolio,
+//     });
+//   } catch (error) {
+//     res
+//       .status(500)
+//       .render('response/status', { message: 'Failed to fetch portfolio' });
+//   }
+// });
+
 const getBuyPortfolioForm = catchAsync(async (req, res) => {
   const { id } = req.params;
 
@@ -179,10 +283,14 @@ const getBuyPortfolioForm = catchAsync(async (req, res) => {
         .render('response/status', { message: 'Portfolio not found' });
     }
 
-    // console.log(portfolio);
+    const minimumCapital = Number(
+      portfolio.minimumCapital.replace(/[\$,]/g, '').trim()
+    );
+
     res.render('portfolio/user/buyportfolio', {
       title: 'Buy Portfolio',
-      portfolio: portfolio,
+      portfolio,
+      minimumCapital: minimumCapital,
     });
   } catch (error) {
     res
@@ -324,5 +432,5 @@ module.exports = {
   getPayment,
   updatePayment,
   getStatusIndex,
-  paymentSucceeded,
+  // paymentSucceeded,
 };

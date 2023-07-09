@@ -7,6 +7,20 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css"
     />
+
+    <style>
+      .buy-button {
+        background-color: #ffc107 !important; /* Yellow color */
+        color: #ffffff !important; /* Text color */
+      }
+
+      .buy-button:disabled,
+      .buy-button[disabled] {
+        opacity: 0.5 !important; /* Reduced opacity for disabled state */
+        cursor: not-allowed; /* Disable pointer events */
+        background-color: #c0c0c0 !important; /* Gray color */
+      }
+    </style>
   </head>
 
   <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
@@ -65,7 +79,6 @@
                           method="POST"
                         >
                           <!-- ... -->
-
                           <div class="form-group">
                             <label for="amount">Amount:</label>
                             <div class="input-group mb-20">
@@ -76,9 +89,14 @@
                                 name="amount"
                                 id="amount"
                                 required
+                                min="<%= minimumCapital %>"
+                                oninput="checkFormValidity()"
                               />
                             </div>
+                            <div id="error-message" style="color: red"></div>
                           </div>
+
+                          <!-- ... -->
 
                           <div class="form-group">
                             <label class="form-label" for="payout"
@@ -91,8 +109,9 @@
                                 name="payout"
                                 id="payout"
                                 required
+                                onchange="checkFormValidity()"
                               >
-                                <option value="" selected="selected">
+                                <option value="" selected disabled>
                                   Select Payout
                                 </option>
                                 <option value="daily">Daily Payout</option>
@@ -114,8 +133,9 @@
                                 name="currency"
                                 id="currency"
                                 required
+                                onchange="checkFormValidity()"
                               >
-                                <option value="" selected="selected">
+                                <option value="" selected disabled>
                                   Select Currency
                                 </option>
                                 <option value="BTC" data-icon="BTC">
@@ -124,28 +144,20 @@
                                 <option value="ETH" data-icon="ETH">
                                   Ethereum
                                 </option>
-                                <option value="USDT" data-icon="USDT">
-                                  Tether USD
-                                </option>
-                                <option value="TRX" data-icon="TRX">
-                                  TRON
-                                </option>
                                 <option value="USDT_TRX" data-icon="USDT">
                                   Tether USD TRC20
                                 </option>
-                                <option value="DASH" data-icon="DASH">
-                                  DASH
-                                </option>
-                                <option value="BCH" data-icon="BCH">BCH</option>
-                                <option value="BNB" data-icon="BNB">BNB</option>
                               </select>
                             </div>
                           </div>
+
                           <div class="form-group">
                             <div class="input-group mb-3">
                               <button
                                 type="submit"
-                                class="waves-effect waves-light btn mb-5 bg-gradient-warning w-p100 mt-10"
+                                class="waves-effect waves-light btn mb-5 w-p100 mt-10 buy-button"
+                                id="buy-button"
+                                disabled
                               >
                                 Buy now
                               </button>
@@ -218,6 +230,38 @@
           },
         });
       });
+
+      // this script disabled the btn when the field are empty
+
+      function checkFormValidity() {
+        var amountInput = document.getElementById('amount');
+        var payoutSelect = document.getElementById('payout');
+        var currencySelect = document.getElementById('currency');
+        var buyButton = document.getElementById('buy-button');
+        var errorMessage = document.getElementById('error-message');
+        var minAmount = parseInt(amountInput.min); // Convert minAmount to a number
+        var enteredAmount = parseInt(amountInput.value);
+
+        if (enteredAmount < minAmount) {
+          errorMessage.textContent =
+            'Amount must not be less than ' + minAmount + '.';
+          amountInput.setCustomValidity('Invalid amount');
+        } else {
+          errorMessage.textContent = '';
+          amountInput.setCustomValidity('');
+        }
+
+        if (
+          amountInput.value === '' ||
+          payoutSelect.value === '' ||
+          currencySelect.value === '' ||
+          enteredAmount < minAmount // Check if enteredAmount is less than minAmount
+        ) {
+          buyButton.disabled = true;
+        } else {
+          buyButton.disabled = false;
+        }
+      }
     </script>
   </body>
 </html>
