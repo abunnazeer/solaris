@@ -36,7 +36,7 @@ router.get(
 );
 // PAYMENT ROUTE
 router.post('/payment/:id', protect, updatePayment);
-router.post('/payment-completed/:id', protect, paymentSucceeded);
+// router.post('/payment-completed/', protect, paymentSucceeded);
 // router.get('/payment', protect, getPayment);
 router.get('/payment/:id', protect, getPayment);
 //////////////////user routes ////////////

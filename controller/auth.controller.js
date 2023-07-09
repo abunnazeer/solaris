@@ -79,7 +79,7 @@ const register = catchAsync(async (req, res, next) => {
     passwordConfirm,
     role,
     referralCode: generateRandomNumber(),
-    referredMe: referredBy ? referredBy._id : null,
+    referredMe: referredBy ? referredBy.referMe : null,
   });
   //Create user profile while creating user
   const newProfile = await Profile.create({
