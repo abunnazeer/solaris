@@ -17,6 +17,11 @@ const buyPortfolioSchema = new mongoose.Schema({
   },
   amount: {
     type: Number,
+
+    default: 0,
+  },
+  depositAmount: {
+    type: Number,
     required: true,
   },
   compAmount: {
@@ -34,7 +39,7 @@ const buyPortfolioSchema = new mongoose.Schema({
   },
   currency: {
     type: String,
-    enum: ['BTC', 'ETH', 'USDT', 'DASH', 'BCH', 'BNB', 'TRX', 'USDT_TRX'],
+    enum: ['BTC', 'ETH', 'USDT'],
     required: true,
   },
   balance: {
@@ -47,12 +52,12 @@ const buyPortfolioSchema = new mongoose.Schema({
   },
   dateOfPurchase: {
     type: Date,
-    required: true,
+
     default: new Date(),
   },
   dateOfExpiry: {
     type: Date,
-    required: true,
+
     default: new Date(),
   },
   walletAddress: {

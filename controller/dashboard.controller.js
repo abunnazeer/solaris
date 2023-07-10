@@ -1,11 +1,12 @@
 const buyPortfolio = require('../models/portfolio/buyportfolio.model');
-const { emiting } = require('../server');
+const { io } = require('../app');
+
+// Rest of the code...
 
 function sendBalanceUpdate(portfolioId, balance, compBalance) {
   const message = JSON.stringify({ portfolioId, balance, compBalance });
-  emiting('balanceUpdate', message);
+  io.emit('balanceUpdate', message);
 }
-
 const updatePortfolio = async (
   portfolio,
   dailyPercentage,

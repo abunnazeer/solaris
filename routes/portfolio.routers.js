@@ -19,6 +19,7 @@ const {
   updatePayment,
   getStatusIndex,
   paymentSucceeded,
+  paymentComfirmation,
 } = require('../controller/view.portfolio');
 
 const {
@@ -48,7 +49,12 @@ router.get('/create-portfolio', protect, getPortfolioForm);
 router.get('/', protect, getPortfolioIndex);
 router.get('/index', protect, restrictTo('admin'), getStatusIndex);
 // router.get('/portfolio', getPortfolioIndex);
-router.put('/buyportfolio/:id', protect, restrictTo('admin'), postBuyPortfolio);
+router.put(
+  '/buyportfolio/:id',
+  protect,
+  restrictTo('admin'),
+  paymentComfirmation
+);
 router.post(
   '/create-portfolio',
   protect,
