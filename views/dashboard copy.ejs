@@ -4,6 +4,7 @@
     <!-- head and meta-->
     <title><%=title%></title>
     <%- include('layouts/head') %>
+    <script src="/socket.io/socket.io.js"></script>
   </head>
 
   <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
@@ -1365,7 +1366,22 @@
     </div>
     <%- include('layouts/script') %>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/dashboard.js"></script>
+    <script>
+      const socket = io(); // Connect to the server
+      console.log('Client socket connected');
+
+      socket.on('balanceUpdate', function (message) {
+        console.log('Received balance update:', message);
+        const data = JSON.parse(message);
+        const { portfolioId, balance, compBalance } = data;
+        const balanceElement = document.getElementById(
+          `balance-${portfolioId}`
+        );
+        if (balanceElement) {
+          balanceElement.textContent = balance.toLocaleString();
+        }
+        // Update compBalance or perform any other necessary actions
+      });
+    </script>
   </body>
 </html>

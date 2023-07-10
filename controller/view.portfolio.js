@@ -189,7 +189,7 @@ const getPayment = catchAsync(async (req, res) => {
     });
 
     const convertedAmounts = walletAddressWithPrices.map(crypto => {
-      const cryptoAmount = (portfolio.amount / crypto.price).toFixed(6);
+      const cryptoAmount = (portfolio.depositAmount / crypto.price).toFixed(6);
       return { ...crypto, cryptoAmount };
     });
 
@@ -203,7 +203,7 @@ const getPayment = catchAsync(async (req, res) => {
   }
 });
 const postBuyPortfolio = catchAsync(async (req, res) => {
-  const { amount, payout, currency } = req.body;
+  const { depositAmount, payout, currency } = req.body;
   const { id } = req.params;
 
   let portfolio;
@@ -222,18 +222,18 @@ const postBuyPortfolio = catchAsync(async (req, res) => {
 
   const userId = req.user._id;
 
-  const currentDate = new Date();
-  const dateOfExpiry = new Date(currentDate);
-  dateOfExpiry.setMonth(dateOfExpiry.getMonth() + 12);
+  // const currentDate = new Date();
+  // const dateOfExpiry = new Date(currentDate);
+  // dateOfExpiry.setMonth(dateOfExpiry.getMonth() + 12);
 
   const buyPortfolio = new BuyPortfolio({
     userId,
-    amount,
+    depositAmount,
     portfolioName: portfolio.portfolioTitle,
     payout,
     currency,
-    dateOfPurchase: currentDate,
-    dateOfExpiry,
+    // dateOfPurchase: currentDate,
+    // dateOfExpiry,
   });
 
   try {
@@ -244,6 +244,54 @@ const postBuyPortfolio = catchAsync(async (req, res) => {
     return res
       .status(500)
       .render('response/status', { message: 'Failed to save the portfolio' });
+  }
+});
+
+// Assuming you have a function named `sendEmail` to send emails
+
+const paymentComfirmation = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const { status, dateOfPurchase, dateOfExpiry } = req.body;
+
+  try {
+    const portfoliodetail = await BuyPortfolio.findById(id);
+
+    if (!portfoliodetail) {
+      return res.status(404).json({ message: 'Portfolio not found' });
+    }
+    const userId = portfoliodetail.userId;
+    const userDetal = await User.findOne({ _id: userId });
+
+    const buyPortfolio = await BuyPortfolio.findByIdAndUpdate(
+      id,
+      {
+        amount: portfoliodetail.depositAmount,
+        status,
+        depositAmount: 0,
+        dateOfPurchase,
+        dateOfExpiry,
+      },
+      { new: true }
+    );
+
+    if (!buyPortfolio) {
+      return res.status(404).json({ message: 'BuyPortfolio not found' });
+    }
+    const emailContent = `Your payment for ${portfoliodetail.portfolioName}has been confirmed, and your portfolio has been activated`;
+    // Send email to the user
+    await sendEmail({
+      email: userDetal.email,
+      subject: 'Payment confirmed, Portfolio Activation successful',
+      message: emailContent,
+    });
+
+    return res.json({
+      message: 'Status updated successfully',
+      portfolio: buyPortfolio,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Failed to update status' });
   }
 });
 
@@ -322,6 +370,38 @@ const getPortfolioIndex = catchAsync(async (req, res) => {
 
 // PORTFOLIO STATUS
 
+// const getStatusIndex = catchAsync(async (req, res) => {
+//   const page = parseInt(req.query.page) || 1; // Get the page number from the query parameters (default: page 1)
+//   const limit = 10; // Number of items per page
+//   const skip = (page - 1) * limit; // Calculate the number of items to skip
+
+//   const buyPortfolioCount = await BuyPortfolio.countDocuments();
+//   const totalPages = Math.ceil(buyPortfolioCount / limit);
+
+//   const userDetails = await BuyPortfolio.find()
+//     .skip(skip)
+//     .limit(limit)
+//     .populate('userId') // Populate the 'user' field to retrieve the associated user data
+//     .exec();
+
+//   const userId = userDetails[0].userId._id;
+//   const userProfile = await Profile.findOne({ _id: userId });
+
+//   console.log(userProfile.fullName);
+//   if (!userProfile) {
+//     return res
+//       .status(404)
+//       .render('response/status', { message: 'User profile not found' });
+//   }
+//   res.render('portfolio/statusindex', {
+//     title: 'Portfolio Status',
+//     userDetails,
+//     // userProfile,
+//     currentPage: page,
+//     totalPages: totalPages,
+//   });
+// });
+
 const getStatusIndex = catchAsync(async (req, res) => {
   const page = parseInt(req.query.page) || 1; // Get the page number from the query parameters (default: page 1)
   const limit = 10; // Number of items per page
@@ -333,12 +413,33 @@ const getStatusIndex = catchAsync(async (req, res) => {
   const userDetails = await BuyPortfolio.find()
     .skip(skip)
     .limit(limit)
-    .populate('userId') // Populate the 'user' field to retrieve the associated user data
+    .populate('userId') // Populate the 'userId' field to retrieve the associated user data
     .exec();
-  console.log(userDetails);
+
+  const userObjects = []; // Create an array to store the userObjects
+
+  for (const user of userDetails) {
+    const userId = user.userId._id;
+    const userProfile = await Profile.findOne({ _id: userId });
+
+    if (!userProfile) {
+      return res
+        .status(404)
+        .render('response/status', { message: 'User profile not found' });
+    }
+
+    const userObject = {
+      userDetails: user,
+      userProfile: userProfile,
+    };
+
+    userObjects.push(userObject); // Push the userObject to the array
+  }
+
+  console.log(userObjects);
   res.render('portfolio/statusindex', {
     title: 'Portfolio Status',
-    userDetails: userDetails,
+    userObjects,
     currentPage: page,
     totalPages: totalPages,
   });
@@ -413,8 +514,10 @@ const updatePayment = catchAsync(async (req, res) => {
       message: adminMessage,
     });
 
-    // Redirect to /user/user-investments
-    res.redirect('/user/user-investments');
+    return res.status(404).render('response/status', {
+      message:
+        'You have sent your payment. Your portfolio will be activated after payment has been confirmed',
+    });
   } catch (error) {
     res
       .status(500)
@@ -432,5 +535,5 @@ module.exports = {
   getPayment,
   updatePayment,
   getStatusIndex,
-  // paymentSucceeded,
+  paymentComfirmation,
 };
