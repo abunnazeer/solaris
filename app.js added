@@ -26,7 +26,7 @@ const app = express();
 // GLOBAL MIDDLEWARE
 
 // set security HTTP Headers
-app.use(helmet());
+// app.use(helmet());
 
 // loading development
 
@@ -47,10 +47,10 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 // Data sanitazation agasnt noSQL Injection
-app.use(mongoSanitize());
+// app.use(mongoSanitize());
 
 // Data sanitize  against xss
-app.use(xss());
+// app.use(xss());
 
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname + '/public/')));

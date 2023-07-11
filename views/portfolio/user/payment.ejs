@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src *; script-src 'unsafe-inline' * 'self'; style-src 'unsafe-inline' * 'self'; img-src * data: 'self'; font-src * data: 'self';"
+    />
     <title><%=title%></title>
-    <%- include('../../layouts/head') %>
+
     <style>
       .qr__image {
         width: 150px;
@@ -132,13 +136,6 @@
       </div>
       <!-- /.content-wrapper -->
 
-      <footer class="main-footer">
-        <!-- footer -->
-        <%- include('../../layouts/footer') %>
-      </footer>
-
-      <!-- Vendor JS -->
-      <%- include('../../layouts/formscript') %>
       <script>
         function copyToClipboard() {
           var walletAddressInput =
@@ -147,7 +144,11 @@
           document.execCommand('copy');
         }
       </script>
+
+      <footer class="main-footer">
+        <!-- footer -->
+        <%- include('../../layouts/footer') %>
+      </footer>
     </div>
-    <!-- <script src="/js/bundle.js"></script> -->
   </body>
 </html>
