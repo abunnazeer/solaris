@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <%- include('../layouts/head') %>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
@@ -145,20 +144,6 @@
           </section>
         </div>
       </div>
-      <footer class="main-footer">
-        <!-- footer-->
-        <%- include('../layouts/footer') %>
-      </footer>
-      <!-- Side panel -->
-      <!-- quick_user_toggle -->
-      <div class="modal modal-right fade" id="quick_user_toggle" tabindex="-1">
-        <!-- user profile -->
-        <%- include('../layouts/right') %>
-      </div>
-      <!-- /quick_user_toggle -->
-
-      <!-- Control Sidebar -->
-      <%- include('../layouts/sidebar') %>
     </div>
 
     <!-- <%- include('../layouts/script') %> -->
@@ -185,5 +170,9 @@
         }
       }
     </script>
+    <footer class="main-footer">
+      <!-- footer-->
+      <%- include('../layouts/footer') %>
+    </footer>
   </body>
 </html>

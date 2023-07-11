@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <%- include('../layouts/head') %>
+ 
   </head>
   <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
     <div class="wrapper">
@@ -178,25 +178,8 @@
         </div>
       </div>
       <!-- /.content-wrapper -->
-
-      <footer class="main-footer">
-        <!-- footer -->
-        <%- include('../layouts/footer') %>
-      </footer>
-
-      <!-- Vendor JS -->
-      <script src="/js/vendors.min.js"></script>
-      <script src="/js/pages/chat-popup.js"></script>
-      <script src="/assets/icons/feather-icons/feather.min.js"></script>
-      <script src="/assets/vendor_components/apexcharts-bundle/dist/apexcharts.js"></script>
-
-      <!-- InvestX App -->
-      <script src="/js/demo.js"></script>
-      <script src="/js/template.js"></script>
-      <script src="/js/pages/dashboard.js"></script>
-
-      <script src="/js/pages/chart-widgets.js"></script>
-
+      
+      
       <script>
         function handleFileSelection(event) {
           const fileInput = event.target;
@@ -210,10 +193,10 @@
             }
           }
         }
-
+        
         const fileInput = document.getElementById('profilePicture');
         fileInput.addEventListener('change', handleFileSelection);
-
+        
         function previewProfileImage(event) {
           const reader = new FileReader();
           reader.onload = function () {
@@ -227,7 +210,7 @@
             previewImage.src = '../../../images/avatar/avatar-13.png'; // Default image URL
           }
         }
-
+        
         function copyReferralLink() {
           const referralLink = document.getElementById('referralLink');
           const range = document.createRange();
@@ -237,7 +220,7 @@
           document.execCommand('copy');
           window.getSelection().removeAllRanges();
         }
-
+        
         function copyReferralCode() {
           const referralLink = document.getElementById('referralCode');
           const range = document.createRange();
@@ -247,7 +230,12 @@
           document.execCommand('copy');
           window.getSelection().removeAllRanges();
         }
-      </script>
+        </script>
 
+
+      <footer class="main-footer">
+        <!-- footer -->
+        <%- include('../layouts/footer') %>
+      </footer>
     </body>
 </html>

@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <head>
+  <meta http-equiv="Content-Security-Policy" content="default-src *; script-src 'unsafe-inline' * 'self'; style-src 'unsafe-inline' * 'self'; img-src * data: 'self'; font-src * data: 'self';">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+
     <title><%=portfolio.portfolioTitle%></title>
-    <%- include('../../layouts/head') %>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css"
-    />
+
+    
 
     <style>
       .buy-button {
@@ -178,14 +179,6 @@
         </div>
       </div>
       <!-- /.content-wrapper -->
-
-      <footer class="main-footer">
-        <!-- footer -->
-        <%- include('../../layouts/footer') %>
-      </footer>
-
-      <!-- Vendor JS -->
-      <%- include('../../layouts/formscript') %>
     </div>
 
     <!-- Include Select2 JS -->
@@ -263,5 +256,9 @@
         }
       }
     </script>
+    <footer class="main-footer">
+      <!-- footer -->
+      <!-- <%- include('../../layouts/footer') %> -->
+    </footer>
   </body>
 </html>

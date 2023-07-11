@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <%- include('../layouts/head') %>
-  </head>
+  <head> </head>
 
   <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
     <div class="wrapper">
@@ -58,7 +56,6 @@
                             class="btn btn-sm btn-toggle <%= item.userDetails.status === 'active' ? 'btn-success active' : 'btn-warning-light' %>"
                             data-bs-toggle="button"
                             aria-pressed="<%= item.userDetails.status === 'active' ? 'true' : 'false' %>"
-                            onclick="toggleStatus('<%= item.userDetails._id %>', '<%= item.userDetails.status %>')"
                           >
                             <span class="handle"></span>
                           </button>
@@ -120,25 +117,23 @@
           </section>
         </div>
       </div>
-      <footer class="main-footer">
-        <!-- footer-->
-        <%- include('../layouts/footer') %>
-      </footer>
-      <!-- Side panel -->
-      <!-- quick_user_toggle -->
-      <div class="modal modal-right fade" id="quick_user_toggle" tabindex="-1">
-        <!-- user profile -->
-        <%- include('../layouts/right') %>
-      </div>
-      <!-- /quick_user_toggle -->
-
-      <!-- Control Sidebar -->
-      <%- include('../layouts/sidebar') %>
     </div>
 
     <script>
-      function toggleStatus(userId, currentStatus) {
-        const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+      const buttons = document.querySelectorAll('.btn-toggle');
+      buttons.forEach(button => {
+        button.addEventListener('click', () => {
+          const userId = button.id;
+          const currentStatus =
+            button.getAttribute('aria-pressed') === 'true'
+              ? 'inactive'
+              : 'active';
+          toggleStatus(userId, currentStatus, button);
+        });
+      });
+
+      function toggleStatus(userId, currentStatus, button) {
+        const newStatus = currentStatus === 'inactive' ? 'active' : 'active';
         const currentDate = new Date();
         const dateOfExpiry = new Date(currentDate);
         dateOfExpiry.setMonth(dateOfExpiry.getMonth() + 12);
@@ -164,8 +159,13 @@
             console.log(`Status after update: ${data.portfolio.status}`);
             // Check if the status was changed successfully
             if (data.message === 'Status updated successfully') {
-              // Update the UI to reflect the new status
+              // Update the button state to reflect the new status
               location.reload();
+              button.setAttribute(
+                'aria-pressed',
+                newStatus === 'active' ? 'true' : 'false'
+              );
+              button.classList.toggle('active', newStatus === 'active');
             } else {
               // Handle the error or display an error message
               console.error('Failed to update status');
@@ -177,19 +177,10 @@
           });
       }
     </script>
-    <script src="/js/toggleStatus.js"></script>
-    <script src="/js/pages/data-table.js"></script>
-    <!-- Vendor JS -->
-    <script src="/js/vendors.min.js"></script>
-    <script src="/js/pages/chat-popup.js"></script>
-    <script src="/assets/icons/feather-icons/feather.min.js"></script>
-    <script src="/assets/vendor_components/apexcharts-bundle/dist/apexcharts.js"></script>
 
-    <!-- InvestX App -->
-    <script src="/js/demo.js"></script>
-    <script src="/js/template.js"></script>
-    <script src="/js/pages/dashboard.js"></script>
-
-    <script src="/js/pages/chart-widgets.js"></script>
+    <footer class="main-footer">
+      <!-- footer-->
+      <%- include('../layouts/footer') %>
+    </footer>
   </body>
 </html>

@@ -25,30 +25,13 @@ const app = express();
 
 // Middleware setup
 
-const allowInlineScripts = (req, res, next) => {
-  // Get the existing CSP header
-  const cspHeader = res.get('Content-Security-Policy');
-
-  // Modify the CSP header to allow inline scripts
-  const modifiedCspHeader = cspHeader.replace(
-    "script-src-attr 'none'",
-    "script-src-attr 'unsafe-inline'"
-  );
-
-  // Set the modified CSP header
-  res.set('Content-Security-Policy', modifiedCspHeader);
-
-  // Call the next middleware or route handler
-  next();
-};
-app.use(allowInlineScripts);
-app.use(helmet()); // Set security HTTP Headers
-app.use(cors()); // Enable Cross-Origin Resource Sharing
+// app.use(helmet()); // Set security HTTP Headers
+// app.use(cors()); // Enable Cross-Origin Resource Sharing
 app.use(express.json({ limit: '10kb' })); // Parse JSON request bodies
 app.use(cookieParser()); // Parse cookies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded request bodies
 app.use(mongoSanitize()); // Data sanitization against NoSQL Injection
-app.use(xss()); // Data sanitization against XSS
+// app.use(xss()); // Data sanitization against XSS
 
 // Load development middleware
 if (process.env.NODE_ENV === 'development') {
@@ -61,6 +44,14 @@ const limiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   message: 'Too Many Requests from this IP, please try again in an hour!',
 });
+// function updateCSP(req, res, next) {
+//   res.setHeader(
+//     'Content-Security-Policy',
+//     "script-src 'self' https://conoret.com"
+//   );
+//   next();
+// }
+
 app.use('/login', limiter);
 
 // Set view engine
@@ -76,7 +67,6 @@ app.get('*', function (req, res, next) {
     return res.status(404).send('Not found');
   }
 
-  // For other URLs, continue to the next middleware
   next();
 });
 
@@ -110,7 +100,7 @@ app.use(
     }),
   })
 );
-
+// app.use(updateCSP);
 // Import and use routers
 app.use('/user', userRouter);
 app.use('/portfolio', portfolioRouter);
@@ -132,7 +122,7 @@ io.on('connection', socket => {
   });
 
   socket.on('balanceUpdate', message => {
-    console.log('Balance Update:', message);
+    // console.log('Balance Update:', message);
     // Parse the message and update the dashboard accordingly
     const { portfolioId, balance, compBalance } = JSON.parse(message);
     // Update the dashboard with the new balance values
@@ -146,7 +136,7 @@ io.on('connection', socket => {
 
 // Function to send balance update
 function sendBalanceUpdate(portfolioId, balance, compBalance) {
-  console.log('Sending balance update:', portfolioId, balance, compBalance);
+  // console.log('Sending balance update:', portfolioId, balance, compBalance);
   const message = JSON.stringify({ portfolioId, balance, compBalance });
   io.emit('balanceUpdate', message);
 }
