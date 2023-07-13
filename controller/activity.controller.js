@@ -56,7 +56,7 @@ const getActivity = async (req, res, next) => {
 };
 
 const postWithdrawal = async (req, res) => {
-  const { amount, walletAddress, authCode } = req.body;
+  const { amount, walletAddress, authCode, method } = req.body;
   try {
     // 1. Generate a serial number and assign it to `sn`
 
@@ -94,10 +94,11 @@ const postWithdrawal = async (req, res) => {
       date: date,
       description: 'Withdrawal',
       buyPortfolioId: buyPortfolioId,
-      status: buyPortfolioId ? 'pending' : 'cancelled',
+      status: buyPortfolioId ? 'Pending Approval' : 'Approved',
       amount: amount,
       authCode: authCode,
       walletAddress: walletAddress,
+      method: method,
     });
 
     // Save the TransactionsActivity document
@@ -117,9 +118,63 @@ const getTransfer = (req, res) => {
   });
 };
 
+// withdrawal-request
+const getWithdrawalRequest = (req, res) => {
+  res
+    .status(200)
+    .render('withdrawal/withdrawalrequest', { title: 'Withdrawal  Request ' });
+};
+
+const getwithdrawalHistory = async (req, res, next) => {
+  const { id } = req.user._id;
+  try {
+    const page = parseInt(req.query.page) || 1; // Current page number
+    const limit = parseInt(req.query.limit) || 10; // Number of activities per page
+
+    const count = await Transactions.countDocuments(); // Total count of activities
+    const totalPages = Math.ceil(count / limit); // Calculate total number of pages
+
+    const skip = (page - 1) * limit; // Calculate number of activities to skip
+
+    const activities = await Transactions.find({})
+      .populate('buyPortfolioId')
+      .skip(skip)
+      .limit(limit);
+
+    let twoFactorCode = null;
+    if (id) {
+      twoFactorCode = await TwoFactor.findOne({ user: id });
+    }
+
+    if (twoFactorCode) {
+      console.log(twoFactorCode.userId);
+    }
+
+    res.status(200).render('withdrawal/withdrawalhistory', {
+      title: 'Withdrawal History',
+      activities: activities,
+      totalPages: totalPages,
+      currentPage: page,
+      limit: limit, // Pass the 'limit' value to the template
+    });
+  } catch (err) {
+    console.log(err);
+    const error = new AppError('An error occurred', 500);
+    next(error);
+  }
+};
+
+// const getwithdrawalHistory = (req, res) => {
+//   res
+//     .status(200)
+//     .render('withdrawal/withdrawalhistory', { title: 'Withdrawal History' });
+// };
+
 module.exports = {
   // Activity
   getActivity,
   getTransfer,
   postWithdrawal,
+  getWithdrawalRequest,
+  getwithdrawalHistory,
 };

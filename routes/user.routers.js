@@ -21,8 +21,6 @@ const {
   getReferral,
   getReferralBunus,
   // withdrawal
-  getWithdrawalRequest,
-  getwithdrawalHistory,
 } = require('../controller/view.controller');
 
 const {
@@ -123,9 +121,5 @@ router.get('/portfolio-details', protect, getDetailsPage);
 // REFERRAL VIEW
 router.get('/referred-users', protect, getReferral);
 router.get('/referral-bonus', protect, getReferralBunus);
-// Withdrawal Routes
-router.get('/withdrawal-request', protect, getWithdrawalRequest);
-router.get('/withdrawal-history', protect, getwithdrawalHistory);
-// router.delete('/update-profile/:id', protect, updateProfile);
 
 module.exports = router;

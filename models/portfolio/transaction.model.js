@@ -19,6 +19,11 @@ const transactionsActivitySchema = new mongoose.Schema({
     default: Date.now,
     required: true,
   },
+  method: {
+    type: String,
+    enum: ['BTC', 'ETH', 'USDT'],
+    required: true,
+  },
   description: {
     type: String,
     required: true,
@@ -30,8 +35,16 @@ const transactionsActivitySchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'completed', 'cancelled'],
-    default: 'pending',
+    enum: [
+      'Pending',
+      'Withdrawal',
+      'Deposit',
+      'Credited',
+      'Failed',
+      'Pending Approval',
+      'Approved',
+    ],
+    default: 'Pending',
   },
   walletAddress: {
     type: String,
