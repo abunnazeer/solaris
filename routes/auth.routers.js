@@ -4,29 +4,12 @@ const {
   getLoginForm,
   getForgetPasswordForm,
   getProfile,
-  getBizForm,
+
   getResetPasswordForm,
   getSuccess,
   getRegOption,
   getChangePasswordForm,
   getTwoFactor,
-
-  // Activity
-  getActivity,
-  getTransfer,
-  // PORTFOLIO
-  getInvestPortfolio,
-  getActivePortfolio,
-  getInvestHistory,
-  getShortTermForm,
-  getDetailsPage,
-  // REFERRAL
-  getReferral,
-  getReferralBunus,
-  // withdrawal
-  getWithdrawalRequest,
-  getwithdrawalHistory,
-  dashboard,
 } = require('../controller/auth.view');
 
 const {

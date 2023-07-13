@@ -129,20 +129,6 @@ const getRegOption = (req, res) => {
   });
 };
 
-// ACTIVITIES VIEW CONTROLLER
-
-const getActivity = (req, res) => {
-  res.status(200).render('activities/activity', {
-    title: 'Activity',
-  });
-};
-
-const getTransfer = (req, res) => {
-  res.status(200).render('activities/transfer', {
-    title: 'Transfer',
-  });
-};
-
 // //////////// THIS RENDER PORTFOLIO LIST TO BUY//////////
 
 const getInvestPortfolio = catchAsync(async (req, res) => {
@@ -246,9 +232,6 @@ module.exports = {
   getChangePasswordForm,
   getTwoFactor,
 
-  // Activity
-  getActivity,
-  getTransfer,
   // PORTFOLIO
   getInvestPortfolio,
   getActivePortfolio,

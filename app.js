@@ -1,11 +1,11 @@
 const express = require('express');
-const cors = require('cors');
+// const cors = require('cors');
 const path = require('path');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
-const helmet = require('helmet');
+// const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
-const xss = require('xss-clean');
+// const xss = require('xss-clean');
 const cookieParser = require('cookie-parser');
 const http = require('http');
 const mongoose = require('mongoose');
@@ -17,6 +17,7 @@ const MongoStore = require('connect-mongo');
 const buyPortfolio = require('./models/portfolio/buyportfolio.model');
 const userRouter = require('./routes/user.routers');
 const portfolioRouter = require('./routes/portfolio.routers');
+const activity = require('./routes/activity.routers');
 const { protect } = require('./controller/auth.controller');
 const globalErrorHandler = require('./controller/error.controller');
 const AppError = require('./utils/appError');
@@ -66,7 +67,6 @@ app.get('*', function (req, res, next) {
     // If it ends with '.map' or '.woff2', respond with a 404 error
     return res.status(404).send('Not found');
   }
-
   next();
 });
 
@@ -104,6 +104,7 @@ app.use(
 // Import and use routers
 app.use('/user', userRouter);
 app.use('/portfolio', portfolioRouter);
+app.use('/user', activity);
 
 // Error handling middleware
 app.use(globalErrorHandler);
@@ -126,7 +127,6 @@ io.on('connection', socket => {
     // Parse the message and update the dashboard accordingly
     const { portfolioId, balance, compBalance } = JSON.parse(message);
     // Update the dashboard with the new balance values
-    // ...
   });
 
   socket.on('disconnect', () => {

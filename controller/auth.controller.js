@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user/user.model');
 const Profile = require('../models/user/profile.model');
+const TwoFactor = require('../models/user/twoFactor.model');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const sendEmail = require('../utils/email');
@@ -419,6 +420,42 @@ const changePassword = catchAsync(async (req, res, next) => {
   res.redirect('/user/change-password');
 });
 
+// 2 Factor
+
+const postTwoFactor = catchAsync(async (req, res) => {
+  const { email, _id } = req.user;
+
+  // Check if the user already has a TwoFactor document and delete it if exists
+  await TwoFactor.findOneAndDelete({ userId: _id });
+
+  // Generate random 6-digit number
+  const code = Math.floor(100000 + Math.random() * 900000);
+
+  // Save the generated random number, user ID, and code to the TwoFactor collection
+  const twoFactorCode = await TwoFactor.create({
+    code,
+    userId: _id,
+  });
+
+  // Send an email to the user with the current code and expiration message
+  await sendEmail({
+    email: email,
+    subject: 'Two-Factor Authentication Code',
+    message: `Hi there, use this code to complete your transaction. It will expire after 5 seconds: ${code}`,
+  });
+
+  // Check if 1 minute has passed and delete the document from the TwoFactor collection
+  setTimeout(async () => {
+    await TwoFactor.findOneAndDelete({ _id: twoFactorCode._id });
+    console.log('TwoFactor document deleted:', twoFactorCode._id);
+  }, 60000);
+
+  // Additional response or further processing if needed
+  res
+    .status(200)
+    .json({ message: 'Two-Factor Authentication code sent successfully' });
+});
+
 module.exports = {
   register,
   verifyEmail,
@@ -430,4 +467,5 @@ module.exports = {
   isLoggedIn,
   logout,
   changePassword,
+  postTwoFactor,
 };

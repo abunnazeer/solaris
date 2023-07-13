@@ -1,5 +1,5 @@
 const express = require('express');
-// const slugify = require('slugify');
+
 const {
   createPortfolio,
   updatePortfolio,
@@ -18,7 +18,7 @@ const {
   getPayment,
   updatePayment,
   getStatusIndex,
-  paymentSucceeded,
+
   paymentComfirmation,
 } = require('../controller/view.portfolio');
 

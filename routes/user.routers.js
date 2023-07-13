@@ -11,9 +11,6 @@ const {
   getChangePasswordForm,
   getTwoFactor,
 
-  // Activity
-  getActivity,
-  getTransfer,
   // PORTFOLIO
   getInvestPortfolio,
   getActivePortfolio,
@@ -41,6 +38,7 @@ const {
   // logout,
   logout,
   changePassword,
+  postTwoFactor,
 } = require('../controller/auth.controller');
 const { updateProfile, uploadProfilePhoto } = require('./user.controller');
 // const { getMe } = require('./user.controller');
@@ -108,16 +106,13 @@ router.get('/forget-password', getForgetPasswordForm);
 // Route to display the change password form
 router.get('/change-password', protect, getChangePasswordForm);
 
+router.post('/two-factor', protect, postTwoFactor);
 router.get('/two-factor', getTwoFactor);
 router.get('/success', getSuccess);
 router.get('/registration', getRegOption);
 
 router.get('/reset-password/:token', getResetPasswordForm);
 router.get('/verify-email/:token', verifyEmail);
-
-// activty routes
-router.get('/activity', protect, getActivity);
-router.get('/transfer', protect, getTransfer);
 
 // PORTFOLIO
 router.get('/view-investments-portfolio', protect, getInvestPortfolio);
