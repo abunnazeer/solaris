@@ -141,7 +141,7 @@ function sendBalanceUpdate(portfolioId, balance, compBalance) {
   io.emit('balanceUpdate', message);
 }
 
-// Update portfolio
+// // Update portfolio
 const updatePortfolio = async (
   portfolio,
   dailyPercentage,
@@ -216,6 +216,88 @@ const updatePortfolio = async (
   }, dailyInterval);
 };
 
+// // Dashboard route
+// app.get('/dashboard', protect, async (req, res) => {
+//   try {
+//     const user = req.user.id;
+//     const portfolios = await buyPortfolio.find({ userId: user });
+
+//     for (const portfolio of portfolios) {
+//       if (
+//         portfolio.payout === portfolio.payoutName[portfolio.payout] &&
+//         portfolio.payout !== 'compounding' &&
+//         portfolio.status === 'active'
+//       ) {
+//         const dailyInterval = portfolio.portConfig[portfolio.payout];
+//         if (dailyInterval > 0) {
+//           updatePortfolio(
+//             portfolio,
+//             portfolio.dailyPercentage,
+//             24 * 60 * 60 * 1000,
+//             dailyInterval
+//           );
+//         }
+//       }
+
+//       if (
+//         portfolio.payout === portfolio.payoutName['compounding'] &&
+//         portfolio.payout !== 'daily' &&
+//         portfolio.status === 'active'
+//       ) {
+//         const dailyInterval = portfolio.portConfig[portfolio.payout];
+//         if (dailyInterval > 0) {
+//           let compBalance = portfolio.compBalance;
+//           let currentTime = Date.parse(portfolio.dateOfPurchase);
+//           const terminationTime = Date.parse(portfolio.dateOfExpiry);
+//           const intervalId = setInterval(async () => {
+//             if (portfolio.status === 'inactive') {
+//               clearInterval(intervalId);
+//               return;
+//             }
+//             if (currentTime >= terminationTime) {
+//               clearInterval(intervalId);
+//               await buyPortfolio.findByIdAndUpdate(portfolio._id, {
+//                 status: 'inactive',
+//               });
+//               return;
+//             }
+//             const newCompBalance =
+//               compBalance + portfolio.compPercentage * portfolio.amount;
+
+//             const updatedPortfolio = await buyPortfolio.findByIdAndUpdate(
+//               portfolio._id,
+//               {
+//                 compBalance: newCompBalance,
+//                 compAmount: newCompBalance + portfolio.amount,
+//               },
+//               { new: true }
+//             );
+
+//             sendBalanceUpdate(
+//               updatedPortfolio._id,
+//               updatedPortfolio.balance,
+//               updatedPortfolio.compBalance
+//             );
+
+//             console.log('Updated Portfolio:', updatedPortfolio);
+
+//             compBalance = newCompBalance;
+//             currentTime += 24 * 60 * 60 * 1000;
+//           }, dailyInterval);
+//         }
+//       }
+//     }
+
+//     res.status(200).render('dashboard', {
+//       title: 'Dashboard',
+//       portfolios,
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send('An error occurred while fetching the portfolios.');
+//   }
+// });
+
 // Dashboard route
 app.get('/dashboard', protect, async (req, res) => {
   try {
@@ -228,15 +310,13 @@ app.get('/dashboard', protect, async (req, res) => {
         portfolio.payout !== 'compounding' &&
         portfolio.status === 'active'
       ) {
-        const dailyInterval = portfolio.portConfig[portfolio.payout];
-        if (dailyInterval > 0) {
-          updatePortfolio(
-            portfolio,
-            portfolio.dailyPercentage,
-            24 * 60 * 60 * 1000,
-            dailyInterval
-          );
-        }
+        const dailyInterval = 600000; // 1 hour interval
+        updatePortfolio(
+          portfolio,
+          portfolio.dailyPercentage,
+          24 * 60 * 60 * 1000,
+          dailyInterval
+        );
       }
 
       if (
@@ -244,47 +324,46 @@ app.get('/dashboard', protect, async (req, res) => {
         portfolio.payout !== 'daily' &&
         portfolio.status === 'active'
       ) {
-        const dailyInterval = portfolio.portConfig[portfolio.payout];
-        if (dailyInterval > 0) {
-          let compBalance = portfolio.compBalance;
-          let currentTime = Date.parse(portfolio.dateOfPurchase);
-          const terminationTime = Date.parse(portfolio.dateOfExpiry);
-          const intervalId = setInterval(async () => {
-            if (portfolio.status === 'inactive') {
-              clearInterval(intervalId);
-              return;
-            }
-            if (currentTime >= terminationTime) {
-              clearInterval(intervalId);
-              await buyPortfolio.findByIdAndUpdate(portfolio._id, {
-                status: 'inactive',
-              });
-              return;
-            }
-            const newCompBalance =
-              compBalance + portfolio.compPercentage * portfolio.amount;
+        const dailyInterval = 600000; // 1 hour interval
+        // const dailyInterval = 60 * 60 * 1000; // 1 hour interval
+        let compBalance = portfolio.compBalance;
+        let currentTime = Date.parse(portfolio.dateOfPurchase);
+        const terminationTime = Date.parse(portfolio.dateOfExpiry);
+        const intervalId = setInterval(async () => {
+          if (portfolio.status === 'inactive') {
+            clearInterval(intervalId);
+            return;
+          }
+          if (currentTime >= terminationTime) {
+            clearInterval(intervalId);
+            await buyPortfolio.findByIdAndUpdate(portfolio._id, {
+              status: 'inactive',
+            });
+            return;
+          }
+          const newCompBalance =
+            compBalance + portfolio.compPercentage * portfolio.amount;
 
-            const updatedPortfolio = await buyPortfolio.findByIdAndUpdate(
-              portfolio._id,
-              {
-                compBalance: newCompBalance,
-                compAmount: newCompBalance + portfolio.amount,
-              },
-              { new: true }
-            );
+          const updatedPortfolio = await buyPortfolio.findByIdAndUpdate(
+            portfolio._id,
+            {
+              compBalance: newCompBalance,
+              compAmount: newCompBalance + portfolio.amount,
+            },
+            { new: true }
+          );
 
-            sendBalanceUpdate(
-              updatedPortfolio._id,
-              updatedPortfolio.balance,
-              updatedPortfolio.compBalance
-            );
+          sendBalanceUpdate(
+            updatedPortfolio._id,
+            updatedPortfolio.balance,
+            updatedPortfolio.compBalance
+          );
 
-            console.log('Updated Portfolio:', updatedPortfolio);
+          console.log('Updated Portfolio:', updatedPortfolio);
 
-            compBalance = newCompBalance;
-            currentTime += 24 * 60 * 60 * 1000;
-          }, dailyInterval);
-        }
+          compBalance = newCompBalance;
+          currentTime += 60 * 60 * 1000; // Increment currentTime by 1 hour
+        }, dailyInterval);
       }
     }
 

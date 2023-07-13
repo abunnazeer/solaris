@@ -5,33 +5,30 @@
   </head>
   <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
     <div class="wrapper">
-      <!-- <div id="loader"></div> -->
-
       <header class="main-header">
         <!-- header -->
         <%- include('../layouts/header') %>
       </header>
 
-      <!-- Left side column. contains the logo and sidebar -->
       <aside class="main-sidebar">
-        <!-- sidebar-->
+        <!-- sidebar -->
         <%- include('../layouts/aside') %>
       </aside>
 
-      <!-- Content Wrapper. Contains page content -->
       <div class="content-wrapper">
         <div class="container-full">
-          <!-- Main content -->
           <section class="content">
-            <% buyPortfolios.map(function(buyPortfolio) { %>
-
+            <% let activePortfolioFound = false; %> <%
+            buyPortfolios.forEach(function(buyPortfolio) { %> <% if
+            (buyPortfolio.status !== 'inactive') { %> <% activePortfolioFound =
+            true; %>
             <div class="active__portfolio">
               <div class="row">
                 <div class="col-xl-8 col-lg-7">
                   <div class="card">
                     <div class="card-body">
                       <h3 class="text-center mb-2">
-                        <%=buyPortfolio.portfolioName %>
+                        <%= buyPortfolio.portfolioName %>
                       </h3>
                       <p class="text-center mb-10">
                         <span
@@ -40,15 +37,14 @@
                           <%= buyPortfolio.status %>
                         </span>
                       </p>
-
                       <div class="row">
                         <div class="col-12 col-md-4 mt-20">
                           <div class="box text-center">
                             <div class="box-body py-5">
                               <p class="fs-17">$<%= buyPortfolio.amount %></p>
                               <p class="fw-500 fs-18">
-                                <span class="path1"></span
-                                ><span class="path2"></span>
+                                <span class="path1"></span>
+                                <span class="path2"></span>
                                 AMOUNT INVESTED
                               </p>
                             </div>
@@ -59,8 +55,8 @@
                             <div class="box-body py-5">
                               <p class="fs-17"><%= buyPortfolio.payout %></p>
                               <p class="fw-500 fs-18">
-                                <span class="path1"></span
-                                ><span class="path2"></span>
+                                <span class="path1"></span>
+                                <span class="path2"></span>
                                 PAYOUT
                               </p>
                             </div>
@@ -71,8 +67,8 @@
                             <div class="box-body py-5">
                               <p class="fs-17">12 months</p>
                               <p class="fw-500 fs-18">
-                                <span class="path1"></span
-                                ><span class="path2"></span>
+                                <span class="path1"></span>
+                                <span class="path2"></span>
                                 DURATION
                               </p>
                             </div>
@@ -101,9 +97,7 @@
                         </div>
                       </div>
                     </div>
-                    <!-- end card body -->
                   </div>
-                  <!-- end card -->
                 </div>
                 <div class="col-12 col-xl-4">
                   <div class="box">
@@ -122,8 +116,8 @@
                         <div class="d-flex flex-column">
                           <h4 class="text-dark mb-1 fs-16">
                             Open date:
-                            <span
-                              ><%=
+                            <span>
+                              <%=
                               buyPortfolio.dateOfPurchase.toLocaleDateString('en-US',
                               { weekday: 'short', month: 'short', day:
                               'numeric', year: 'numeric' }) %>
@@ -140,8 +134,8 @@
                         <div class="d-flex flex-column">
                           <h4 class="text-dark mb-1 fs-16">
                             Close date:
-                            <span
-                              ><%=
+                            <span>
+                              <%=
                               buyPortfolio.dateOfExpiry.toLocaleDateString('en-US',
                               { weekday: 'short', month: 'short', day:
                               'numeric', year: 'numeric' }) %>
@@ -152,16 +146,14 @@
                     </div>
                   </div>
                 </div>
-                <!-- end col -->
               </div>
             </div>
-            <% }); %>
-            <!-- end row-->
+            <% } %> <% }); %> <% if (!activePortfolioFound) { %>
+            <h3>No portfolio found</h3>
+            <% } %>
           </section>
-          <!-- /.content -->
         </div>
       </div>
-      <!-- /.content-wrapper -->
 
       <footer class="main-footer">
         <!-- footer -->
