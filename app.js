@@ -299,6 +299,8 @@ const updatePortfolio = async (
 // });
 
 // Dashboard route
+// Dashboard route
+// Dashboard route
 app.get('/dashboard', protect, async (req, res) => {
   try {
     const user = req.user.id;
@@ -310,7 +312,7 @@ app.get('/dashboard', protect, async (req, res) => {
         portfolio.payout !== 'compounding' &&
         portfolio.status === 'active'
       ) {
-        const dailyInterval = 600000; // 1 hour interval
+        const dailyInterval = 60 * 1000; // 1 minute interval
         updatePortfolio(
           portfolio,
           portfolio.dailyPercentage,
@@ -324,8 +326,7 @@ app.get('/dashboard', protect, async (req, res) => {
         portfolio.payout !== 'daily' &&
         portfolio.status === 'active'
       ) {
-        const dailyInterval = 600000; // 1 hour interval
-        // const dailyInterval = 60 * 60 * 1000; // 1 hour interval
+        const dailyInterval = 60 * 1000; // 1 minute interval
         let compBalance = portfolio.compBalance;
         let currentTime = Date.parse(portfolio.dateOfPurchase);
         const terminationTime = Date.parse(portfolio.dateOfExpiry);
@@ -362,7 +363,7 @@ app.get('/dashboard', protect, async (req, res) => {
           console.log('Updated Portfolio:', updatedPortfolio);
 
           compBalance = newCompBalance;
-          currentTime += 60 * 60 * 1000; // Increment currentTime by 1 hour
+          currentTime += 60 * 1000; // Increment currentTime by 1 minute
         }, dailyInterval);
       }
     }
