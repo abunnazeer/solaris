@@ -11,9 +11,6 @@ const {
   getChangePasswordForm,
   getTwoFactor,
 
-  // Activity
-  getActivity,
-  getTransfer,
   // PORTFOLIO
   getInvestPortfolio,
   getActivePortfolio,
@@ -24,8 +21,6 @@ const {
   getReferral,
   getReferralBunus,
   // withdrawal
-  getWithdrawalRequest,
-  getwithdrawalHistory,
 } = require('../controller/view.controller');
 
 const {
@@ -41,6 +36,7 @@ const {
   // logout,
   logout,
   changePassword,
+  postTwoFactor,
 } = require('../controller/auth.controller');
 const { updateProfile, uploadProfilePhoto } = require('./user.controller');
 // const { getMe } = require('./user.controller');
@@ -108,16 +104,13 @@ router.get('/forget-password', getForgetPasswordForm);
 // Route to display the change password form
 router.get('/change-password', protect, getChangePasswordForm);
 
+router.post('/two-factor', protect, postTwoFactor);
 router.get('/two-factor', getTwoFactor);
 router.get('/success', getSuccess);
 router.get('/registration', getRegOption);
 
 router.get('/reset-password/:token', getResetPasswordForm);
 router.get('/verify-email/:token', verifyEmail);
-
-// activty routes
-router.get('/activity', protect, getActivity);
-router.get('/transfer', protect, getTransfer);
 
 // PORTFOLIO
 router.get('/view-investments-portfolio', protect, getInvestPortfolio);
@@ -128,9 +121,5 @@ router.get('/portfolio-details', protect, getDetailsPage);
 // REFERRAL VIEW
 router.get('/referred-users', protect, getReferral);
 router.get('/referral-bonus', protect, getReferralBunus);
-// Withdrawal Routes
-router.get('/withdrawal-request', protect, getWithdrawalRequest);
-router.get('/withdrawal-history', protect, getwithdrawalHistory);
-// router.delete('/update-profile/:id', protect, updateProfile);
 
 module.exports = router;

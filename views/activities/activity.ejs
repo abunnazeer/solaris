@@ -1,61 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
- 
   <head>
-    <%- include('../layouts/head') %>
+    <title><%= title %></title>
   </head>
   <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
     <div class="wrapper">
-      <!-- <div id="loader"></div> -->
-
       <header class="main-header">
-        <!-- header -->
+        <!-- header-->
         <%- include('../layouts/header') %>
       </header>
 
-      <!-- Left side column. contains the logo and sidebar -->
       <aside class="main-sidebar">
         <!-- sidebar-->
         <%- include('../layouts/aside') %>
       </aside>
 
-      <!-- Content Wrapper. Contains page content -->
       <div class="content-wrapper">
         <div class="container-full">
-        
+          <section class="content">
+            <div class="col-12 col-xl-12">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title"><%= title %></h5>
+                </div>
+                <div></div>
+                <div class="card-body">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th style="width: 5%">SN</th>
+                        <th style="width: 15%">Title</th>
+                        <th style="width: 20%">Date</th>
+                        <th style="width: 30%">Descriptions</th>
+                        <th style="width: 20%">Amount</th>
+                        <th style="width: 10%">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% if (activities.length > 0) { %> <%
+                      activities.forEach(activity => { %>
+                      <tr>
+                        <td><%= activity.sn %></td>
+                        <td>hello</td>
+                        <td>
+                          <%= new Date(activity.date).toLocaleString('en-US', {
+                          weekday: 'short', month: 'short', day: 'numeric',
+                          year: 'numeric', hour: 'numeric', minute: 'numeric',
+                          hour12: true }) %>
+                        </td>
 
-          	<!-- Main content -->
-		<section class="content">
-			<div class="row">
-				
+                        <td><%= activity.description %></td>
+                        <td>$<%= activity.amount %></td>
+                        <td><%= activity.status %></td>
+                      </tr>
+                      <% }); %> <% } else { %>
+                      <tr>
+                        <td colspan="6">No records found</td>
+                      </tr>
+                      <% } %>
+                    </tbody>
+                  </table>
 
-				<div class="col-xl-12 col-lg-7">
-					<div class="card">
-						<div class="card-body">
-							<h1>Recent and past activities </h1>
-					
-
-						
-						</div> <!-- end card body -->
-					</div> <!-- end card -->
-				</div> <!-- end col -->
-			</div>
-			<!-- end row-->
-
-		</section>
-		<!-- /.content -->
+                  <div
+                    class="dataTables_paginate paging_simple_numbers align-right"
+                    id="example_paginate"
+                  >
+                    <% if (totalPages > 1) { %>
+                    <ul class="pagination">
+                      <% if (currentPage > 1) { %>
+                      <li class="paginate_button page-item previous">
+                        <a
+                          href="?page=<%= currentPage - 1 %>&limit=<%= limit %>"
+                          class="page-link"
+                          >Previous</a
+                        >
+                      </li>
+                      <% } %> <% for (let i = 1; i <= totalPages; i++) { %> <%
+                      if (i === currentPage) { %>
+                      <li class="paginate_button page-item active">
+                        <a href="#" class="page-link"><%= i %></a>
+                      </li>
+                      <% } else { %>
+                      <li class="paginate_button page-item">
+                        <a
+                          href="?page=<%= i %>&limit=<%= limit %>"
+                          class="page-link"
+                          ><%= i %></a
+                        >
+                      </li>
+                      <% } %> <% } %> <% if (currentPage < totalPages) { %>
+                      <li class="paginate_button page-item next">
+                        <a
+                          href="?page=<%= currentPage + 1 %>&limit=<%= limit %>"
+                          class="page-link"
+                          >Next</a
+                        >
+                      </li>
+                      <% } %>
+                    </ul>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
-      <!-- /.content-wrapper -->
 
       <footer class="main-footer">
-        <!-- footer -->
+        <!-- footer-->
         <%- include('../layouts/footer') %>
       </footer>
-      
-    <!-- Vendor JS -->
-    <%- include('../layouts/script') %>
+    </div>
   </body>
-  <script src="/js/bundle.js"></script>
-  
 </html>

@@ -1331,12 +1331,11 @@
                         <hr style="margin: 2px 77px 3px 77px" />
 
                         <div class="mt-10 mt-md-0">
-                          <a
-                            href="#"
-                            class="waves-effect waves-light btn btn-outline btn-primary"
-                            >Withdraw</a
+                          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#standard-modal"
+                            >Withdraw</button
                           >
                         </div>
+                      </div>
                       </div>
                     </div>
                   </div>
@@ -1347,10 +1346,182 @@
             <!-- THE FIRST ROW END HERE -->
           </section>
           <!-- /.content -->
+  <!-- Standard modal content -->
+<div id="standard-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-black">
+        <h4 class="modal-title" id="standard-modalLabel">Withdrawal Request</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-6">
+            <h5>Main Wallet Balance</h5>
+            <h3>$20000</h3>
+          </div>
+          <div class="col-6">
+            <h5>Compounding Dividends</h5>
+            <h3>$20000</h3>
+          </div>
         </div>
+        <hr>
+      <form class="rform__modified" action="/user/withdrawal" method="post" onsubmit="return validateForm()">
+  <div class="form-group">
+    <div class="row">
+      <div class="col-7">
+        <input
+          type="number"
+          name="authCode"
+          class="form-control ps-15 p-10"
+          placeholder="Enter 2FA"
+          id="authCode"
+          onblur="checkAuthCodeValidity()"
+          required
+        />
+        <span id="errorText" style="color: red; display: none;">.</span>
+      </div>
+      <div class="col-5">
+        <span class="btn btn-info" id="generateCodeBtn">Generate Code</span>
       </div>
     </div>
+  </div>
+  <div class="form-group">
+    <input
+      type="number"
+      name="amount"
+      class="form-control ps-15 p-10"
+      placeholder="You can only Withdraw $100 a day"
+      id="amount"
+      min="100"
+      max="100"
+      required
+    />
+  </div>
+  <div class="input-group mb-20">
+    <select
+      class="form-control select2"
+      style="width: 100%"
+      name="method"
+      id="method"
+      required
+      onchange="checkFormValidity()"
+    >
+      <option value="" selected disabled>Select Wallet Type</option>
+      <option value="BTC" data-icon="BTC">Bitcoin</option>
+      <option value="ETH" data-icon="ETH">Ethereum</option>
+      <option value="USDT" data-icon="USDT">Tether USD TRC20</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <input
+      type="text"
+      name="walletAddress"
+      class="form-control ps-15 p-10"
+      placeholder="Wallet Address"
+      id="walletAddress"
+      required
+    />
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary-light" data-bs-dismiss="modal">Close</button>
+    <button type="submit" class="btn btn-primary">Withdraw Now</button>
+  </div>
+</form>
+      </div>
+    </div>
+  </div>
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+  // Event handler for the "Generate Code" button
+  document.getElementById('generateCodeBtn').addEventListener('click', function() {
+    // Retrieve the value from the 2FA input field
+    var twoFactorValue = document.getElementById('authCode').value;
+
+    // Make a POST request to the "user/2factor" endpoint
+    axios.post('/user/two-factor', { twoFactorValue })
+      .then(function(response) {
+        // Handle the response from the server
+        console.log(response.data);
+        // Perform any necessary actions based on the response
+      })
+      .catch(function(error) {
+        // Handle errors
+        console.error(error);
+      });
+  });
+// function checkAuthCodeValidity() {
+//   const inputAuthCode = document.getElementById('authCode').value;
+
+//   axios.get('/user/activity')
+//     .then(function(response) {
+//       const twofactorCode = response.data.twofactorCode;
+//       const validAuthCode = response.data.authCode;
+
+//       if (!twofactorCode.code || !validAuthCode) {
+//         document.getElementById('errorText').textContent = 'Invalid OTP';
+//         document.getElementById('errorText').style.display = 'block';
+//       } else if (inputAuthCode === validAuthCode && inputAuthCode === twofactorCode.code) {
+//         document.getElementById('errorText').textContent = 'OTP has already been used';
+//         document.getElementById('errorText').style.display = 'block';
+//       } else {
+//         const currentAuthCode = document.getElementById('authCode').value;
+//         if (inputAuthCode === currentAuthCode) {
+//           document.getElementById('authCode').value = '';
+//           alert('The authentication code has expired. Please generate another one.');
+//         }
+//       }
+//     })
+//     .catch(function(error) {
+//       console.error(error);
+//       // Handle error
+//     });
+// }
+function checkAuthCodeValidity() {
+  const inputAuthCode = document.getElementById('authCode').value;
+
+  axios.get('/user/activity')
+    .then(function(response) {
+      const twofactorCode = response.data.twofactorCode;
+      const validAuthCode = response.data.authCode;
+      const errorText = document.getElementById('errorText');
+
+      if (!twofactorCode.code || !validAuthCode) {
+        errorText.textContent = 'Invalid OTP';
+        errorText.style.display = 'block';
+      } else if (inputAuthCode === validAuthCode && inputAuthCode === twofactorCode.code) {
+        errorText.textContent = 'OTP has already been used';
+        errorText.style.display = 'block';
+      } else {
+        errorText.textContent = '';
+        errorText.style.display = 'none';
+      }
+    })
+    .catch(function(error) {
+      console.error(error);
+      // Handle error
+    });
+}
+
+  function checkFormValidity() {
+    const authCode = document.getElementById('authCode').value;
+    const amount = document.getElementById('amount').value;
+    const currency = document.getElementById('currency').value;
+    const walletAddress = document.getElementById('walletAddress').value;
+
+    return authCode && amount && currency && walletAddress;
+  }
+
+  function validateForm() {
+    if (!checkFormValidity()) {
+      alert('Please fill in all the required fields.');
+      return false;
+    }
+    return true;
+  }
+</script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/dashboard.js"></script>
 

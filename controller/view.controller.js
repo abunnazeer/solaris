@@ -129,20 +129,6 @@ const getRegOption = (req, res) => {
   });
 };
 
-// ACTIVITIES VIEW CONTROLLER
-
-const getActivity = (req, res) => {
-  res.status(200).render('activities/activity', {
-    title: 'Activity',
-  });
-};
-
-const getTransfer = (req, res) => {
-  res.status(200).render('activities/transfer', {
-    title: 'Transfer',
-  });
-};
-
 // //////////// THIS RENDER PORTFOLIO LIST TO BUY//////////
 
 const getInvestPortfolio = catchAsync(async (req, res) => {
@@ -221,19 +207,6 @@ const getReferralBunus = (req, res) => {
     .render('referrals/referralbonus', { title: 'Referral Bunus' });
 };
 
-// withdrawal-request
-const getWithdrawalRequest = (req, res) => {
-  res
-    .status(200)
-    .render('withdrawal/withdrawalrequest', { title: 'Withdrawal  Request ' });
-};
-
-const getwithdrawalHistory = (req, res) => {
-  res
-    .status(200)
-    .render('withdrawal/withdrawalhistory', { title: 'Withdrawal History' });
-};
-
 module.exports = {
   getRegistrationForm,
   getLoginForm,
@@ -246,9 +219,6 @@ module.exports = {
   getChangePasswordForm,
   getTwoFactor,
 
-  // Activity
-  getActivity,
-  getTransfer,
   // PORTFOLIO
   getInvestPortfolio,
   getActivePortfolio,
@@ -259,9 +229,4 @@ module.exports = {
   // REFERRAL VIEW
   getReferral,
   getReferralBunus,
-
-  //Withdrawal
-  getWithdrawalRequest,
-  getwithdrawalHistory,
-  // dashboard,
 };
