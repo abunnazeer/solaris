@@ -105,7 +105,7 @@ const postWithdrawal = async (req, res) => {
     await transActivity.save();
 
     // Redirect to user activity after successful withdrawal
-    res.redirect('/user/activity');
+    res.redirect('/user/withdrawal-history');
   } catch (err) {
     console.log(err);
     // Handle error
