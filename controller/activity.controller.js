@@ -128,11 +128,60 @@ const getTransfer = (req, res) => {
   });
 };
 
-// withdrawal-request
-const getWithdrawalRequest = (req, res) => {
-  res
-    .status(200)
-    .render('withdrawal/withdrawalrequest', { title: 'Withdrawal  Request ' });
+const getWithdrawalRequest = async (req, res, next) => {
+  const { id, role } = req.user; // Get the user ID and role from req.user
+
+  try {
+    const page = parseInt(req.query.page) || 1; // Current page number
+    const limit = parseInt(req.query.limit) || 10; // Number of activities per page
+
+    let conditions = {}; // Initialize an empty object for the query conditions
+
+    // Check if the user role is 'admin'
+    if (role === 'admin') {
+      // No specific conditions needed for admin, so leave conditions object empty
+    } else if (role === 'personal') {
+      // Set the condition to match the user ID for 'personal' role
+      conditions = { userId: id };
+    }
+    // console.log(conditions);
+    const count = await Transactions.countDocuments(conditions); // Total count of activities based on conditions
+    const totalPages = Math.ceil(count / limit); // Calculate total number of pages
+
+    // console.log(count);
+    const skip = (page - 1) * limit; // Calculate number of activities to skip
+
+    const activities = await Transactions.find(conditions)
+      .populate({
+        path: 'userId',
+        model: 'User',
+        select: 'name email', // Specify the fields you want to retrieve from the User model
+      })
+      .populate('buyPortfolioId')
+      .skip(skip)
+      .limit(limit);
+
+    let twoFactorCode = null;
+    if (id) {
+      twoFactorCode = await TwoFactor.findOne({ user: id });
+    }
+
+    if (twoFactorCode) {
+      // console.log(twoFactorCode.userId);
+    }
+
+    res.status(200).render('withdrawal/withdrawalrequest', {
+      title: 'Withdrawal Request',
+      activities: activities,
+      totalPages: totalPages,
+      currentPage: page,
+      limit: limit, // Pass the 'limit' value to the template
+    });
+  } catch (err) {
+    console.log(err);
+    const error = new AppError('An error occurred', 500);
+    next(error);
+  }
 };
 
 const getwithdrawalHistory = async (req, res, next) => {

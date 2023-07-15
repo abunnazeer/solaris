@@ -1,58 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
- 
   <head>
-  
+    <title><%= title %></title>
   </head>
   <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
     <div class="wrapper">
-      <!-- <div id="loader"></div> -->
-
       <header class="main-header">
-        <!-- header -->
+        <!-- header-->
         <%- include('../layouts/header') %>
       </header>
 
-      <!-- Left side column. contains the logo and sidebar -->
       <aside class="main-sidebar">
         <!-- sidebar-->
         <%- include('../layouts/aside') %>
       </aside>
 
-      <!-- Content Wrapper. Contains page content -->
       <div class="content-wrapper">
         <div class="container-full">
-        
+          <section class="content">
+            <div class="col-12 col-xl-12">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title"><%= title %></h5>
+                </div>
+                <div></div>
+                <div class="card-body">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th style="width: 10%">SN</th>
+                        <th style="width: 15%">Date</th>
+                        <th style="width: 10%">Method</th>
+                        <th style="width: 10%">Amount Paid</th>
+                        <th style="width: 40%">Wallet Address</th>
+                        <th style="width: 10%">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% let count = 0; %> <% if (activities.length > 0) { %> <%
+                      activities.forEach(activity => { %> <% if (activity.status
+                      === 'Pending Approval') { %> <% count++; %> <% if (count
+                      <= 9) { %>
+                      <tr>
+                        <td><%= activity.sn %></td>
+                        <td>
+                          <%= new Date(activity.date).toLocaleString('en-US', {
+                          weekday: 'short', month: 'short', day: 'numeric',
+                          year: 'numeric', hour: 'numeric', minute: 'numeric',
+                          hour12: true }) %>
+                        </td>
+                        <td><%= activity.method %></td>
+                        <td>$<%= activity.amount %></td>
+                        <td><%= activity.walletAddress %></td>
+                        <td>
+                          <% if (activity.status === 'Approved') { %>
+                          <span class="badge badge-success">Approved</span>
+                          <% } else if (activity.status === 'Pending Approval')
+                          { %>
+                          <span class="badge badge-danger"
+                            >Pending Approval</span
+                          >
+                          <% } %>
+                        </td>
+                      </tr>
+                      <% } %> <% } %> <% }); %> <% if (count === 0) { %>
+                      <tr>
+                        <td colspan="6">No records found</td>
+                      </tr>
+                      <% } %> <% } else { %>
+                      <tr>
+                        <td colspan="6">No records found</td>
+                      </tr>
+                      <% } %>
+                    </tbody>
+                  </table>
 
-          	<!-- Main content -->
-		<section class="content">
-			<div class="row">
-				
-
-				<div class="col-xl-12 col-lg-7">
-					<div class="card">
-						<div class="card-body">
-							<h1>Withdrawal Request</h1>
-					
-
-						
-						</div> <!-- end card body -->
-					</div> <!-- end card -->
-				</div> <!-- end col -->
-			</div>
-			<!-- end row-->
-
-		</section>
-		<!-- /.content -->
+                  <% if (count > 9) { %>
+                  <div
+                    class="dataTables_paginate paging_simple_numbers align-right"
+                    id="example_paginate"
+                  >
+                    <% if (totalPages > 1) { %>
+                    <ul class="pagination">
+                      <% if (currentPage > 1) { %>
+                      <li class="paginate_button page-item previous">
+                        <a
+                          href="?page=<%= currentPage - 1 %>&limit=<%= limit %>"
+                          class="page-link"
+                          >Previous</a
+                        >
+                      </li>
+                      <% } %> <% for (let i = 1; i <= totalPages; i++) { %> <%
+                      if (i === currentPage) { %>
+                      <li class="paginate_button page-item active">
+                        <a href="#" class="page-link"><%= i %></a>
+                      </li>
+                      <% } else { %>
+                      <li class="paginate_button page-item">
+                        <a
+                          href="?page=<%= i %>&limit=<%= limit %>"
+                          class="page-link"
+                          ><%= i %></a
+                        >
+                      </li>
+                      <% } %> <% } %> <% if (currentPage < totalPages) { %>
+                      <li class="paginate_button page-item next">
+                        <a
+                          href="?page=<%= currentPage + 1 %>&limit=<%= limit %>"
+                          class="page-link"
+                          >Next</a
+                        >
+                      </li>
+                      <% } %>
+                    </ul>
+                    <% } %>
+                  </div>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
-      <!-- /.content-wrapper -->
 
       <footer class="main-footer">
-        <!-- footer -->
+        <!-- footer-->
         <%- include('../layouts/footer') %>
       </footer>
-  
+    </div>
   </body>
-  
 </html>

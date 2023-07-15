@@ -37,10 +37,10 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <% if (activities.length > 0) { %> <%
+                      <% let count = 0; %> <% if (activities.length > 0) { %> <%
                       activities.forEach(activity => { %> <% if (activity.status
                       === 'Pending Approval' || activity.status === 'Approved')
-                      { %>
+                      { %> <% count++; %>
                       <tr>
                         <td><%= activity.sn %></td>
                         <td>
@@ -71,11 +71,11 @@
                     </tbody>
                   </table>
 
+                  <% if (count >= 9 && totalPages > 1) { %>
                   <div
                     class="dataTables_paginate paging_simple_numbers align-right"
                     id="example_paginate"
                   >
-                    <% if (totalPages > 1) { %>
                     <ul class="pagination">
                       <% if (currentPage > 1) { %>
                       <li class="paginate_button page-item previous">
@@ -108,8 +108,8 @@
                       </li>
                       <% } %>
                     </ul>
-                    <% } %>
                   </div>
+                  <% } %>
                 </div>
               </div>
             </div>
