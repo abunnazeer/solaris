@@ -65,10 +65,20 @@ router.post(
 router.delete('/:id', protect, deletePortfolio);
 
 // Route to render the edit form
-router.get('/edit-portfolio/:id', protect, getEditPortfolioForm);
+router.get(
+  '/edit-portfolio/:id',
+  protect,
+
+  getEditPortfolioForm
+);
 
 // Route to handle the update request
-router.post('/update-portfolio/:id', protect, updatePortfolio);
+router.post(
+  '/update-portfolio/:id',
+  protect,
+  uploadPortfolioPhoto,
+  updatePortfolio
+);
 // View single portfolio
 router.get('/:id', protect, viewPortfolio);
 

@@ -2,6 +2,11 @@
 const mongoose = require('mongoose');
 
 const portfolioSchema = new mongoose.Schema({
+  sn: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   portfolioTitle: {
     type: String,
     required: true,

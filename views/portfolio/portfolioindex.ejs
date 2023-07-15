@@ -38,7 +38,8 @@
                   <table class="table table-striped">
                     <thead>
                       <tr>
-                        <th style="width: 90%">Portfolio Name</th>
+                        <th style="width: 5%">SN</th>
+                        <th style="width: 85%">Portfolio Name</th>
 
                         <th style="width: 10%">Actions</th>
                       </tr>
@@ -50,6 +51,7 @@
 
                       <% } else { %> <% portfolio.forEach((item) => { %>
                       <tr>
+                        <td><%= item.sn %></td>
                         <td><%= item.portfolioTitle %></td>
                         <td class="table-action min-w-100">
                           <a

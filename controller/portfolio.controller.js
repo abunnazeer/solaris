@@ -36,7 +36,24 @@ const getPortfolio = catchAsync(async (req, res) => {
 
 const createPortfolio = catchAsync(async (req, res, next) => {
   try {
+    const highestSerialPortfolio = await Portfolio.findOne(
+      {},
+      {},
+      { sort: { sn: -1 } }
+    );
+    let serialNumber = '01';
+
+    if (highestSerialPortfolio && highestSerialPortfolio.sn) {
+      const highestSerial = highestSerialPortfolio.sn;
+      const currentSerialNumber = parseInt(highestSerial, 10);
+      if (!isNaN(currentSerialNumber)) {
+        const nextSerialNumber = currentSerialNumber + 1;
+        serialNumber = nextSerialNumber.toString().padStart(2, '0');
+      }
+    }
+
     const portfolioData = {
+      sn: serialNumber,
       portfolioTitle: req.body.portfolioTitle,
       description: req.body.description,
       minimumCapital: req.body.minimumCapital,
@@ -49,15 +66,10 @@ const createPortfolio = catchAsync(async (req, res, next) => {
         cPercentage: req.body.cPercentage,
       },
       duration: req.body.duration,
-
       imageName: req.file.filename,
     };
 
-    console.log('Portfolio Data:', portfolioData);
-
     const portfolio = await Portfolio.create(portfolioData);
-
-    console.log('Created Portfolio:', portfolio);
 
     res.status(201).render('msg/succeed', {
       message: 'Portfolio created successfully',
@@ -69,23 +81,52 @@ const createPortfolio = catchAsync(async (req, res, next) => {
   }
 });
 
-// Update portfolio
 const updatePortfolio = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const updatedPortfolio = req.body;
 
   try {
+    const updatedPortfolio = {
+      portfolioTitle: req.body.portfolioTitle,
+      description: req.body.description,
+      minimumCapital: req.body.minimumCapital,
+      returnOnInvestment: {
+        rioPText: req.body.rioPText,
+        rioPercentage: req.body.rioPercentage,
+      },
+      compounding: {
+        cPText: req.body.cPText,
+        cPercentage: req.body.cPercentage,
+      },
+      duration: req.body.duration,
+    };
+
+    // Check if an image file was uploaded
+    if (req.file) {
+      updatedPortfolio.imageName = req.file.filename;
+    }
+
     const portfolio = await Portfolio.findByIdAndUpdate(id, updatedPortfolio, {
       new: true,
+      runValidators: true,
     });
 
     if (!portfolio) {
-      return res.status(404).json({ message: 'Portfolio not found' });
+      console.log('Portfolio not found');
+      return res
+        .status(404)
+        .render('response/status', { message: 'Portfolio not found' });
     }
 
-    res.json({ message: 'Portfolio updated successfully', portfolio });
+    console.log('Portfolio updated successfully');
+
+    res
+      .status(200)
+      .render('response/status', { message: 'Portfolio updated successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to update portfolio' });
+    console.error('Error updating portfolio:', error);
+    res.status(500).render('response/status', {
+      message: 'Failed to update portfolio',
+    });
   }
 });
 

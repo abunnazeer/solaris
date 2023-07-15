@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 
 const transactionsActivitySchema = new mongoose.Schema({
+  title: {
+    type: String,
+  },
   sn: {
     type: Number,
     required: true,
@@ -32,6 +35,11 @@ const transactionsActivitySchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Portfolio',
     required: true,
+  },
+
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
   },
   status: {
     type: String,

@@ -14,6 +14,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 
 // Importing routers
+const Transactions = require('./models/portfolio/transaction.model');
 const buyPortfolio = require('./models/portfolio/buyportfolio.model');
 const userRouter = require('./routes/user.routers');
 const portfolioRouter = require('./routes/portfolio.routers');
@@ -134,14 +135,11 @@ io.on('connection', socket => {
   });
 });
 
-// Function to send balance update
 function sendBalanceUpdate(portfolioId, balance, compBalance) {
-  // console.log('Sending balance update:', portfolioId, balance, compBalance);
   const message = JSON.stringify({ portfolioId, balance, compBalance });
   io.emit('balanceUpdate', message);
 }
 
-// // Update portfolio
 const updatePortfolio = async (
   portfolio,
   dailyPercentage,
@@ -174,13 +172,17 @@ const updatePortfolio = async (
     }
 
     let newBalance;
+    let incrementValue;
     if (portfolio.payout === 'compounding') {
-      newBalance = compBalance + portfolio.compPercentage * portfolio.amount;
+      incrementValue = dailyPercentage * portfolio.amount;
+      newBalance = compBalance + incrementValue;
     } else {
-      newBalance = balance + dailyPercentage * portfolio.amount;
+      incrementValue = dailyPercentage * portfolio.amount;
+      newBalance = balance + incrementValue;
     }
 
     let updatedPortfolio;
+
     if (portfolio.payout === 'compounding') {
       updatedPortfolio = await buyPortfolio.findByIdAndUpdate(
         portfolio._id,
@@ -196,6 +198,35 @@ const updatePortfolio = async (
         { balance: newBalance },
         { new: true }
       );
+    }
+
+    // Generate a serial number
+    const sn = generateRandomNumber();
+
+    // Get the current date
+    const date = new Date();
+
+    const transActivity = new Transactions({
+      sn: sn,
+      date: date,
+      title: portfolio.payout,
+      description: `Credit of $${incrementValue} made for ${portfolio.portfolioName}`,
+      buyPortfolioId: portfolio.userId,
+      status: portfolio.userId ? 'Credited' : 'Approved',
+      amount: incrementValue,
+      userId: portfolio.userId,
+      method: portfolio.currency,
+      authCode: 0,
+    });
+
+    try {
+      // Save the transactions activity document without validation
+      await transActivity.save({ validateBeforeSave: false });
+    } catch (error) {
+      console.error('Failed to save the document:', error);
+      return res.status(500).render('response/status', {
+        message: 'Failed to save the document',
+      });
     }
 
     sendBalanceUpdate(
@@ -215,6 +246,13 @@ const updatePortfolio = async (
     currentTime += millisecondsInDay;
   }, dailyInterval);
 };
+
+// Function to generate a random number between 10000 and 99999
+function generateRandomNumber() {
+  const min = 10000;
+  const max = 99999;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 // // Dashboard route
 // app.get('/dashboard', protect, async (req, res) => {
