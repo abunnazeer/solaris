@@ -19,7 +19,7 @@ const getReferral = async (req, res, next) => {
       downline => downline.user
     );
     const referredUsers = await User.find({ _id: { $in: referredUserIds } });
-
+    console.log(referringUser.referralCode);
     // Get the profiles for the referred users
     const profilePromises = referredUsers.map(user =>
       Profile.findOne({ _id: user._id })
@@ -50,11 +50,16 @@ const getReferral = async (req, res, next) => {
     const endIndex = currentPage * limit;
     const paginatedUsers = referredUsersData.slice(startIndex, endIndex);
 
+    const protocol = req.protocol;
+    const host = req.get('host');
+    const url = `${protocol}://${host}/user/register`;
     res.render('referrals/referredusers', {
       title: 'Referred Partners',
       referredUsers: paginatedUsers,
       totalPages,
       currentPage,
+      url,
+      referringUser,
     });
   } catch (err) {
     next(err);

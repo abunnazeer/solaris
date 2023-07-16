@@ -23,7 +23,40 @@
                 <div class="card-header">
                   <h5 class="card-title"><%= title %></h5>
                 </div>
-                <div></div>
+                <div class="row" style="margin-right: 10px">
+                  <div class="col-5"></div>
+                  <div class="col-7">
+                    <div class="input-group" style="gap: 20px">
+                      <div
+                        style="
+                          border: 1px solid blue;
+
+                          padding: 19px 0px;
+                        "
+                      >
+                        Referal Link:
+                        <span
+                          id="referralCode"
+                          style="
+                            background: #fff2f2;
+                            padding: 15px;
+                            margin: 5px;
+                            border-radius: 10px;
+                          "
+                        >
+                          <%= url %>/<%=referringUser.referralCode %>
+                        </span>
+                      </div>
+                      <button
+                        id="copyReferralLinkButton"
+                        class="waves-effect waves-light btn btn-success"
+                        type="button"
+                      >
+                        Copy Referral Link
+                      </button>
+                    </div>
+                  </div>
+                </div>
                 <div class="card-body">
                   <table class="table table-striped">
                     <thead>
@@ -110,6 +143,24 @@
           </section>
         </div>
       </div>
+
+      <script>
+        function copyReferralLink() {
+          const referralLink = document.getElementById('referralCode');
+          const range = document.createRange();
+          const textNode = referralLink.firstChild;
+          range.selectNode(textNode);
+          window.getSelection().removeAllRanges();
+          window.getSelection().addRange(range);
+          document.execCommand('copy');
+          window.getSelection().removeAllRanges();
+        }
+
+        const copyReferralLinkButton = document.getElementById(
+          'copyReferralLinkButton'
+        );
+        copyReferralLinkButton.addEventListener('click', copyReferralLink);
+      </script>
 
       <footer class="main-footer">
         <!-- footer-->
