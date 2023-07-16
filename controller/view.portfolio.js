@@ -1,6 +1,7 @@
 const Portfolio = require('../models/portfolio/portfolio.model');
 const BuyPortfolio = require('../models/portfolio/buyportfolio.model');
 const User = require('../models/user/user.model');
+const Transactions = require('../models/portfolio/transaction.model');
 
 const Profile = require('../models/user/profile.model');
 const catchAsync = require('../utils/catchAsync');
@@ -48,79 +49,6 @@ function generateOrderNumber() {
   const paddedNumber = randomNumber.toString().padStart(8, '0');
   return paddedNumber;
 }
-
-// const getPayment = catchAsync(async (req, res) => {
-//   const { id } = req.params;
-
-//   const protocol = req.protocol;
-//   const host = req.get('host');
-//   const successUrl = `${protocol}://${host}/portfolio/payment-completed?json=true`;
-//   const portfolio = await BuyPortfolio.findById(id);
-//   const { userId } = portfolio;
-//   const user = await User.findOne({ _id: userId });
-//   const url = 'https://plisio.net/api/v1/invoices/new';
-
-//   const params = {
-//     source_currency: 'USD',
-//     source_amount: portfolio.amount,
-//     order_number: generateOrderNumber(),
-//     currency: portfolio.currency,
-//     email: user.email,
-//     order_name: portfolio.portfolioName,
-//     callback_url: true,
-//     success_callback_url: true,
-//     fail_callback_url: true,
-//     api_key: secretKey,
-//   };
-
-//   const config = {
-//     params,
-//     maxRedirects: 0, // Disable Axios redirect handling
-//     validateStatus: status => status >= 200 && status < 303,
-//     headers: {
-//       'User-Agent': req.headers['user-agent'],
-//     },
-//   };
-
-//   try {
-//     const response = await axios.get(url, config);
-//     const { invoice_url, txn_id } = response.data.data;
-
-//     // Update portfolio.walletAddress with the txn_id before redirecting
-//     portfolio.walletAddress = txn_id;
-//     await portfolio.save();
-
-//     // Perform the redirect to the invoice URL
-//     return res.redirect(303, invoice_url);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).render('response/status', {
-//       message: 'An error occurred while generating invoice.',
-//     });
-//   }
-// });
-
-// const paymentSucceeded = catchAsync(async (req, res) => {
-//   // const { id, sum } = req.params;
-
-//   // Example code to parse the JSON response
-//   const paymentData = req.body;
-//   console.log(paymentData);
-
-//   const portfolio = await BuyPortfolio.findOne({
-//     walletAddress: paymentData.txn_id,
-//   });
-//   console.log(portfolio);
-//   if (portfolio) {
-//     portfolio.status = 'active';
-//     portfolio.portfolioCryptoAmount = sum;
-//     await portfolio.save();
-//   }
-
-//   // Add any additional logic or response handling as needed
-
-//   res.status(200).send('Payment succeeded');
-// });
 
 const fetchCryptoPrices = async (cryptocurrencies, targetCurrency) => {
   try {
@@ -222,18 +150,12 @@ const postBuyPortfolio = catchAsync(async (req, res) => {
 
   const userId = req.user._id;
 
-  // const currentDate = new Date();
-  // const dateOfExpiry = new Date(currentDate);
-  // dateOfExpiry.setMonth(dateOfExpiry.getMonth() + 12);
-
   const buyPortfolio = new BuyPortfolio({
     userId,
     depositAmount,
     portfolioName: portfolio.portfolioTitle,
     payout,
     currency,
-    // dateOfPurchase: currentDate,
-    // dateOfExpiry,
   });
 
   try {
@@ -356,7 +278,8 @@ const getPortfolioIndex = catchAsync(async (req, res) => {
   const totalPages = Math.ceil(portfolioCount / limit);
 
   const portfolio = await Portfolio.find()
-    .select('portfolioTitle')
+    .select('sn portfolioTitle') // Include 'sn' and 'portfolioTitle' fields
+    .sort({ sn: 1 }) // Sort portfolios by 'sn' field in ascending order
     .skip(skip)
     .limit(limit);
 
@@ -367,40 +290,6 @@ const getPortfolioIndex = catchAsync(async (req, res) => {
     totalPages: totalPages,
   });
 });
-
-// PORTFOLIO STATUS
-
-// const getStatusIndex = catchAsync(async (req, res) => {
-//   const page = parseInt(req.query.page) || 1; // Get the page number from the query parameters (default: page 1)
-//   const limit = 10; // Number of items per page
-//   const skip = (page - 1) * limit; // Calculate the number of items to skip
-
-//   const buyPortfolioCount = await BuyPortfolio.countDocuments();
-//   const totalPages = Math.ceil(buyPortfolioCount / limit);
-
-//   const userDetails = await BuyPortfolio.find()
-//     .skip(skip)
-//     .limit(limit)
-//     .populate('userId') // Populate the 'user' field to retrieve the associated user data
-//     .exec();
-
-//   const userId = userDetails[0].userId._id;
-//   const userProfile = await Profile.findOne({ _id: userId });
-
-//   console.log(userProfile.fullName);
-//   if (!userProfile) {
-//     return res
-//       .status(404)
-//       .render('response/status', { message: 'User profile not found' });
-//   }
-//   res.render('portfolio/statusindex', {
-//     title: 'Portfolio Status',
-//     userDetails,
-//     // userProfile,
-//     currentPage: page,
-//     totalPages: totalPages,
-//   });
-// });
 
 const getStatusIndex = catchAsync(async (req, res) => {
   const page = parseInt(req.query.page) || 1; // Get the page number from the query parameters (default: page 1)
@@ -474,7 +363,6 @@ const viewPortfolio = catchAsync(async (req, res) => {
   }
 });
 
-// //////////////////////// UPDATE PAYMENT
 const updatePayment = catchAsync(async (req, res) => {
   const { id } = req.params;
   const { walletAddress, cryptoAmount } = req.body;
@@ -491,6 +379,52 @@ const updatePayment = catchAsync(async (req, res) => {
         .status(404)
         .render('response/status', { message: 'Payment not found' });
     }
+
+    // 1. Generate a serial number and assign it to `sn`
+    function generateRandomNumber() {
+      const min = 10000;
+      const max = 99999;
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // 2. Get the current date and assign it to `date`
+    const date = new Date();
+
+    const transActivity = new Transactions({
+      sn: generateRandomNumber(),
+      date: date,
+      title: portfolio.payout,
+      description: `Deposit of $${portfolio.depositAmount} made for ${portfolio.portfolioName}`,
+      buyPortfolioId: id,
+      status: id ? 'Deposit' : 'Approved',
+      amount: portfolio.depositAmount,
+      userId: id,
+      method: portfolio.currency, // Replace 'paymentMethod' with the actual payment method value
+      authCode: 0,
+    });
+
+    transActivity.validate(function (error) {
+      if (error) {
+        console.error('Validation error:', error);
+        return res
+          .status(400)
+          .render('response/status', { message: 'Validation error' });
+      }
+
+      transActivity.save({ runValidators: true }, function (error) {
+        if (error) {
+          console.error('Save error:', error);
+          return res.status(500).render('response/status', {
+            message: 'Failed to save the document',
+          });
+        }
+
+        console.log('Document saved successfully');
+        return res.status(200).render('response/status', {
+          message: 'Document saved successfully',
+        });
+      });
+    });
 
     // Get logged-in user email and name
     const { email } = req.user;
@@ -514,12 +448,13 @@ const updatePayment = catchAsync(async (req, res) => {
       message: adminMessage,
     });
 
-    return res.status(404).render('response/status', {
+    return res.status(200).render('response/status', {
       message:
         'You have sent your payment. Your portfolio will be activated after payment has been confirmed',
     });
   } catch (error) {
-    res
+    console.error('Failed to update the payment:', error);
+    return res
       .status(500)
       .render('response/status', { message: 'Failed to update the payment' });
   }

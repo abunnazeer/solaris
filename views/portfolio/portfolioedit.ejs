@@ -31,6 +31,7 @@
                       <form
                         action="/portfolio/update-portfolio/<%= portfolio._id %>"
                         method="POST"
+                         enctype="multipart/form-data"
                       >
                         <!-- Form fields for editing the portfolio details -->
                         <!-- Replace the input values with the corresponding portfolio data -->
@@ -42,7 +43,7 @@
                               type="text"
                               class="form-control ps-15"
                               placeholder="Title"
-                              name="title"
+                              name="portfolioTitle"
                               value="<%= portfolio.portfolioTitle %>"
                               required
                             />
@@ -60,6 +61,18 @@
                               name="description"
                               value="<%= portfolio.description %>"
                               required
+                            />
+                          </div>
+                        </div>
+                         <div class="form-group">
+                          <div class="mb-3">
+                            <label for="image" class="form-label">Image:</label>
+                            <input
+                              id="image"
+                              type="file"
+                              class="form-control ps-15"
+                              name="image"
+                             
                             />
                           </div>
                         </div>
@@ -88,7 +101,7 @@
                               type="text"
                               class="form-control ps-15"
                               placeholder="Return on Percentage"
-                              name="returnOnInvestment"
+                              name="rioPText"
                               value="<%= portfolio.returnOnInvestment.rioPText %>"
                               required
                             />
@@ -104,7 +117,7 @@
                               type="text"
                               class="form-control ps-15"
                               placeholder="Return on Percentage"
-                              name="returnOnInvestment"
+                              name="rioPercentage"
                               value="<%= portfolio.returnOnInvestment.rioPercentage %>"
                               required
                             />
@@ -121,7 +134,7 @@
                               type="text"
                               class="form-control ps-15"
                               placeholder="Percentage in text"
-                              name="returnOnInvestment"
+                              name="cPText"
                               value="<%= portfolio.compounding.cPText %>"
                               required
                             />
@@ -137,7 +150,7 @@
                               type="text"
                               class="form-control ps-15"
                               placeholder="Compounding Percentage in Number"
-                              name="returnOnInvestment"
+                              name="cPercentage"
                               value="<%= portfolio.compounding.cPercentage %>"
                               required
                             />
@@ -154,7 +167,7 @@
                               type="text"
                               class="form-control ps-15"
                               placeholder="Portfolio Duration"
-                              name="portfolioDuration"
+                              name="duration"
                               value="<%= portfolio.duration %>"
                             />
                           </div>

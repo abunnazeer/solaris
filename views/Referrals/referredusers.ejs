@@ -1,59 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
- 
   <head>
-
+    <title><%= title %></title>
   </head>
   <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
     <div class="wrapper">
-      <!-- <div id="loader"></div> -->
-
       <header class="main-header">
-        <!-- header -->
+        <!-- header-->
         <%- include('../layouts/header') %>
       </header>
 
-      <!-- Left side column. contains the logo and sidebar -->
       <aside class="main-sidebar">
         <!-- sidebar-->
         <%- include('../layouts/aside') %>
       </aside>
 
-      <!-- Content Wrapper. Contains page content -->
       <div class="content-wrapper">
         <div class="container-full">
-        
+          <section class="content">
+            <div class="col-12 col-xl-12">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title"><%= title %></h5>
+                </div>
+                <div></div>
+                <div class="card-body">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th style="width: 5%">SN</th>
+                        <th style="width: 15%">Full Name</th>
+                        <th style="width: 20%">Email</th>
+                        <th style="width: 30%">Invested</th>
+                        <th style="width: 10%">Status</th>
+                      </tr>
+                    </thead>
+                    <!-- ...existing code... -->
+                    <tbody>
+                      <% if (referredUsers.length > 0) { %> <%
+                      referredUsers.forEach((user, index) => { %>
+                      <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= user.profile.fullName %></td>
+                        <td><%= user.user.email %></td>
+                        <td>
+                          <% if (user.buyPortfolio &&
+                          user.buyPortfolio.depositAmount) { %>
+                          <span class="badge badge-warning">Pending</span>
+                          <% } else if (user.buyPortfolio &&
+                          user.buyPortfolio.amount) { %>
+                          <span class="badge badge-success">Invested</span>
+                          <% } else { %>
+                          <span class="badge bg-light">N/A</span>
+                          <% } %>
+                        </td>
+                        <td><!-- Display the status --></td>
+                      </tr>
+                      <% }) %> <% } else { %>
+                      <tr>
+                        <td colspan="5">No records found</td>
+                      </tr>
+                      <% } %>
+                    </tbody>
+                    <!-- ...remaining code... -->
+                  </table>
 
-          	<!-- Main content -->
-		<section class="content">
-			<div class="row">
-				
-
-				<div class="col-xl-12 col-lg-7">
-					<div class="card">
-						<div class="card-body">
-							<h1>Referred Partners</h1>
-					
-
-						
-						</div> <!-- end card body -->
-					</div> <!-- end card -->
-				</div> <!-- end col -->
-			</div>
-			<!-- end row-->
-
-		</section>
-		<!-- /.content -->
+                  <div
+                    class="dataTables_paginate paging_simple_numbers align-right"
+                    id="example_paginate"
+                  >
+                    <% if (totalPages > 1) { %>
+                    <ul class="pagination">
+                      <% if (currentPage > 1) { %>
+                      <li class="paginate_button page-item previous">
+                        <a
+                          href="?page=<%= currentPage - 1 %>&limit=<%= limit %>"
+                          class="page-link"
+                          >Previous</a
+                        >
+                      </li>
+                      <% } %> <% for (let i = 1; i <= totalPages; i++) { %> <%
+                      if (i === currentPage) { %>
+                      <li class="paginate_button page-item active">
+                        <a href="#" class="page-link"><%= i %></a>
+                      </li>
+                      <% } else { %>
+                      <li class="paginate_button page-item">
+                        <a
+                          href="?page=<%= i %>&limit=<%= limit %>"
+                          class="page-link"
+                          ><%= i %></a
+                        >
+                      </li>
+                      <% } %> <% } %> <% if (currentPage < totalPages) { %>
+                      <li class="paginate_button page-item next">
+                        <a
+                          href="?page=<%= currentPage + 1 %>&limit=<%= limit %>"
+                          class="page-link"
+                          >Next</a
+                        >
+                      </li>
+                      <% } %>
+                    </ul>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
-      <!-- /.content-wrapper -->
 
       <footer class="main-footer">
-        <!-- footer -->
+        <!-- footer-->
         <%- include('../layouts/footer') %>
       </footer>
-      
-   
+    </div>
   </body>
- 
 </html>

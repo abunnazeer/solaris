@@ -17,10 +17,6 @@ const {
   getInvestHistory,
   getShortTermForm,
   getDetailsPage,
-  // REFERRAL
-  getReferral,
-  getReferralBunus,
-  // withdrawal
 } = require('../controller/view.controller');
 
 const {
@@ -63,7 +59,7 @@ router.patch(
 );
 
 // router.post('/register', register);
-router.post('/register/:reCode?', register);
+router.post('/register/:referredByCode?', register);
 
 router.post('/login', login);
 //  this is a api baised url
@@ -89,7 +85,7 @@ router.post(
 );
 
 // router.get('/user/users', protect, restrictTo('admin'), getUserIndex);
-router.get('/register/:reCode?', getRegistrationForm);
+router.get('/register/:referredByCode?', getRegistrationForm);
 // router.get('/biz-register', getBizForm);
 
 router.get('/login', getLoginForm);
@@ -118,8 +114,5 @@ router.get('/user-investments', protect, getActivePortfolio);
 router.get('/investment-history', protect, getInvestHistory);
 router.get('/short-term-funds', protect, getShortTermForm);
 router.get('/portfolio-details', protect, getDetailsPage);
-// REFERRAL VIEW
-router.get('/referred-users', protect, getReferral);
-router.get('/referral-bonus', protect, getReferralBunus);
 
 module.exports = router;

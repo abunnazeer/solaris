@@ -195,18 +195,6 @@ const getShortTermForm = (req, res) => {
     .render('portfolio/shorttermfunds', { title: 'Short Term Open Funds' });
 };
 
-// REFERRAL VIEW
-const getReferral = (req, res) => {
-  res
-    .status(200)
-    .render('referrals/referredusers', { title: 'Referred Partners' });
-};
-const getReferralBunus = (req, res) => {
-  res
-    .status(200)
-    .render('referrals/referralbonus', { title: 'Referral Bunus' });
-};
-
 module.exports = {
   getRegistrationForm,
   getLoginForm,
@@ -225,8 +213,4 @@ module.exports = {
   getInvestHistory,
   getShortTermForm,
   getDetailsPage,
-
-  // REFERRAL VIEW
-  getReferral,
-  getReferralBunus,
 };
