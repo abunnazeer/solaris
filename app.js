@@ -19,6 +19,7 @@ const buyPortfolio = require('./models/portfolio/buyportfolio.model');
 const userRouter = require('./routes/user.routers');
 const portfolioRouter = require('./routes/portfolio.routers');
 const activity = require('./routes/activity.routers');
+const referral = require('./routes/referral.routers');
 const { protect } = require('./controller/auth.controller');
 const globalErrorHandler = require('./controller/error.controller');
 const AppError = require('./utils/appError');
@@ -106,6 +107,7 @@ app.use(
 app.use('/user', userRouter);
 app.use('/portfolio', portfolioRouter);
 app.use('/user', activity);
+app.use('/user', referral);
 
 // Error handling middleware
 app.use(globalErrorHandler);

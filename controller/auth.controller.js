@@ -35,15 +35,16 @@ const createSendToken = (user, profile, statusCode, res, redirectUrl) => {
 //////////////////////////////////////////////////////
 //////////// REGISTERING  ENDPOINT //////////////////
 /////////////////////////////////////////////////////
-function generateRandomNumber() {
+function generateReferralCode() {
   const randomNumber = Math.floor(Math.random() * 100000000);
   const paddedNumber = randomNumber.toString().padStart(8, '0');
   return paddedNumber;
 }
 
 const register = catchAsync(async (req, res, next) => {
-  const referMe = req.params.reCode;
-  const { email, password, passwordConfirm, role } = req.body;
+  const { email, password, passwordConfirm, referredByCodeForm } = req.body;
+  let { referredByCode } = req.params;
+  // const { referralCode: referredByCodeForm } = req.body;
 
   // Check if the email already exists in the database
   const existingUser = await User.findOne({ email });
@@ -66,29 +67,48 @@ const register = catchAsync(async (req, res, next) => {
       )
     );
   }
-  // Check if a user has referred the new user
-  const referredBy = await User.findOne({ referralCode: referMe });
 
-  // If referral code provided but no user found with that referral code
-  if (referMe && !referredBy) {
-    return next(new AppError('Invalid referral code.', 400));
+  // Find the referring user based on the referral code if provided
+  let referredByUser = null;
+  if (referredByCode) {
+    referredByUser = await User.findOne({ referralCode: referredByCode });
+    if (!referredByUser) {
+      return res.status(404).json({ error: 'Invalid referral code' });
+    }
+  } else if (referredByCodeForm) {
+    referredByUser = await User.findOne({ referralCode: referredByCodeForm });
+    if (!referredByUser) {
+      return res.status(404).json({ error: 'Invalid referral code from form' });
+    }
   }
+
   // Create a new user
   const newUser = await User.create({
     email,
     password,
     passwordConfirm,
-    role,
-    referralCode: generateRandomNumber(),
-    referredMe: referredBy ? referredBy.referMe : null,
+    role: 'personal',
+    referredBy: referredByUser ? referredByUser._id : null,
+    referralCode: generateReferralCode(), // Generate referral code
+    downlines: [], // Initialize the downlines array
   });
-  //Create user profile while creating user
+
+  // Create user profile while creating user
   const newProfile = await Profile.create({
     // Assigning user id to profile id
     _id: newUser._id,
     fullName: req.body.fullName,
     role: newUser.role,
   });
+
+  // Add the new user as a downline to the referring user (if exists)
+  if (referredByUser) {
+    referredByUser.downlines.push({
+      level: 1,
+      user: newUser._id,
+    });
+    await referredByUser.save({ validateBeforeSave: false });
+  }
 
   // Generate email verification token
   const emailVerificationToken = newUser.generateEmailVerificationToken();
@@ -117,6 +137,82 @@ const register = catchAsync(async (req, res, next) => {
   createSendToken(user, profile, statusCode, res, redirectUrl);
 });
 
+// const register = catchAsync(async (req, res, next) => {
+//   const referMe = req.params.reCode;
+//   const { email, password, passwordConfirm, role } = req.body;
+
+//   // Check if the email already exists in the database
+//   const existingUser = await User.findOne({ email });
+//   if (existingUser) {
+//     return res.status(400).json({ error: 'Email address already exists.' });
+//   }
+
+//   // Validate password and password confirmation
+//   if (password !== passwordConfirm) {
+//     return next(new AppError('Passwords do not match.', 400));
+//   }
+
+//   // Password validation: at least 8 characters, alphanumeric combination
+//   const isAlphanumeric = /^[0-9a-zA-Z]+$/;
+//   if (password.length < 8 || isAlphanumeric.test(password)) {
+//     return next(
+//       new AppError(
+//         'Password must be at least 8 characters long and contain only alphanumeric characters.',
+//         400
+//       )
+//     );
+//   }
+//   // Check if a user has referred the new user
+//   const referredBy = await User.findOne({ referralCode: referMe });
+
+//   // If referral code provided but no user found with that referral code
+//   if (referMe && !referredBy) {
+//     return next(new AppError('Invalid referral code.', 400));
+//   }
+//   // Create a new user
+//   const newUser = await User.create({
+//     email,
+//     password,
+//     passwordConfirm,
+//     role,
+//     referralCode: generateRandomNumber(),
+//     referredMe: referredBy ? referredBy.referMe : null,
+//   });
+//   //Create user profile while creating user
+//   const newProfile = await Profile.create({
+//     // Assigning user id to profile id
+//     _id: newUser._id,
+//     fullName: req.body.fullName,
+//     role: newUser.role,
+//   });
+
+//   // Generate email verification token
+//   const emailVerificationToken = newUser.generateEmailVerificationToken();
+//   await newUser.save({ validateBeforeSave: false });
+
+//   // Email verification URL
+//   const emailVerificationURL = `${req.protocol}://${req.get(
+//     'host'
+//   )}/user/verify-email/${emailVerificationToken}`;
+
+//   // Send verification email
+//   const message = `Please click on the following link to verify your email: ${emailVerificationURL}`;
+//   await sendEmail({
+//     email: newUser.email,
+//     subject: 'Email Verification',
+//     message,
+//   });
+
+//   // Remove password from the response
+//   newUser.password = undefined;
+
+//   const user = newUser;
+//   const profile = newProfile;
+//   const statusCode = 201;
+//   const redirectUrl = '/user/success';
+//   createSendToken(user, profile, statusCode, res, redirectUrl);
+// });
+
 // Email verification endpoint
 const verifyEmail = catchAsync(async (req, res, next) => {
   const response = 'Email verified. You can now log in.';
@@ -137,7 +233,7 @@ const verifyEmail = catchAsync(async (req, res, next) => {
     );
   }
 
-  user.active = true; // Activate the user's account
+  user.isActive = true; // Activate the user's account
   user.emailVerificationToken = undefined;
   user.emailVerificationExpires = undefined;
   await user.save({ validateBeforeSave: false });
