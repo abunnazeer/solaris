@@ -237,7 +237,7 @@ const updatePortfolio = async (
       updatedPortfolio.compBalance
     );
 
-    console.log('Updated Portfolio:', updatedPortfolio);
+    // console.log('Updated Portfolio:', updatedPortfolio);
 
     if (portfolio.payout === 'compounding') {
       compBalance = newBalance;
@@ -400,7 +400,7 @@ app.get('/dashboard', protect, async (req, res) => {
             updatedPortfolio.compBalance
           );
 
-          console.log('Updated Portfolio:', updatedPortfolio);
+          // console.log('Updated Portfolio:', updatedPortfolio);
 
           compBalance = newCompBalance;
           currentTime += 60 * 1000; // Increment currentTime by 1 minute
