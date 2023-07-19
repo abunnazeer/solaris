@@ -225,11 +225,13 @@ const paymentComfirmation = catchAsync(async (req, res) => {
         const { _id: secondLevelReferrerUserId } = await User.findOne({
           _id: referringUserId,
         });
-
+        const userProfile = await Profile.findOne({ _id: userId });
+        const description = `Credited 5% $${bonusAmount}, as a referral from ${userProfile.fullName} to your ${portfoliodetail.payout} Wallet `;
         const secondLevelReferralBonus = new Referralbonus({
           referringUserId: secondLevelReferrerId, // The user who referred the referring user
           bonusAmount: secondLevelBonusAmount,
           referredUserId: secondLevelReferrerUserId, // The referring user who was referred
+          description: description,
         });
 
         // Save it without validation
@@ -247,11 +249,13 @@ const paymentComfirmation = catchAsync(async (req, res) => {
           const { _id: thirdLevelReferrerUserId } = await User.findOne({
             _id: secondLevelReferrerId,
           });
-
+          const userProfile = await Profile.findOne({ _id: userId });
+          const description = `Credited 5% $${bonusAmount}, as a referral from ${userProfile.fullName} to your ${portfoliodetail.payout} Wallet `;
           const thirdLevelReferralBonus = new Referralbonus({
             referringUserId: thirdLevelReferrerId, // The user who referred the second-level referrer
             bonusAmount: thirdLevelBonusAmount,
             referredUserId: thirdLevelReferrerUserId, // The second-level referrer who was referred
+            description: description,
           });
 
           // Save it without validation
