@@ -5,7 +5,7 @@ const User = require('../models/user/user.model');
 const Profile = require('../models/user/profile.model');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
-const Portfolio = require('../models/portfolio/portfolio.model');
+const Bonus = require('../models/user/referralBonus.model');
 const buyPortfolio = require('../models/portfolio/buyportfolio.model');
 
 const getReferral = async (req, res, next) => {
@@ -66,12 +66,42 @@ const getReferral = async (req, res, next) => {
   }
 };
 
-const getReferralBunus = (req, res) => {
-  res
-    .status(200)
-    .render('referrals/referralbonus', { title: 'Referral Bunus' });
+const getReferralBonus = async (req, res, next) => {
+  const id = req.user._id;
+  try {
+    // Get all the amounts related to the user
+    const getAllReferalBonus = await Bonus.find({
+      referringUserId: id,
+      user: id,
+    });
+
+    const currentPage = req.query.page ? parseInt(req.query.page, 10) : 1;
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;
+    const totalUsers = getAllReferalBonus.length;
+    const totalPages = Math.ceil(totalUsers / limit);
+
+    // Apply pagination to the getAllReferalBonus array
+    const startIndex = (currentPage - 1) * limit;
+    const endIndex = currentPage * limit;
+    const paginatedUsers = getAllReferalBonus.slice(startIndex, endIndex);
+
+    const protocol = req.protocol;
+    const host = req.get('host');
+    const url = `${protocol}://${host}/user/register`;
+    res.render('referrals/referralbonus', {
+      title: 'Referred Partners',
+      referredUsers: paginatedUsers,
+      totalPages,
+      currentPage,
+      url,
+      referringUser: req.user,
+    });
+  } catch (err) {
+    next(err);
+  }
 };
+
 module.exports = {
   getReferral,
-  getReferralBunus,
+  getReferralBonus,
 };

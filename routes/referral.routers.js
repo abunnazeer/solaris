@@ -3,7 +3,7 @@ const express = require('express');
 
 const {
   getReferral,
-  getReferralBunus,
+  getReferralBonus,
 } = require('../controller/referral.controller');
 const {
   restrictTo,
@@ -16,6 +16,6 @@ const router = express.Router();
 router.use(isLoggedIn);
 // REFERRAL VIEW
 router.get('/referred-users', protect, getReferral);
-router.get('/referral-bonus', protect, getReferralBunus);
+router.get('/referral-bonus', protect, getReferralBonus);
 
 module.exports = router;

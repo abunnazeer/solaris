@@ -12,6 +12,10 @@ const referralBonusSchema = new mongoose.Schema({
     ref: 'User', // Reference to the User model, representing the user who was referred
     required: true,
   },
+  description: {
+    type: String,
+    required: true,
+  },
   bonusAmount: {
     type: Number,
     required: true,

@@ -2,6 +2,7 @@ const Portfolio = require('../models/portfolio/portfolio.model');
 const BuyPortfolio = require('../models/portfolio/buyportfolio.model');
 const User = require('../models/user/user.model');
 const Transactions = require('../models/portfolio/transaction.model');
+const Referralbonus = require('../models/user/referralBonus.model');
 
 const Profile = require('../models/user/profile.model');
 const catchAsync = require('../utils/catchAsync');
@@ -169,8 +170,6 @@ const postBuyPortfolio = catchAsync(async (req, res) => {
   }
 });
 
-// Assuming you have a function named `sendEmail` to send emails
-
 const paymentComfirmation = catchAsync(async (req, res) => {
   const { id } = req.params;
   const { status, dateOfPurchase, dateOfExpiry } = req.body;
@@ -181,8 +180,9 @@ const paymentComfirmation = catchAsync(async (req, res) => {
     if (!portfoliodetail) {
       return res.status(404).json({ message: 'Portfolio not found' });
     }
+
     const userId = portfoliodetail.userId;
-    const userDetal = await User.findOne({ _id: userId });
+    const userDetail = await User.findOne({ _id: userId });
 
     const buyPortfolio = await BuyPortfolio.findByIdAndUpdate(
       id,
@@ -196,13 +196,83 @@ const paymentComfirmation = catchAsync(async (req, res) => {
       { new: true }
     );
 
+    // If the user was referred by someone, create a Referralbonus
+    if (userDetail.referredBy) {
+      const referringUserId = userDetail.referredBy;
+      const bonusAmount = portfoliodetail.depositAmount * 0.1; // 10% of depositAmount
+
+      const { _id } = await User.findOne({ _id: userId });
+      const userProfile = await Profile.findOne({ _id: userId });
+      const description = `Credited 10% $${bonusAmount}, as a referral from ${userProfile.fullName} to your ${portfoliodetail.payout} Wallet `;
+
+      const referralBonus = new Referralbonus({
+        referringUserId, // The user who referred the current user
+        bonusAmount,
+        referredUserId: _id, // The current user who was referred
+        description: description,
+      });
+
+      // Save it without validation
+      await referralBonus.save({ validateBeforeSave: false });
+
+      // Check if the referring user has a referrer (second-level referrer)
+      const referringUser = await User.findOne({ _id: referringUserId });
+
+      if (referringUser && referringUser.referredBy) {
+        const secondLevelReferrerId = referringUser.referredBy;
+        const secondLevelBonusAmount = portfoliodetail.depositAmount * 0.05; // 5% of depositAmount
+
+        const { _id: secondLevelReferrerUserId } = await User.findOne({
+          _id: referringUserId,
+        });
+        const userProfile = await Profile.findOne({ _id: userId });
+        const description = `Credited 5% $${bonusAmount}, as a referral from ${userProfile.fullName} to your ${portfoliodetail.payout} Wallet `;
+        const secondLevelReferralBonus = new Referralbonus({
+          referringUserId: secondLevelReferrerId, // The user who referred the referring user
+          bonusAmount: secondLevelBonusAmount,
+          referredUserId: secondLevelReferrerUserId, // The referring user who was referred
+          description: description,
+        });
+
+        // Save it without validation
+        await secondLevelReferralBonus.save({ validateBeforeSave: false });
+
+        // Check if the second-level referrer has a referrer (third-level referrer)
+        const secondLevelReferrerUser = await User.findOne({
+          _id: secondLevelReferrerId,
+        });
+
+        if (secondLevelReferrerUser && secondLevelReferrerUser.referredBy) {
+          const thirdLevelReferrerId = secondLevelReferrerUser.referredBy;
+          const thirdLevelBonusAmount = portfoliodetail.depositAmount * 0.025; // 2.5% of depositAmount
+
+          const { _id: thirdLevelReferrerUserId } = await User.findOne({
+            _id: secondLevelReferrerId,
+          });
+          const userProfile = await Profile.findOne({ _id: userId });
+          const description = `Credited 5% $${bonusAmount}, as a referral from ${userProfile.fullName} to your ${portfoliodetail.payout} Wallet `;
+          const thirdLevelReferralBonus = new Referralbonus({
+            referringUserId: thirdLevelReferrerId, // The user who referred the second-level referrer
+            bonusAmount: thirdLevelBonusAmount,
+            referredUserId: thirdLevelReferrerUserId, // The second-level referrer who was referred
+            description: description,
+          });
+
+          // Save it without validation
+          await thirdLevelReferralBonus.save({ validateBeforeSave: false });
+        }
+      }
+    }
+
     if (!buyPortfolio) {
       return res.status(404).json({ message: 'BuyPortfolio not found' });
     }
-    const emailContent = `Your payment for ${portfoliodetail.portfolioName}has been confirmed, and your portfolio has been activated`;
+
+    const emailContent = `Your payment for ${portfoliodetail.portfolioName} has been confirmed, and your portfolio has been activated`;
+
     // Send email to the user
     await sendEmail({
-      email: userDetal.email,
+      email: userDetail.email,
       subject: 'Payment confirmed, Portfolio Activation successful',
       message: emailContent,
     });
@@ -217,27 +287,68 @@ const paymentComfirmation = catchAsync(async (req, res) => {
   }
 });
 
-// const getBuyPortfolioForm = catchAsync(async (req, res) => {
+// const paymentComfirmation = catchAsync(async (req, res) => {
 //   const { id } = req.params;
+//   const { status, dateOfPurchase, dateOfExpiry } = req.body;
 
 //   try {
-//     const portfolio = await Portfolio.findById(id);
+//     const portfoliodetail = await BuyPortfolio.findById(id);
 
-//     if (!portfolio) {
-//       return res
-//         .status(404)
-//         .render('response/status', { message: 'Portfolio not found' });
+//     if (!portfoliodetail) {
+//       return res.status(404).json({ message: 'Portfolio not found' });
+//     }
+//     const userId = portfoliodetail.userId;
+//     const userDetail = await User.findOne({ _id: userId });
+
+//     const buyPortfolio = await BuyPortfolio.findByIdAndUpdate(
+//       id,
+//       {
+//         amount: portfoliodetail.depositAmount,
+//         status,
+//         depositAmount: 0,
+//         dateOfPurchase,
+//         dateOfExpiry,
+//       },
+//       { new: true }
+//     );
+
+//     // If the user was referred by someone, create a Referralbonus
+//     if (userDetail.referredBy) {
+//       const referringUserId = userDetail.referredBy;
+//       const bonusAmount = portfoliodetail.depositAmount * 0.1; // 10% of depositAmount
+
+//       const { _id } = await User.findOne({ _id: userDetail });
+
+//       const referralBonus = new Referralbonus({
+//         referringUserId, // The user who referred the current user
+//         bonusAmount,
+//         referredUserId: _id, // The current user who was referred
+//       });
+
+//       // Save it without validation
+//       await referralBonus.save({ validateBeforeSave: false });
 //     }
 
-//     // console.log(portfolio);
-//     res.render('portfolio/user/buyportfolio', {
-//       title: 'Buy Portfolio',
-//       portfolio: portfolio,
+//     if (!buyPortfolio) {
+//       return res.status(404).json({ message: 'BuyPortfolio not found' });
+//     }
+
+//     const emailContent = `Your payment for ${portfoliodetail.portfolioName} has been confirmed, and your portfolio has been activated`;
+
+//     // Send email to the user
+//     await sendEmail({
+//       email: userDetail.email,
+//       subject: 'Payment confirmed, Portfolio Activation successful',
+//       message: emailContent,
+//     });
+
+//     return res.json({
+//       message: 'Status updated successfully',
+//       portfolio: buyPortfolio,
 //     });
 //   } catch (error) {
-//     res
-//       .status(500)
-//       .render('response/status', { message: 'Failed to fetch portfolio' });
+//     console.error(error);
+//     return res.status(500).json({ message: 'Failed to update status' });
 //   }
 // });
 
@@ -325,7 +436,7 @@ const getStatusIndex = catchAsync(async (req, res) => {
     userObjects.push(userObject); // Push the userObject to the array
   }
 
-  console.log(userObjects);
+  // console.log(userObjects);
   res.render('portfolio/statusindex', {
     title: 'Portfolio Status',
     userObjects,

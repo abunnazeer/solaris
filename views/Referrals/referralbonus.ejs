@@ -1,60 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
- 
   <head>
-
+    <title><%= title %></title>
   </head>
   <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
     <div class="wrapper">
-      <!-- <div id="loader"></div> -->
-
       <header class="main-header">
-        <!-- header -->
+        <!-- header-->
         <%- include('../layouts/header') %>
       </header>
 
-      <!-- Left side column. contains the logo and sidebar -->
       <aside class="main-sidebar">
         <!-- sidebar-->
         <%- include('../layouts/aside') %>
       </aside>
 
-      <!-- Content Wrapper. Contains page content -->
       <div class="content-wrapper">
         <div class="container-full">
-        
+          <section class="content">
+            <div class="col-12 col-xl-12">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title"><%= title %></h5>
+                </div>
+                <div class="row" style="margin-right: 10px">
+                  <div class="col-5"></div>
+                  <div class="col-7">
+                    <div class="input-group" style="gap: 20px">
+                      <div style="border: 1px solid blue; padding: 19px 0px">
+                        Referal Link:
+                        <span
+                          id="referralCode"
+                          style="
+                            background: #fff2f2;
+                            padding: 15px;
+                            margin: 5px;
+                            border-radius: 10px;
+                          "
+                        >
+                          <%= url %>/<%= referringUser.referralCode %>
+                        </span>
+                      </div>
+                      <button
+                        id="copyReferralLinkButton"
+                        class="waves-effect waves-light btn btn-success"
+                        type="button"
+                      >
+                        Copy Referral Link
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th style="width: 5%">SN</th>
+                        <th style="width: 15%">Date</th>
+                        <th style="width: 70%">Details</th>
+                        <th style="width: 30%">Amount</th>
+                        <th style="width: 10%">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% if (referredUsers.length > 0) { %> <%
+                      referredUsers.forEach((user, index) => { %>
+                      <tr>
+                        <td><%= index + 1 %></td>
+                        <td>
+                          <%= user.createdAt.toLocaleString('en-US', { day:
+                          'numeric', month: 'long', year: 'numeric', hour:
+                          'numeric', minute: 'numeric' }) %>
+                        </td>
+                        <td><%= user.description %></td>
+                        <td>$<%= user.bonusAmount %></td>
+                        <td><!-- Display the status --></td>
+                      </tr>
+                      <% }) %> <% } else { %>
+                      <tr>
+                        <td colspan="5">No records found</td>
+                      </tr>
+                      <% } %>
+                    </tbody>
+                  </table>
 
-          	<!-- Main content -->
-		<section class="content">
-			<div class="row">
-				
-
-				<div class="col-xl-12 col-lg-7">
-					<div class="card">
-						<div class="card-body">
-							<h1>Referred Bunus</h1>
-					
-
-						
-						</div> <!-- end card body -->
-					</div> <!-- end card -->
-				</div> <!-- end col -->
-			</div>
-			<!-- end row-->
-
-		</section>
-		<!-- /.content -->
+                  <div
+                    class="dataTables_paginate paging_simple_numbers align-right"
+                    id="example_paginate"
+                  >
+                    <% if (totalPages > 1) { %>
+                    <ul class="pagination">
+                      <% if (currentPage > 1) { %>
+                      <li class="paginate_button page-item previous">
+                        <a
+                          href="?page=<%= currentPage - 1 %>&limit=<%= limit %>"
+                          class="page-link"
+                          >Previous</a
+                        >
+                      </li>
+                      <% } %> <% for (let i = 1; i <= totalPages; i++) { %> <%
+                      if (i === currentPage) { %>
+                      <li class="paginate_button page-item active">
+                        <a href="#" class="page-link"><%= i %></a>
+                      </li>
+                      <% } else { %>
+                      <li class="paginate_button page-item">
+                        <a
+                          href="?page=<%= i %>&limit=<%= limit %>"
+                          class="page-link"
+                          ><%= i %></a
+                        >
+                      </li>
+                      <% } %> <% } %> <% if (currentPage < totalPages) { %>
+                      <li class="paginate_button page-item next">
+                        <a
+                          href="?page=<%= currentPage + 1 %>&limit=<%= limit %>"
+                          class="page-link"
+                          >Next</a
+                        >
+                      </li>
+                      <% } %>
+                    </ul>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
-      <!-- /.content-wrapper -->
+
+      <script>
+        function copyReferralLink() {
+          const referralLink = document.getElementById('referralCode');
+          const range = document.createRange();
+          const textNode = referralLink.firstChild;
+          range.selectNode(textNode);
+          window.getSelection().removeAllRanges();
+          window.getSelection().addRange(range);
+          document.execCommand('copy');
+          window.getSelection().removeAllRanges();
+        }
+
+        const copyReferralLinkButton = document.getElementById(
+          'copyReferralLinkButton'
+        );
+        copyReferralLinkButton.addEventListener('click', copyReferralLink);
+      </script>
 
       <footer class="main-footer">
-        <!-- footer -->
+        <!-- footer-->
         <%- include('../layouts/footer') %>
       </footer>
-      
-  
+    </div>
   </body>
-
- 
 </html>
