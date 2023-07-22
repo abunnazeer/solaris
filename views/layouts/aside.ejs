@@ -3,6 +3,7 @@
     <div class="multinav-scroll" style="height: 97%">
       <!-- sidebar menu-->
       <ul class="sidebar-menu" data-widget="tree">
+        <% if (user.role === 'personal') { %>
         <li>
           <a href="/dashboard">
             <i data-feather="home"></i>
@@ -103,14 +104,98 @@
             <li><a href="/user/withdrawal-history">Withdrawals History</a></li>
           </ul>
         </li>
-
-        <% if (user.role === 'admin') { %>
+        <% } %> <% if (user.role === 'admin') { %>
 
         <li class="header">Administration Menu</li>
+        <li>
+          <a href="/dashboard">
+            <i data-feather="home"></i>
+            <span>Dashboard</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-right pull-right"></i>
+            </span>
+          </a>
+        </li>
+
+        <li>
+          <a href="/user/profile">
+            <i data-feather="user"></i>
+            <span>Profile</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-right pull-right"></i>
+            </span>
+          </a>
+        </li>
+        <li class="treeview">
+          <a href="#">
+            <i data-feather="lock"></i>
+            <span>Security</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-right pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="/user/change-password">Change Password</a></li>
+            <!-- <li><a href="/user/two-factor">2FA</a></li> -->
+          </ul>
+        </li>
+
+        <li class="treeview">
+          <a href="#">
+            <i data-feather="file-text"></i>
+            <span>Account</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-right pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="/user/activity">Transaction Activities</a></li>
+          </ul>
+        </li>
+
+        <li class="treeview">
+          <a href="#">
+            <i data-feather="dollar-sign"></i>
+            <span>Manage Portfolios </span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-right pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="/portfolio/">Manage Portfolios </a></li>
+            <li><a href="/portfolio/index">Portfolio Status</a></li>
+            <li>
+              <a href="/user/view-investments-portfolio"
+                >Purchase Investment Portfolio</a
+              >
+            </li>
+            <li>
+              <a href="/user/user-investments">Active Investment Portfolio</a>
+            </li>
+            <li>
+              <a href="/user/investment-history"
+                >Investment Portfolio History</a
+              >
+            </li>
+          </ul>
+        </li>
         <li class="treeview">
           <a href="#">
             <i data-feather="credit-card"></i>
-            <span>Manage Users</span>
+            <span>Withdrawals</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-right pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="/user/withdrawal-request">Withdrawals Request</a></li>
+            <li><a href="/user/withdrawal-history">Withdrawals History</a></li>
+          </ul>
+        </li>
+        <li class="treeview">
+          <a href="#">
+            <i data-feather="credit-card"></i>
+            <span>User Management </span>
             <span class="pull-right-container">
               <i class="fa fa-angle-right pull-right"></i>
             </span>
@@ -121,21 +206,23 @@
         </li>
         <li class="treeview">
           <a href="#">
-            <i data-feather="credit-card"></i>
-            <span>Manage Portfolios</span>
+            <i data-feather="users"></i>
+            <span>Referrals</span>
             <span class="pull-right-container">
               <i class="fa fa-angle-right pull-right"></i>
             </span>
           </a>
           <ul class="treeview-menu">
-            <li><a href="/portfolio/">Manage</a></li>
-            <li><a href="/portfolio/index">Portfolio Status</a></li>
+            <li><a href="/user/referred-users">Referred Members</a></li>
+            <li>
+              <a href="/user/referral-bonus">Member Benefit Commission</a>
+            </li>
           </ul>
         </li>
         <li class="treeview">
           <a href="#">
             <i data-feather="settings"></i>
-            <span>Configuration</span>
+            <span>Settings</span>
             <span class="pull-right-container">
               <i class="fa fa-angle-right pull-right"></i>
             </span>
@@ -143,6 +230,19 @@
           <ul class="treeview-menu">
             <li><a href="#">Payout Settings</a></li>
             <li><a href="#">Referrals Settings</a></li>
+          </ul>
+        </li>
+        <li class="treeview">
+          <a href="#">
+            <i data-feather="lock"></i>
+            <span>Security</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-right pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="/user/change-password">Change Password</a></li>
+            <!-- <li><a href="/user/two-factor">2FA</a></li> -->
           </ul>
         </li>
         <% } %>

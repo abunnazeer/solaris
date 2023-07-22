@@ -18,22 +18,31 @@
       <div class="content-wrapper">
         <div class="container-full">
           <section class="content">
-            <div class="col-12 col-xl-12">
-              <div class="card">
-                <div class="card-header">
-                  <h5 class="card-title"><%= title %></h5>
-                </div>
-                <div></div>
+            <h5 class="card-title"><%= title %></h5>
+            <div class="col-9 col-xl-9">
+              <div class="card mt-20">
                 <div class="card-body">
-                  <table class="table table-striped">
-                    <thead>
-                      <tr>
-                        <th style="width: 10%">SN</th>
-                        <th style="width: 15%">Date</th>
-                        <th style="width: 10%">Method</th>
-                        <th style="width: 10%">Amount Paid</th>
-                        <th style="width: 40%">Wallet Address</th>
-                        <th style="width: 10%">Status</th>
+                  <table class="table table-striped b-1 border-secondary">
+                    <thead class="bg-dark">
+                      <tr class="p-10">
+                        <th style="width: 10%; border-right: #fff2f2 1px solid">
+                          SN
+                        </th>
+                        <th style="width: 20%; border-right: #fff2f2 1px solid">
+                          Date
+                        </th>
+                        <th style="width: 9%; border-right: #fff2f2 1px solid">
+                          Method
+                        </th>
+                        <th style="width: 11%; border-right: #fff2f2 1px solid">
+                          Amount Paid
+                        </th>
+                        <th style="width: 42%; border-right: #fff2f2 1px solid">
+                          Wallet Address
+                        </th>
+                        <th style="width: 8%; border-right: #fff2f2 1px solid">
+                          Status
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -42,17 +51,23 @@
                       === 'Pending Approval' || activity.status === 'Approved')
                       { %> <% count++; %>
                       <tr>
-                        <td><%= activity.sn %></td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= activity.sn %>
+                        </td>
                         <td>
                           <%= new Date(activity.date).toLocaleString('en-US', {
                           weekday: 'short', month: 'short', day: 'numeric',
                           year: 'numeric', hour: 'numeric', minute: 'numeric',
                           hour12: true }) %>
                         </td>
-                        <td><%= activity.method %></td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= activity.method %>
+                        </td>
                         <td>$<%= activity.amount %></td>
-                        <td><%= activity.walletAddress %></td>
-                        <td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= activity.walletAddress %>
+                        </td>
+                        <td style="border-right: #d1d1d1 1px solid">
                           <% if (activity.status === 'Approved') { %>
                           <span class="badge badge-success">Approved</span>
                           <% } else if (activity.status === 'Pending Approval')
@@ -76,7 +91,8 @@
                     class="dataTables_paginate paging_simple_numbers align-right"
                     id="example_paginate"
                   >
-                    <ul class="pagination">
+                    <% if (totalPages > 1) { %>
+                    <ul class="pagination mb-0 mt-20">
                       <% if (currentPage > 1) { %>
                       <li class="paginate_button page-item previous">
                         <a
@@ -85,8 +101,10 @@
                           >Previous</a
                         >
                       </li>
-                      <% } %> <% for (let i = 1; i <= totalPages; i++) { %> <%
-                      if (i === currentPage) { %>
+                      <% } %> <% for (let i = 1; i <= 4 && i <= totalPages; i++)
+                      { %>
+                      <!-- Adjusted the for loop condition -->
+                      <% if (i === currentPage) { %>
                       <li class="paginate_button page-item active">
                         <a href="#" class="page-link"><%= i %></a>
                       </li>
@@ -108,6 +126,7 @@
                       </li>
                       <% } %>
                     </ul>
+                    <% } %>
                   </div>
                   <% } %>
                 </div>

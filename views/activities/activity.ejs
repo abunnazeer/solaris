@@ -18,64 +18,77 @@
       <div class="content-wrapper">
         <div class="container-full">
           <section class="content">
-            <div class="col-12 col-xl-12">
-              <div class="card">
-                <div class="card-header">
-                  <h5 class="card-title"><%= title %></h5>
-                </div>
-                <div></div>
+            <h5 class="card-title"><%= title %></h5>
+            <div class="col-9 col-xl-9">
+              <div class="card mt-20">
                 <div class="card-body">
-                  
-                    <table class="table table-striped">
-                      <thead>
-                        <tr>
-                          <th style="width: 5%">SN</th>
-                          <th style="width: 15%">Title</th>
-                          <th style="width: 20%">Date</th>
-                          <th style="width: 30%">Descriptions</th>
-                          <th style="width: 20%">Amount</th>
-                          <th style="width: 10%">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <% if (activities.length > 0) { %> <%
-                        activities.forEach(activity => { %> <% if
-                        (activity.status === 'Credited' || activity.status ===
-                        'Deposit' || activity.status === 'Withdrawal') { %>
-                        <tr>
-                          <td><%= activity.sn %></td>
-                          <td><%= activity.title %></td>
-                          <td>
-                            <%= new Date(activity.date).toLocaleString('en-US',
-                            { weekday: 'short', month: 'short', day: 'numeric',
-                            year: 'numeric', hour: 'numeric', minute: 'numeric',
-                            hour12: true }) %>
-                          </td>
-                          <td><%= activity.description %></td>
-                          <td>$<%= activity.amount %></td>
-                          <td>
-                            <% if (activity.status === 'Credited') { %>
-                            <span class="badge badge-success"
-                              ><%= activity.status %></span
-                            >
-                            <% } else if (activity.status === 'Deposit') { %>
-                            <span class="badge badge-warning"
-                              ><%= activity.status %></span
-                            >
-                            <% } else if (activity.status === 'Withdrawal') { %>
-                            <span class="badge badge-danger"
-                              ><%= activity.status %></span
-                            >
-                            <% } %>
-                          </td>
-                        </tr>
-                        <% } %> <% }); %> <% } else { %>
-                        <tr>
-                          <td colspan="6">No records found</td>
-                        </tr>
-                        <% } %>
-                      </tbody>
-                    </table>
+                  <table class="table table-striped b-1 border-secondary">
+                    <thead class="bg-dark">
+                      <tr class="p-10">
+                        <th style="width: 5%; border-right: #fff2f2 1px solid">
+                          SN
+                        </th>
+                        <th style="width: 10%; border-right: #fff2f2 1px solid">
+                          Title
+                        </th>
+                        <th style="width: 20%; border-right: #fff2f2 1px solid">
+                          Date
+                        </th>
+                        <th style="width: 40%; border-right: #fff2f2 1px solid">
+                          Descriptions
+                        </th>
+                        <th style="width: 20%; border-right: #fff2f2 1px solid">
+                          Amount
+                        </th>
+                        <th style="width: 10%">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% if (activities.length > 0) { %> <%
+                      activities.forEach(activity => { %> <% if (activity.status
+                      === 'Credited' || activity.status === 'Deposit' ||
+                      activity.status === 'Withdrawal') { %>
+                      <tr>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= activity.sn %>
+                        </td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= activity.title %>
+                        </td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= new Date(activity.date).toLocaleString('en-US', {
+                          weekday: 'short', month: 'short', day: 'numeric',
+                          year: 'numeric', hour: 'numeric', minute: 'numeric',
+                          hour12: true }) %>
+                        </td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= activity.description %>
+                        </td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          $<%= activity.amount %>
+                        </td>
+                        <td>
+                          <% if (activity.status === 'Credited') { %>
+                          <span class="badge badge-success"
+                            ><%= activity.status %></span
+                          >
+                          <% } else if (activity.status === 'Deposit') { %>
+                          <span class="badge badge-warning"
+                            ><%= activity.status %></span
+                          >
+                          <% } else if (activity.status === 'Withdrawal') { %>
+                          <span class="badge badge-danger"
+                            ><%= activity.status %></span
+                          >
+                          <% } %>
+                        </td>
+                      </tr>
+                      <% } %> <% }); %> <% } else { %>
+                      <tr>
+                        <td colspan="6">No records found</td>
+                      </tr>
+                      <% } %>
+                    </tbody>
                   </table>
 
                   <div
@@ -83,7 +96,7 @@
                     id="example_paginate"
                   >
                     <% if (totalPages > 1) { %>
-                    <ul class="pagination">
+                    <ul class="pagination mb-0 mt-20">
                       <% if (currentPage > 1) { %>
                       <li class="paginate_button page-item previous">
                         <a
@@ -92,8 +105,10 @@
                           >Previous</a
                         >
                       </li>
-                      <% } %> <% for (let i = 1; i <= totalPages; i++) { %> <%
-                      if (i === currentPage) { %>
+                      <% } %> <% for (let i = 1; i <= 4 && i <= totalPages; i++)
+                      { %>
+                      <!-- Adjusted the for loop condition -->
+                      <% if (i === currentPage) { %>
                       <li class="paginate_button page-item active">
                         <a href="#" class="page-link"><%= i %></a>
                       </li>

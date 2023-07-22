@@ -8,6 +8,7 @@
 
     <!-- head and meta-->
     <title><%=title%></title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
 
   <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
@@ -29,1313 +30,177 @@
           <!-- Main content -->
           <section class="content">
             <div class="row">
-              <div class="row">
-                <div class="col-xl-3 col-lg-6 col-sm-6 col-12">
-                  <div class="box mb-15 pull-up hover-success">
-                    <div class="box-body">
-                      <div
-                        class="d-flex align-items-center justify-content-between"
-                      >
-                        <h4 class="fw-500">Active Portfolio</h4>
+              <div class="col-xl-3 col-lg-6 col-sm-6 col-12">
+                <div class="box mb-15">
+                  <div class="box-body" style="height: 150px">
+                    <div
+                      class="d-flex align-items-center justify-content-between"
+                    >
+                      <h4 class="fw-500">Active Portfolio</h4>
+                    </div>
+                    <div class="row align-items-center mt-10">
+                      <div class="col-6">
+                        <% let activePortfoliosCount = 0; %>
+                        <!-- Initialize a variable to keep track of the count -->
+                        <% portfolios.forEach(function(portfolio) { %> <% if
+                        (portfolio.status === 'active') { %> <%
+                        activePortfoliosCount++; %>
+                        <!-- Increment the count for each active portfolio -->
+                        <% } %> <% }) %>
+                        <h1 class="m-0 fw-600"><%= activePortfoliosCount %></h1>
                       </div>
-                      <div class="row align-items-center mt-10">
-                        <div class="col-6">
-                          <% let activePortfoliosCount = 0; %>
-                          <!-- Initialize a variable to keep track of the count -->
 
-                          <% portfolios.forEach(function(portfolio) { %> <% if
-                          (portfolio.status === 'active') { %> <%
-                          activePortfoliosCount++; %>
-                          <!-- Increment the count for each active portfolio -->
-                          <% } %> <% }) %>
-
-                          <h3 class="m-0 fw-600">
-                            <%= activePortfoliosCount %>
-                          </h3>
+                      <div class="col-6">
+                        <div style="height: 80px">
+                          <canvas
+                            id="lineport"
+                            width="400"
+                            height="200"
+                          ></canvas>
                         </div>
-
-                        <div class="col-6">
-                          <div class="text-end" style="position: relative">
-                            <div
-                              id="new-leads-chart"
-                              style="min-height: 79px"
-                            ></div>
-                            <div class="resize-triggers">
-                              <div class="expand-trigger">
-                                <div style="width: 136px; height: 71px"></div>
-                              </div>
-                              <div class="contract-trigger"></div>
-                            </div>
-                          </div>
-                        </div>
-                        <!-- end row-->
                       </div>
+                      <!-- end row-->
                     </div>
                   </div>
                 </div>
-                <div class="col-xl-3 col-lg-6 col-sm-6 col-12">
-                  <div class="box mb-15 pull-up hover-success">
-                    <div class="box-body">
-                      <div
-                        class="d-flex align-items-center justify-content-between"
-                      >
-                        <h4 class="fw-500">Compounding Dividends</h4>
-                      </div>
-                      <div class="row align-items-center mt-10">
-                        <div class="col-6">
-                          <% let totlaCompBalance = 0; %> <%
-                          portfolios.forEach(function(portfolio) { %> <%
-                          totlaCompBalance += portfolio.compBalance %>
-                          <!-- Display the compBalance value with a unique identifier -->
-                          <h1>
-                            <span id="compBalance-<%- portfolio._id %>">
-                              <% }) %> $ <%= totlaCompBalance.toLocaleString()
-                              %></span
-                            >
-                          </h1>
-                        </div>
-                        <div class="col-6">
-                          <div class="text-end" style="position: relative">
-                            <div
-                              id="deals-chart"
-                              style="min-height: 78.95px"
-                            ></div>
-                            <div class="resize-triggers">
-                              <div class="expand-trigger"></div>
-                              <div class="contract-trigger"></div>
-                            </div>
-                          </div>
-                        </div>
-                        <!-- end row-->
-                      </div>
+              </div>
+              <div class="col-xl-3 col-lg-6 col-sm-6 col-12">
+                <div class="box mb-15">
+                  <div class="box-body" style="height: 150px">
+                    <div
+                      class="d-flex align-items-center justify-content-between"
+                    >
+                      <h4 class="fw-500">Compounding Dividends</h4>
                     </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-6 col-sm-6 col-12">
-                  <div class="box mb-15 pull-up hover-success">
-                    <div class="box-body">
-                      <div
-                        class="d-flex align-items-center justify-content-between"
-                      >
-                        <h4 class="fw-500">Total referral commission</h4>
-                      </div>
-                      <div class="row align-items-center mt-10">
-                        <div class="col-6">
-                          <h3 class="m-0 fw-600">0</h3>
-                        </div>
-                        <div class="col-6">
-                          <div class="text-end" style="position: relative">
-                            <div id="new-leads-chart3" style="min-height: 70px">
-                              <div
-                                id="apexchartsd4yklzuvk"
-                                class="apexcharts-canvas apexchartsd4yklzuvk apexcharts-theme-light"
-                              >
-                                <svg
-                                  id="SvgjsSvg1437"
-                                  width="100"
-                                  height="70"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  version="1.1"
-                                  xmlns:xlink="http://www.w3.org/1999/xlink"
-                                  xmlns:svgjs="http://svgjs.com/svgjs"
-                                  class="apexcharts-svg"
-                                  xmlns:data="ApexChartsNS"
-                                  transform="translate(0, 0)"
-                                  style="background: transparent"
-                                >
-                                  <g
-                                    id="SvgjsG1439"
-                                    class="apexcharts-inner apexcharts-graphical"
-                                    transform="translate(0, 0)"
-                                  >
-                                    <defs id="SvgjsDefs1438">
-                                      <clipPath id="gridRectMaskd4yklzuvk">
-                                        <rect
-                                          id="SvgjsRect1445"
-                                          width="106"
-                                          height="72"
-                                          x="-3"
-                                          y="-1"
-                                          rx="0"
-                                          ry="0"
-                                          opacity="1"
-                                          stroke-width="0"
-                                          stroke="none"
-                                          stroke-dasharray="0"
-                                          fill="#fff"
-                                        ></rect>
-                                      </clipPath>
-                                      <clipPath
-                                        id="forecastMaskd4yklzuvk"
-                                      ></clipPath>
-                                      <clipPath
-                                        id="nonForecastMaskd4yklzuvk"
-                                      ></clipPath>
-                                      <clipPath
-                                        id="gridRectMarkerMaskd4yklzuvk"
-                                      >
-                                        <rect
-                                          id="SvgjsRect1446"
-                                          width="104"
-                                          height="74"
-                                          x="-2"
-                                          y="-2"
-                                          rx="0"
-                                          ry="0"
-                                          opacity="1"
-                                          stroke-width="0"
-                                          stroke="none"
-                                          stroke-dasharray="0"
-                                          fill="#fff"
-                                        ></rect>
-                                      </clipPath>
-                                    </defs>
-                                    <line
-                                      id="SvgjsLine1444"
-                                      x1="0"
-                                      y1="0"
-                                      x2="0"
-                                      y2="70"
-                                      stroke="#b6b6b6"
-                                      stroke-dasharray="3"
-                                      class="apexcharts-xcrosshairs"
-                                      x="0"
-                                      y="0"
-                                      width="1"
-                                      height="70"
-                                      fill="#b1b9c4"
-                                      filter="none"
-                                      fill-opacity="0.9"
-                                      stroke-width="1"
-                                    ></line>
-                                    <g
-                                      id="SvgjsG1452"
-                                      class="apexcharts-xaxis"
-                                      transform="translate(0, 0)"
-                                    >
-                                      <g
-                                        id="SvgjsG1453"
-                                        class="apexcharts-xaxis-texts-g"
-                                        transform="translate(0, 2.75)"
-                                      ></g>
-                                    </g>
-                                    <g id="SvgjsG1466" class="apexcharts-grid">
-                                      <g
-                                        id="SvgjsG1467"
-                                        class="apexcharts-gridlines-horizontal"
-                                        style="display: none"
-                                      >
-                                        <line
-                                          id="SvgjsLine1469"
-                                          x1="0"
-                                          y1="0"
-                                          x2="100"
-                                          y2="0"
-                                          stroke="#e0e0e0"
-                                          stroke-dasharray="0"
-                                          class="apexcharts-gridline"
-                                        ></line>
-                                        <line
-                                          id="SvgjsLine1470"
-                                          x1="0"
-                                          y1="14"
-                                          x2="100"
-                                          y2="14"
-                                          stroke="#e0e0e0"
-                                          stroke-dasharray="0"
-                                          class="apexcharts-gridline"
-                                        ></line>
-                                        <line
-                                          id="SvgjsLine1471"
-                                          x1="0"
-                                          y1="28"
-                                          x2="100"
-                                          y2="28"
-                                          stroke="#e0e0e0"
-                                          stroke-dasharray="0"
-                                          class="apexcharts-gridline"
-                                        ></line>
-                                        <line
-                                          id="SvgjsLine1472"
-                                          x1="0"
-                                          y1="42"
-                                          x2="100"
-                                          y2="42"
-                                          stroke="#e0e0e0"
-                                          stroke-dasharray="0"
-                                          class="apexcharts-gridline"
-                                        ></line>
-                                        <line
-                                          id="SvgjsLine1473"
-                                          x1="0"
-                                          y1="56"
-                                          x2="100"
-                                          y2="56"
-                                          stroke="#e0e0e0"
-                                          stroke-dasharray="0"
-                                          class="apexcharts-gridline"
-                                        ></line>
-                                        <line
-                                          id="SvgjsLine1474"
-                                          x1="0"
-                                          y1="70"
-                                          x2="100"
-                                          y2="70"
-                                          stroke="#e0e0e0"
-                                          stroke-dasharray="0"
-                                          class="apexcharts-gridline"
-                                        ></line>
-                                      </g>
-                                      <g
-                                        id="SvgjsG1468"
-                                        class="apexcharts-gridlines-vertical"
-                                        style="display: none"
-                                      ></g>
-                                      <line
-                                        id="SvgjsLine1476"
-                                        x1="0"
-                                        y1="70"
-                                        x2="100"
-                                        y2="70"
-                                        stroke="transparent"
-                                        stroke-dasharray="0"
-                                      ></line>
-                                      <line
-                                        id="SvgjsLine1475"
-                                        x1="0"
-                                        y1="1"
-                                        x2="0"
-                                        y2="70"
-                                        stroke="transparent"
-                                        stroke-dasharray="0"
-                                      ></line>
-                                    </g>
-                                    <g
-                                      id="SvgjsG1447"
-                                      class="apexcharts-line-series apexcharts-plot-series"
-                                    >
-                                      <path
-                                        id="SvgjsPath1451"
-                                        d="M 0 52.5C 3.5 52.5 6.5 23.800000000000004 10 23.800000000000004C 13.5 23.800000000000004 16.5 41.3 20 41.3C 23.5 41.3 26.5 7.700000000000003 30 7.700000000000003C 33.5 7.700000000000003 36.5 25.9 40 25.9C 43.5 25.9 46.5 52.5 50 52.5C 53.5 52.5 56.5 39.2 60 39.2C 63.5 39.2 66.5 61.6 70 61.6C 73.5 61.6 76.5 44.8 80 44.8C 83.5 44.8 86.5 63.7 90 63.7C 93.5 63.7 96.5 32.2 100 32.2"
-                                        fill="none"
-                                        fill-opacity="1"
-                                        stroke="rgba(81,206,138,0.85)"
-                                        stroke-opacity="1"
-                                        stroke-linecap="butt"
-                                        stroke-width="2"
-                                        stroke-dasharray="0"
-                                        class="apexcharts-line"
-                                        index="0"
-                                        clip-path="url(#gridRectMaskd4yklzuvk)"
-                                        pathTo="M 0 52.5C 3.5 52.5 6.5 23.800000000000004 10 23.800000000000004C 13.5 23.800000000000004 16.5 41.3 20 41.3C 23.5 41.3 26.5 7.700000000000003 30 7.700000000000003C 33.5 7.700000000000003 36.5 25.9 40 25.9C 43.5 25.9 46.5 52.5 50 52.5C 53.5 52.5 56.5 39.2 60 39.2C 63.5 39.2 66.5 61.6 70 61.6C 73.5 61.6 76.5 44.8 80 44.8C 83.5 44.8 86.5 63.7 90 63.7C 93.5 63.7 96.5 32.2 100 32.2"
-                                        pathFrom="M -1 70L -1 70L 10 70L 20 70L 30 70L 40 70L 50 70L 60 70L 70 70L 80 70L 90 70L 100 70"
-                                      ></path>
-                                    </g>
-                                    <g
-                                      id="SvgjsG1450"
-                                      class="apexcharts-datalabels"
-                                      data:realIndex="0"
-                                    ></g>
-                                  </g>
-                                  <line
-                                    id="SvgjsLine1477"
-                                    x1="0"
-                                    y1="0"
-                                    x2="100"
-                                    y2="0"
-                                    stroke="#b6b6b6"
-                                    stroke-dasharray="0"
-                                    stroke-width="1"
-                                    class="apexcharts-ycrosshairs"
-                                  ></line>
-                                  <line
-                                    id="SvgjsLine1478"
-                                    x1="0"
-                                    y1="0"
-                                    x2="100"
-                                    y2="0"
-                                    stroke-dasharray="0"
-                                    stroke-width="0"
-                                    class="apexcharts-ycrosshairs-hidden"
-                                  ></line>
-                                  <g
-                                    id="SvgjsG1479"
-                                    class="apexcharts-yaxis-annotations"
-                                  ></g>
-                                  <g
-                                    id="SvgjsG1480"
-                                    class="apexcharts-xaxis-annotations"
-                                  ></g>
-                                  <g
-                                    id="SvgjsG1481"
-                                    class="apexcharts-point-annotations"
-                                  ></g>
-
-                                  <rect
-                                    id="SvgjsRect1443"
-                                    width="0"
-                                    height="0"
-                                    x="0"
-                                    y="0"
-                                    rx="0"
-                                    ry="0"
-                                    opacity="1"
-                                    stroke-width="0"
-                                    stroke="none"
-                                    stroke-dasharray="0"
-                                    fill="#fefefe"
-                                  ></rect>
-                                  <g
-                                    id="SvgjsG1465"
-                                    class="apexcharts-yaxis"
-                                    rel="0"
-                                    transform="translate(-18, 0)"
-                                  ></g>
-                                  <g
-                                    id="SvgjsG1440"
-                                    class="apexcharts-annotations"
-                                  ></g>
-                                </svg>
-                                <div
-                                  class="apexcharts-legend"
-                                  style="max-height: 35px"
-                                ></div>
-                                <div
-                                  class="apexcharts-tooltip apexcharts-theme-light"
-                                >
-                                  <div
-                                    class="apexcharts-tooltip-series-group"
-                                    style="order: 1"
-                                  >
-                                    <span
-                                      class="apexcharts-tooltip-marker"
-                                      style="
-                                        background-color: rgb(81, 206, 138);
-                                      "
-                                    ></span>
-                                    <div
-                                      class="apexcharts-tooltip-text"
-                                      style="
-                                        font-family: Helvetica, Arial,
-                                          sans-serif;
-                                        font-size: 12px;
-                                      "
-                                    >
-                                      <div class="apexcharts-tooltip-y-group">
-                                        <span
-                                          class="apexcharts-tooltip-text-y-label"
-                                        ></span
-                                        ><span
-                                          class="apexcharts-tooltip-text-y-value"
-                                        ></span>
-                                      </div>
-                                      <div
-                                        class="apexcharts-tooltip-goals-group"
-                                      >
-                                        <span
-                                          class="apexcharts-tooltip-text-goals-label"
-                                        ></span
-                                        ><span
-                                          class="apexcharts-tooltip-text-goals-value"
-                                        ></span>
-                                      </div>
-                                      <div class="apexcharts-tooltip-z-group">
-                                        <span
-                                          class="apexcharts-tooltip-text-z-label"
-                                        ></span
-                                        ><span
-                                          class="apexcharts-tooltip-text-z-value"
-                                        ></span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div
-                                  class="apexcharts-yaxistooltip apexcharts-yaxistooltip-0 apexcharts-yaxistooltip-left apexcharts-theme-light"
-                                >
-                                  <div
-                                    class="apexcharts-yaxistooltip-text"
-                                  ></div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="resize-triggers">
-                              <div class="expand-trigger">
-                                <div style="width: 136px; height: 71px"></div>
-                              </div>
-                              <div class="contract-trigger"></div>
-                            </div>
-                          </div>
-                        </div>
-                        <!-- end row-->
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-xl-3 col-lg-6 col-sm-6 col-12">
-                  <div class="box mb-15 pull-up hover-success">
-                    <div class="box-body">
-                      <div
-                        class="d-flex align-items-center justify-content-between"
-                      >
-                        <h4 class="fw-500">Retirement Dividends</h4>
-                      </div>
-                      <div class="row align-items-center mt-10">
-                        <div class="col-6">
-                          <h3 class="m-0 fw-600">0</h3>
-                        </div>
-                        <div class="col-6">
-                          <div class="text-end" style="position: relative">
-                            <div
-                              id="booked-revenue-chart"
-                              style="min-height: 81px"
-                            ></div>
-                            <div class="resize-triggers">
-                              <div class="expand-trigger">
-                                <div style="width: 136px; height: 71px"></div>
-                              </div>
-                              <div class="contract-trigger"></div>
-                            </div>
-                          </div>
-                        </div>
-                        <!-- end row-->
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col-xl-9 col-lg-10">
-                  <!-- to add later -->
-                  <div class="card chart_card">
-                    <div class="card-body">
-                      <div class="box-header px-0">
-                        <h4>Profit</h4>
-                        <div class="box-controls pull-right">
-                          <ul class="nav nav-pills nav-pills-sm" role="tablist">
-                            <li class="nav-item">
-                              <a
-                                class="nav-link py-2 px-4 b-0"
-                                data-bs-toggle="tab"
-                                href="#"
-                              >
-                                <span class="nav-text base-font">Month</span>
-                              </a>
-                            </li>
-                            <li class="nav-item">
-                              <a
-                                class="nav-link py-2 px-4 b-0"
-                                data-bs-toggle="tab"
-                                href="#"
-                              >
-                                <span class="nav-text base-font">Week</span>
-                              </a>
-                            </li>
-                            <li class="nav-item">
-                              <a
-                                class="nav-link py-2 px-4 b-0 active"
-                                data-bs-toggle="tab"
-                                href="#"
-                              >
-                                <span class="nav-text base-font">Day</span>
-                              </a>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-
-                      <div dir="ltr">
-                        <div
-                          class="mt-3 chartjs-chart"
-                          style="height: 320px; position: relative"
-                        >
-                          <div id="apexcharts-line" style="min-height: 335px">
-                            <div
-                              id="apexcharts5zutefx8"
-                              class="apexcharts-canvas apexcharts5zutefx8 apexcharts-theme-light"
-                              style="width: 879px; height: 320px"
-                            >
-                              <svg
-                                id="SvgjsSvg1441"
-                                width="879"
-                                height="320"
-                                xmlns="http://www.w3.org/2000/svg"
-                                version="1.1"
-                                xmlns:xlink="http://www.w3.org/1999/xlink"
-                                xmlns:svgjs="http://svgjs.com/svgjs"
-                                class="apexcharts-svg"
-                                xmlns:data="ApexChartsNS"
-                                transform="translate(0, 0)"
-                                style="background: transparent"
-                              >
-                                <g
-                                  id="SvgjsG1443"
-                                  class="apexcharts-inner apexcharts-graphical"
-                                  transform="translate(51.4765625, 30)"
-                                >
-                                  <defs id="SvgjsDefs1442">
-                                    <clipPath id="gridRectMask5zutefx8">
-                                      <rect
-                                        id="SvgjsRect1449"
-                                        width="816.84765625"
-                                        height="259.348"
-                                        x="-5.5"
-                                        y="-3.5"
-                                        rx="0"
-                                        ry="0"
-                                        opacity="1"
-                                        stroke-width="0"
-                                        stroke="none"
-                                        stroke-dasharray="0"
-                                        fill="#fff"
-                                      ></rect>
-                                    </clipPath>
-                                    <clipPath
-                                      id="forecastMask5zutefx8"
-                                    ></clipPath>
-                                    <clipPath
-                                      id="nonForecastMask5zutefx8"
-                                    ></clipPath>
-                                    <clipPath id="gridRectMarkerMask5zutefx8">
-                                      <rect
-                                        id="SvgjsRect1450"
-                                        width="809.84765625"
-                                        height="256.348"
-                                        x="-2"
-                                        y="-2"
-                                        rx="0"
-                                        ry="0"
-                                        opacity="1"
-                                        stroke-width="0"
-                                        stroke="none"
-                                        stroke-dasharray="0"
-                                        fill="#fff"
-                                      ></rect>
-                                    </clipPath>
-                                    <linearGradient
-                                      id="SvgjsLinearGradient1455"
-                                      x1="0"
-                                      y1="0"
-                                      x2="0"
-                                      y2="1"
-                                    >
-                                      <stop
-                                        id="SvgjsStop1456"
-                                        stop-opacity="0.65"
-                                        stop-color="rgba(24,210,107,0.65)"
-                                        offset="0"
-                                      ></stop>
-                                      <stop
-                                        id="SvgjsStop1457"
-                                        stop-opacity="0.5"
-                                        stop-color="rgba(140,233,181,0.5)"
-                                        offset="1"
-                                      ></stop>
-                                      <stop
-                                        id="SvgjsStop1458"
-                                        stop-opacity="0.5"
-                                        stop-color="rgba(140,233,181,0.5)"
-                                        offset="1"
-                                      ></stop>
-                                    </linearGradient>
-                                  </defs>
-                                  <line
-                                    id="SvgjsLine1448"
-                                    x1="0"
-                                    y1="0"
-                                    x2="0"
-                                    y2="252.348"
-                                    stroke="#b6b6b6"
-                                    stroke-dasharray="3"
-                                    class="apexcharts-xcrosshairs"
-                                    x="0"
-                                    y="0"
-                                    width="1"
-                                    height="252.348"
-                                    fill="#b1b9c4"
-                                    filter="none"
-                                    fill-opacity="0.9"
-                                    stroke-width="1"
-                                  ></line>
-                                  <g
-                                    id="SvgjsG1461"
-                                    class="apexcharts-xaxis"
-                                    transform="translate(0, 0)"
-                                  >
-                                    <g
-                                      id="SvgjsG1462"
-                                      class="apexcharts-xaxis-texts-g"
-                                      transform="translate(0, -4)"
-                                    >
-                                      <text
-                                        id="SvgjsText1464"
-                                        font-family="Helvetica, Arial, sans-serif"
-                                        x="0"
-                                        y="281.348"
-                                        text-anchor="middle"
-                                        dominant-baseline="auto"
-                                        font-size="12px"
-                                        font-weight="400"
-                                        fill="#373d3f"
-                                        class="apexcharts-text apexcharts-xaxis-label"
-                                        style="
-                                          font-family: Helvetica, Arial,
-                                            sans-serif;
-                                        "
-                                      >
-                                        <tspan id="SvgjsTspan1465">Mon</tspan>
-                                        <title>Mon</title>
-                                      </text>
-                                      <text
-                                        id="SvgjsText1467"
-                                        font-family="Helvetica, Arial, sans-serif"
-                                        x="134.30794270833331"
-                                        y="281.348"
-                                        text-anchor="middle"
-                                        dominant-baseline="auto"
-                                        font-size="12px"
-                                        font-weight="400"
-                                        fill="#373d3f"
-                                        class="apexcharts-text apexcharts-xaxis-label"
-                                        style="
-                                          font-family: Helvetica, Arial,
-                                            sans-serif;
-                                        "
-                                      >
-                                        <tspan id="SvgjsTspan1468">Tue</tspan>
-                                        <title>Tue</title>
-                                      </text>
-                                      <text
-                                        id="SvgjsText1470"
-                                        font-family="Helvetica, Arial, sans-serif"
-                                        x="268.6158854166667"
-                                        y="281.348"
-                                        text-anchor="middle"
-                                        dominant-baseline="auto"
-                                        font-size="12px"
-                                        font-weight="400"
-                                        fill="#373d3f"
-                                        class="apexcharts-text apexcharts-xaxis-label"
-                                        style="
-                                          font-family: Helvetica, Arial,
-                                            sans-serif;
-                                        "
-                                      >
-                                        <tspan id="SvgjsTspan1471">Wed</tspan>
-                                        <title>Wed</title>
-                                      </text>
-                                      <text
-                                        id="SvgjsText1473"
-                                        font-family="Helvetica, Arial, sans-serif"
-                                        x="402.92382812500006"
-                                        y="281.348"
-                                        text-anchor="middle"
-                                        dominant-baseline="auto"
-                                        font-size="12px"
-                                        font-weight="400"
-                                        fill="#373d3f"
-                                        class="apexcharts-text apexcharts-xaxis-label"
-                                        style="
-                                          font-family: Helvetica, Arial,
-                                            sans-serif;
-                                        "
-                                      >
-                                        <tspan id="SvgjsTspan1474">Thu</tspan>
-                                        <title>Thu</title>
-                                      </text>
-                                      <text
-                                        id="SvgjsText1476"
-                                        font-family="Helvetica, Arial, sans-serif"
-                                        x="537.2317708333335"
-                                        y="281.348"
-                                        text-anchor="middle"
-                                        dominant-baseline="auto"
-                                        font-size="12px"
-                                        font-weight="400"
-                                        fill="#373d3f"
-                                        class="apexcharts-text apexcharts-xaxis-label"
-                                        style="
-                                          font-family: Helvetica, Arial,
-                                            sans-serif;
-                                        "
-                                      >
-                                        <tspan id="SvgjsTspan1477">Fri</tspan>
-                                        <title>Fri</title>
-                                      </text>
-                                      <text
-                                        id="SvgjsText1479"
-                                        font-family="Helvetica, Arial, sans-serif"
-                                        x="671.5397135416669"
-                                        y="281.348"
-                                        text-anchor="middle"
-                                        dominant-baseline="auto"
-                                        font-size="12px"
-                                        font-weight="400"
-                                        fill="#373d3f"
-                                        class="apexcharts-text apexcharts-xaxis-label"
-                                        style="
-                                          font-family: Helvetica, Arial,
-                                            sans-serif;
-                                        "
-                                      >
-                                        <tspan id="SvgjsTspan1480">Sat</tspan>
-                                        <title>Sat</title>
-                                      </text>
-                                      <text
-                                        id="SvgjsText1482"
-                                        font-family="Helvetica, Arial, sans-serif"
-                                        x="805.8476562500002"
-                                        y="281.348"
-                                        text-anchor="middle"
-                                        dominant-baseline="auto"
-                                        font-size="12px"
-                                        font-weight="400"
-                                        fill="#373d3f"
-                                        class="apexcharts-text apexcharts-xaxis-label"
-                                        style="
-                                          font-family: Helvetica, Arial,
-                                            sans-serif;
-                                        "
-                                      >
-                                        <tspan id="SvgjsTspan1483">Sun</tspan>
-                                        <title>Sun</title>
-                                      </text>
-                                    </g>
-                                    <line
-                                      id="SvgjsLine1484"
-                                      x1="0"
-                                      y1="253.348"
-                                      x2="805.84765625"
-                                      y2="253.348"
-                                      stroke="#e0e0e0"
-                                      stroke-dasharray="0"
-                                      stroke-width="1"
-                                    ></line>
-                                  </g>
-                                  <g id="SvgjsG1499" class="apexcharts-grid">
-                                    <g
-                                      id="SvgjsG1500"
-                                      class="apexcharts-gridlines-horizontal"
-                                    >
-                                      <line
-                                        id="SvgjsLine1509"
-                                        x1="0"
-                                        y1="0"
-                                        x2="805.84765625"
-                                        y2="0"
-                                        stroke="#f1f1f1"
-                                        stroke-dasharray="0"
-                                        class="apexcharts-gridline"
-                                      ></line>
-                                      <line
-                                        id="SvgjsLine1510"
-                                        x1="0"
-                                        y1="50.4696"
-                                        x2="805.84765625"
-                                        y2="50.4696"
-                                        stroke="#f1f1f1"
-                                        stroke-dasharray="0"
-                                        class="apexcharts-gridline"
-                                      ></line>
-                                      <line
-                                        id="SvgjsLine1511"
-                                        x1="0"
-                                        y1="100.9392"
-                                        x2="805.84765625"
-                                        y2="100.9392"
-                                        stroke="#f1f1f1"
-                                        stroke-dasharray="0"
-                                        class="apexcharts-gridline"
-                                      ></line>
-                                      <line
-                                        id="SvgjsLine1512"
-                                        x1="0"
-                                        y1="151.40879999999999"
-                                        x2="805.84765625"
-                                        y2="151.40879999999999"
-                                        stroke="#f1f1f1"
-                                        stroke-dasharray="0"
-                                        class="apexcharts-gridline"
-                                      ></line>
-                                      <line
-                                        id="SvgjsLine1513"
-                                        x1="0"
-                                        y1="201.8784"
-                                        x2="805.84765625"
-                                        y2="201.8784"
-                                        stroke="#f1f1f1"
-                                        stroke-dasharray="0"
-                                        class="apexcharts-gridline"
-                                      ></line>
-                                      <line
-                                        id="SvgjsLine1514"
-                                        x1="0"
-                                        y1="252.348"
-                                        x2="805.84765625"
-                                        y2="252.348"
-                                        stroke="#f1f1f1"
-                                        stroke-dasharray="0"
-                                        class="apexcharts-gridline"
-                                      ></line>
-                                    </g>
-                                    <g
-                                      id="SvgjsG1501"
-                                      class="apexcharts-gridlines-vertical"
-                                    ></g>
-                                    <line
-                                      id="SvgjsLine1502"
-                                      x1="0"
-                                      y1="253.348"
-                                      x2="0"
-                                      y2="259.348"
-                                      stroke="#e0e0e0"
-                                      stroke-dasharray="0"
-                                      class="apexcharts-xaxis-tick"
-                                    ></line>
-                                    <line
-                                      id="SvgjsLine1503"
-                                      x1="134.30794270833334"
-                                      y1="253.348"
-                                      x2="134.30794270833334"
-                                      y2="259.348"
-                                      stroke="#e0e0e0"
-                                      stroke-dasharray="0"
-                                      class="apexcharts-xaxis-tick"
-                                    ></line>
-                                    <line
-                                      id="SvgjsLine1504"
-                                      x1="268.6158854166667"
-                                      y1="253.348"
-                                      x2="268.6158854166667"
-                                      y2="259.348"
-                                      stroke="#e0e0e0"
-                                      stroke-dasharray="0"
-                                      class="apexcharts-xaxis-tick"
-                                    ></line>
-                                    <line
-                                      id="SvgjsLine1505"
-                                      x1="402.923828125"
-                                      y1="253.348"
-                                      x2="402.923828125"
-                                      y2="259.348"
-                                      stroke="#e0e0e0"
-                                      stroke-dasharray="0"
-                                      class="apexcharts-xaxis-tick"
-                                    ></line>
-                                    <line
-                                      id="SvgjsLine1506"
-                                      x1="537.2317708333334"
-                                      y1="253.348"
-                                      x2="537.2317708333334"
-                                      y2="259.348"
-                                      stroke="#e0e0e0"
-                                      stroke-dasharray="0"
-                                      class="apexcharts-xaxis-tick"
-                                    ></line>
-                                    <line
-                                      id="SvgjsLine1507"
-                                      x1="671.5397135416667"
-                                      y1="253.348"
-                                      x2="671.5397135416667"
-                                      y2="259.348"
-                                      stroke="#e0e0e0"
-                                      stroke-dasharray="0"
-                                      class="apexcharts-xaxis-tick"
-                                    ></line>
-                                    <line
-                                      id="SvgjsLine1508"
-                                      x1="805.8476562500001"
-                                      y1="253.348"
-                                      x2="805.8476562500001"
-                                      y2="259.348"
-                                      stroke="#e0e0e0"
-                                      stroke-dasharray="0"
-                                      class="apexcharts-xaxis-tick"
-                                    ></line>
-                                    <line
-                                      id="SvgjsLine1516"
-                                      x1="0"
-                                      y1="252.348"
-                                      x2="805.84765625"
-                                      y2="252.348"
-                                      stroke="transparent"
-                                      stroke-dasharray="0"
-                                    ></line>
-                                    <line
-                                      id="SvgjsLine1515"
-                                      x1="0"
-                                      y1="1"
-                                      x2="0"
-                                      y2="252.348"
-                                      stroke="transparent"
-                                      stroke-dasharray="0"
-                                    ></line>
-                                  </g>
-                                  <g
-                                    id="SvgjsG1451"
-                                    class="apexcharts-area-series apexcharts-plot-series"
-                                  >
-                                    <g
-                                      id="SvgjsG1452"
-                                      class="apexcharts-series"
-                                      seriesName="SalesxDuration"
-                                      data:longestSeries="true"
-                                      rel="1"
-                                      data:realIndex="0"
-                                    >
-                                      <path
-                                        id="SvgjsPath1459"
-                                        d="M 0 252.348L 0 227.1132C 47.00777994791667 227.1132 87.30016276041667 151.40879999999999 134.30794270833334 151.40879999999999C 181.31572265625002 151.40879999999999 221.60810546875 211.97232 268.6158854166667 211.97232C 315.62366536458336 211.97232 355.9160481770833 151.40879999999999 402.923828125 151.40879999999999C 449.9316080729167 151.40879999999999 490.2239908854167 111.03312 537.2317708333334 111.03312C 584.23955078125 111.03312 624.53193359375 199.35492 671.5397135416666 199.35492C 718.5474934895833 199.35492 758.8398763020833 50.469600000000014 805.84765625 50.469600000000014C 805.84765625 50.469600000000014 805.84765625 50.469600000000014 805.84765625 252.348M 805.84765625 50.469600000000014z"
-                                        fill="url(#SvgjsLinearGradient1455)"
-                                        fill-opacity="1"
-                                        stroke-opacity="1"
-                                        stroke-linecap="butt"
-                                        stroke-width="0"
-                                        stroke-dasharray="0"
-                                        class="apexcharts-area"
-                                        index="0"
-                                        clip-path="url(#gridRectMask5zutefx8)"
-                                        pathTo="M 0 252.348L 0 227.1132C 47.00777994791667 227.1132 87.30016276041667 151.40879999999999 134.30794270833334 151.40879999999999C 181.31572265625002 151.40879999999999 221.60810546875 211.97232 268.6158854166667 211.97232C 315.62366536458336 211.97232 355.9160481770833 151.40879999999999 402.923828125 151.40879999999999C 449.9316080729167 151.40879999999999 490.2239908854167 111.03312 537.2317708333334 111.03312C 584.23955078125 111.03312 624.53193359375 199.35492 671.5397135416666 199.35492C 718.5474934895833 199.35492 758.8398763020833 50.469600000000014 805.84765625 50.469600000000014C 805.84765625 50.469600000000014 805.84765625 50.469600000000014 805.84765625 252.348M 805.84765625 50.469600000000014z"
-                                        pathFrom="M -1 403.7568L -1 403.7568L 134.30794270833334 403.7568L 268.6158854166667 403.7568L 402.923828125 403.7568L 537.2317708333334 403.7568L 671.5397135416666 403.7568L 805.84765625 403.7568"
-                                      ></path>
-                                      <path
-                                        id="SvgjsPath1460"
-                                        d="M 0 227.1132C 47.00777994791667 227.1132 87.30016276041667 151.40879999999999 134.30794270833334 151.40879999999999C 181.31572265625002 151.40879999999999 221.60810546875 211.97232 268.6158854166667 211.97232C 315.62366536458336 211.97232 355.9160481770833 151.40879999999999 402.923828125 151.40879999999999C 449.9316080729167 151.40879999999999 490.2239908854167 111.03312 537.2317708333334 111.03312C 584.23955078125 111.03312 624.53193359375 199.35492 671.5397135416666 199.35492C 718.5474934895833 199.35492 758.8398763020833 50.469600000000014 805.84765625 50.469600000000014"
-                                        fill="none"
-                                        fill-opacity="1"
-                                        stroke="#18d26b"
-                                        stroke-opacity="1"
-                                        stroke-linecap="butt"
-                                        stroke-width="5"
-                                        stroke-dasharray="0"
-                                        class="apexcharts-area"
-                                        index="0"
-                                        clip-path="url(#gridRectMask5zutefx8)"
-                                        pathTo="M 0 227.1132C 47.00777994791667 227.1132 87.30016276041667 151.40879999999999 134.30794270833334 151.40879999999999C 181.31572265625002 151.40879999999999 221.60810546875 211.97232 268.6158854166667 211.97232C 315.62366536458336 211.97232 355.9160481770833 151.40879999999999 402.923828125 151.40879999999999C 449.9316080729167 151.40879999999999 490.2239908854167 111.03312 537.2317708333334 111.03312C 584.23955078125 111.03312 624.53193359375 199.35492 671.5397135416666 199.35492C 718.5474934895833 199.35492 758.8398763020833 50.469600000000014 805.84765625 50.469600000000014"
-                                        pathFrom="M -1 403.7568L -1 403.7568L 134.30794270833334 403.7568L 268.6158854166667 403.7568L 402.923828125 403.7568L 537.2317708333334 403.7568L 671.5397135416666 403.7568L 805.84765625 403.7568"
-                                      ></path>
-                                      <g
-                                        id="SvgjsG1453"
-                                        class="apexcharts-series-markers-wrap"
-                                        data:realIndex="0"
-                                      >
-                                        <g class="apexcharts-series-markers">
-                                          <circle
-                                            id="SvgjsCircle1522"
-                                            r="0"
-                                            cx="0"
-                                            cy="0"
-                                            class="apexcharts-marker wvja0gz7o no-pointer-events"
-                                            stroke="#ffffff"
-                                            fill="#18d26b"
-                                            fill-opacity="1"
-                                            stroke-width="2"
-                                            stroke-opacity="0.9"
-                                            default-marker-size="0"
-                                          ></circle>
-                                        </g>
-                                      </g>
-                                    </g>
-                                    <g
-                                      id="SvgjsG1454"
-                                      class="apexcharts-datalabels"
-                                      data:realIndex="0"
-                                    ></g>
-                                  </g>
-                                  <line
-                                    id="SvgjsLine1517"
-                                    x1="0"
-                                    y1="0"
-                                    x2="805.84765625"
-                                    y2="0"
-                                    stroke="#b6b6b6"
-                                    stroke-dasharray="0"
-                                    stroke-width="1"
-                                    class="apexcharts-ycrosshairs"
-                                  ></line>
-                                  <line
-                                    id="SvgjsLine1518"
-                                    x1="0"
-                                    y1="0"
-                                    x2="805.84765625"
-                                    y2="0"
-                                    stroke-dasharray="0"
-                                    stroke-width="0"
-                                    class="apexcharts-ycrosshairs-hidden"
-                                  ></line>
-                                  <g
-                                    id="SvgjsG1519"
-                                    class="apexcharts-yaxis-annotations"
-                                  ></g>
-                                  <g
-                                    id="SvgjsG1520"
-                                    class="apexcharts-xaxis-annotations"
-                                  ></g>
-                                  <g
-                                    id="SvgjsG1521"
-                                    class="apexcharts-point-annotations"
-                                  ></g>
-                                </g>
-                                <rect
-                                  id="SvgjsRect1447"
-                                  width="0"
-                                  height="0"
-                                  x="0"
-                                  y="0"
-                                  rx="0"
-                                  ry="0"
-                                  opacity="1"
-                                  stroke-width="0"
-                                  stroke="none"
-                                  stroke-dasharray="0"
-                                  fill="#fefefe"
-                                ></rect>
-                                <g
-                                  id="SvgjsG1485"
-                                  class="apexcharts-yaxis"
-                                  rel="0"
-                                  transform="translate(21.4765625, 0)"
-                                >
-                                  <g
-                                    id="SvgjsG1486"
-                                    class="apexcharts-yaxis-texts-g"
-                                  >
-                                    <text
-                                      id="SvgjsText1487"
-                                      font-family="Helvetica, Arial, sans-serif"
-                                      x="20"
-                                      y="31.5"
-                                      text-anchor="end"
-                                      dominant-baseline="auto"
-                                      font-size="11px"
-                                      font-weight="400"
-                                      fill="#373d3f"
-                                      class="apexcharts-text apexcharts-yaxis-label"
-                                      style="
-                                        font-family: Helvetica, Arial,
-                                          sans-serif;
-                                      "
-                                    >
-                                      <tspan id="SvgjsTspan1488">8000</tspan>
-                                      <title>8000</title>
-                                    </text>
-                                    <text
-                                      id="SvgjsText1489"
-                                      font-family="Helvetica, Arial, sans-serif"
-                                      x="20"
-                                      y="81.9696"
-                                      text-anchor="end"
-                                      dominant-baseline="auto"
-                                      font-size="11px"
-                                      font-weight="400"
-                                      fill="#373d3f"
-                                      class="apexcharts-text apexcharts-yaxis-label"
-                                      style="
-                                        font-family: Helvetica, Arial,
-                                          sans-serif;
-                                      "
-                                    >
-                                      <tspan id="SvgjsTspan1490">7000</tspan>
-                                      <title>7000</title>
-                                    </text>
-                                    <text
-                                      id="SvgjsText1491"
-                                      font-family="Helvetica, Arial, sans-serif"
-                                      x="20"
-                                      y="132.4392"
-                                      text-anchor="end"
-                                      dominant-baseline="auto"
-                                      font-size="11px"
-                                      font-weight="400"
-                                      fill="#373d3f"
-                                      class="apexcharts-text apexcharts-yaxis-label"
-                                      style="
-                                        font-family: Helvetica, Arial,
-                                          sans-serif;
-                                      "
-                                    >
-                                      <tspan id="SvgjsTspan1492">6000</tspan>
-                                      <title>6000</title>
-                                    </text>
-                                    <text
-                                      id="SvgjsText1493"
-                                      font-family="Helvetica, Arial, sans-serif"
-                                      x="20"
-                                      y="182.90879999999999"
-                                      text-anchor="end"
-                                      dominant-baseline="auto"
-                                      font-size="11px"
-                                      font-weight="400"
-                                      fill="#373d3f"
-                                      class="apexcharts-text apexcharts-yaxis-label"
-                                      style="
-                                        font-family: Helvetica, Arial,
-                                          sans-serif;
-                                      "
-                                    >
-                                      <tspan id="SvgjsTspan1494">5000</tspan>
-                                      <title>5000</title>
-                                    </text>
-                                    <text
-                                      id="SvgjsText1495"
-                                      font-family="Helvetica, Arial, sans-serif"
-                                      x="20"
-                                      y="233.3784"
-                                      text-anchor="end"
-                                      dominant-baseline="auto"
-                                      font-size="11px"
-                                      font-weight="400"
-                                      fill="#373d3f"
-                                      class="apexcharts-text apexcharts-yaxis-label"
-                                      style="
-                                        font-family: Helvetica, Arial,
-                                          sans-serif;
-                                      "
-                                    >
-                                      <tspan id="SvgjsTspan1496">4000</tspan>
-                                      <title>4000</title>
-                                    </text>
-                                    <text
-                                      id="SvgjsText1497"
-                                      font-family="Helvetica, Arial, sans-serif"
-                                      x="20"
-                                      y="283.848"
-                                      text-anchor="end"
-                                      dominant-baseline="auto"
-                                      font-size="11px"
-                                      font-weight="400"
-                                      fill="#373d3f"
-                                      class="apexcharts-text apexcharts-yaxis-label"
-                                      style="
-                                        font-family: Helvetica, Arial,
-                                          sans-serif;
-                                      "
-                                    >
-                                      <tspan id="SvgjsTspan1498">3000</tspan>
-                                      <title>3000</title>
-                                    </text>
-                                  </g>
-                                </g>
-                                <g
-                                  id="SvgjsG1444"
-                                  class="apexcharts-annotations"
-                                ></g>
-                              </svg>
-                              <div
-                                class="apexcharts-legend"
-                                style="max-height: 160px"
-                              ></div>
-                              <div
-                                class="apexcharts-tooltip apexcharts-theme-light apexcharts-active"
-                              >
-                                <div
-                                  class="apexcharts-tooltip-title"
-                                  style="
-                                    font-family: Helvetica, Arial, sans-serif;
-                                    font-size: 12px;
-                                  "
-                                ></div>
-                                <div
-                                  class="apexcharts-tooltip-series-group"
-                                  style="order: 1"
-                                >
-                                  <span
-                                    class="apexcharts-tooltip-marker"
-                                    style="background-color: rgb(24, 210, 107)"
-                                  ></span>
-                                  <div
-                                    class="apexcharts-tooltip-text"
-                                    style="
-                                      font-family: Helvetica, Arial, sans-serif;
-                                      font-size: 12px;
-                                    "
-                                  >
-                                    <div class="apexcharts-tooltip-y-group">
-                                      <span
-                                        class="apexcharts-tooltip-text-y-label"
-                                      ></span
-                                      ><span
-                                        class="apexcharts-tooltip-text-y-value"
-                                      ></span>
-                                    </div>
-                                    <div class="apexcharts-tooltip-goals-group">
-                                      <span
-                                        class="apexcharts-tooltip-text-goals-label"
-                                      ></span
-                                      ><span
-                                        class="apexcharts-tooltip-text-goals-value"
-                                      ></span>
-                                    </div>
-                                    <div class="apexcharts-tooltip-z-group">
-                                      <span
-                                        class="apexcharts-tooltip-text-z-label"
-                                      ></span
-                                      ><span
-                                        class="apexcharts-tooltip-text-z-value"
-                                      ></span>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- end card body-->
-                  </div>
-                </div>
-
-                <div class="col-xl-3 col-lg-4">
-                  <div class="box" style="height: 210px; position: relative">
-                    <div class="box-header with-border">
-                      <h4 class="fw-500">Total Invested Amount</h4>
-                    </div>
-                    <div class="box-body p-0">
-                      <div class="text-center">
-                        <!-- dashboard.ejs -->
-
-                        <!-- Existing HTML code -->
-
-                        <% let totalAmount = 0; %>
-                        <!-- Initialize a variable to keep track of the total amount -->
-
-                        <% portfolios.forEach(function(portfolio) { %> <%
-                        totalAmount += portfolio.amount; %>
-                        <!-- Add the amount of each portfolio to the total amount -->
-                        <% }) %>
-
-                        <h1>$<%= totalAmount.toLocaleString() %></h1>
-
-                        <hr style="margin: 2px 77px 3px 77px" />
-                      </div>
-                    </div>
-                  </div>
-                  <div class="box" style="height: 210px; position: relative">
-                    <div class="box-header with-border">
-                      <h4 class="fw-500">Balance for withdrawal</h4>
-                    </div>
-                    <div class="box-body p-0">
-                      <div class="text-center">
-                        <% let totalBalanceForWilthwal = 0; %> <%
-                        portfolios.forEach(function(portfolio) { %> <%
-                        totalBalanceForWilthwal += portfolio.balance %>
-                        <!-- Display the compBalance value with a unique identifier -->
-
+                    <div class="row align-items-center mt-10">
+                      <div class="col-6">
                         <h1>
-                          <span id="balance-<%- portfolio._id %>">
-                            <% }) %> $<%=
-                            totalBalanceForWilthwal.toLocaleString() %>
-                          </span>
+                          <% let totalCompBalance = 0; %> <%
+                          portfolios.forEach(function(portfolio) { %> <%
+                          totalCompBalance += portfolio.compBalance %> <% }); %>
+                          $<%= totalCompBalance.toLocaleString() %>
                         </h1>
-
-                        <hr style="margin: 2px 77px 3px 77px" />
-
-                        <div class="mt-10 mt-md-0">
-                          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#standard-modal"
-                            >Withdraw</button
-                          >
+                        <!-- Display the compBalance value with a unique identifier -->
+                      </div>
+                      <div class="col-6">
+                        <div style="height: 80px">
+                          <canvas
+                            id="cdevent"
+                            width="400"
+                            height="200"
+                          ></canvas>
                         </div>
                       </div>
+                      <!-- end row-->
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-lg-6 col-sm-6 col-12">
+                <div class="box mb-15">
+                  <div class="box-body" style="height: 150px">
+                    <div
+                      class="d-flex align-items-center justify-content-between"
+                    >
+                      <h4 class="fw-500">Total referral commission</h4>
+                    </div>
+                    <div class="row align-items-center mt-10">
+                      <div class="col-6">
+                        <h1 class="m-0 fw-600">0</h1>
+                      </div>
+                      <div class="col-6">
+                        <div style="height: 80px">
+                          <canvas
+                            id="donutChart"
+                            width="300"
+                            height="300"
+                          ></canvas>
+                        </div>
+                      </div>
+                      <!-- end row-->
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-lg-6 col-sm-6 col-12">
+                <div class="box mb-15">
+                  <div class="box-body" style="height: 150px">
+                    <div
+                      class="d-flex align-items-center justify-content-between"
+                    >
+                      <h4 class="fw-500">Retirement Dividends</h4>
+                    </div>
+                    <div class="row align-items-center mt-10">
+                      <div class="col-6">
+                        <h1 class="m-0 fw-600">0</h1>
+                      </div>
+                      <div class="col-6">
+                        <div style="height: 80px">
+                          <canvas
+                            id="rdevent"
+                            width="300"
+                            height="300"
+                          ></canvas>
+                        </div>
+                      </div>
+                      <!-- end row-->
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-9 col-lg-10">
+                <!-- to add later -->
+                <div class="box mb-15">
+                  <h4 class="fw-500 p-20 pb-10">Retirement Dividends</h4>
+                  <div class="box-body" style="height: 380px">
+                    <canvas id="lineChart3" width="400" height="200"></canvas>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-lg-4">
+                <div class="box" style="height: 210px; position: relative">
+                  <div class="box-header with-border">
+                    <h4 class="fw-500">Total Invested Amount</h4>
+                  </div>
+                  <div class="box-body p-0">
+                    <div class="text-center">
+                      <!-- dashboard.ejs -->
+                      <!-- Existing HTML code -->
+                      <% let totalAmount = 0; %>
+                      <!-- Initialize a variable to keep track of the total amount -->
+                      <% portfolios.forEach(function(portfolio) { %> <%
+                      totalAmount += portfolio.amount; %>
+                      <!-- Add the amount of each portfolio to the total amount -->
+                      <% }) %>
+                      <h1>$<%= totalAmount.toLocaleString() %></h1>
+                      <hr style="margin: 2px 77px 3px 77px" />
+                    </div>
+                  </div>
+                </div>
+                <div class="box" style="height: 210px; position: relative">
+                  <div class="box-header with-border">
+                    <h4 class="fw-500">Balance for withdrawal</h4>
+                  </div>
+                  <div class="box-body p-0">
+                    <div class="text-center">
+                      <h1>
+                        <% let totalBalanceForWithdrawal = 0; %> <%
+                        portfolios.forEach(function(portfolio) { %> <%
+                        totalBalanceForWithdrawal += portfolio.balance %> <% });
+                        %> $<%= totalBalanceForWithdrawal.toLocaleString() %>
+                      </h1>
+                      <!-- Display the compBalance value with a unique identifier -->
+                      <hr style="margin: 2px 77px 3px 77px" />
+                      <div class="mt-10 mt-md-0">
+                        <button
+                          type="button"
+                          class="btn btn-primary"
+                          data-bs-toggle="modal"
+                          data-bs-target="#standard-modal"
+                        >
+                          Withdraw
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -1346,188 +211,373 @@
             <!-- THE FIRST ROW END HERE -->
           </section>
           <!-- /.content -->
-  <!-- Standard modal content -->
-<div id="standard-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-black">
-        <h4 class="modal-title" id="standard-modalLabel">Withdrawal Request</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-          <div class="col-6">
-            
-            <h5>Main Wallet Balance</h5>
-            <h3>$<%=
-                            totalBalanceForWilthwal.toLocaleString() %></h3>
-          </div>
-          <div class="col-6">
-            <h5>Compounding Dividends</h5>
-            <h3> $ <%= totlaCompBalance.toLocaleString()
-                              %></h3>
+
+          <!-- Standard modal content -->
+          <div
+            id="standard-modal"
+            class="modal fade"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="standard-modalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header bg-black">
+                  <h4 class="modal-title" id="standard-modalLabel">
+                    Withdrawal Request
+                  </h4>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="col-6">
+                      <h5>Main Wallet Balance</h5>
+                      <h3>
+                        $<%= totalBalanceForWithdrawal.toLocaleString() %>
+                      </h3>
+                    </div>
+                    <div class="col-6">
+                      <h5>Compounding Dividends</h5>
+                      <h3>$<%= totalCompBalance.toLocaleString() %></h3>
+                    </div>
+                  </div>
+                  <hr />
+                  <form
+                    class="rform__modified"
+                    action="/user/withdrawal"
+                    method="post"
+                    onsubmit="return validateForm()"
+                  >
+                    <div class="form-group">
+                      <div class="row">
+                        <div class="col-7">
+                          <input
+                            type="number"
+                            name="authCode"
+                            class="form-control ps-15 p-10"
+                            placeholder="Enter 2FA"
+                            id="authCode"
+                            onblur="checkAuthCodeValidity()"
+                            required
+                          />
+                          <span id="errorText" style="color: red; display: none"
+                            >.</span
+                          >
+                        </div>
+                        <div class="col-5">
+                          <span class="btn btn-info" id="generateCodeBtn"
+                            >Generate Code</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <input
+                        type="number"
+                        name="amount"
+                        class="form-control ps-15 p-10"
+                        placeholder="You can only Withdraw $100 a day"
+                        id="amount"
+                        min="100"
+                        required
+                      />
+                    </div>
+                    <div class="input-group mb-20">
+                      <select
+                        class="form-control select2"
+                        style="width: 100%"
+                        name="method"
+                        id="method"
+                        required
+                        onchange="checkFormValidity()"
+                      >
+                        <option value="" selected disabled>
+                          Select Wallet Type
+                        </option>
+                        <option value="BTC" data-icon="BTC">Bitcoin</option>
+                        <option value="ETH" data-icon="ETH">Ethereum</option>
+                        <option value="USDT" data-icon="USDT">
+                          Tether USD TRC20
+                        </option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <input
+                        type="text"
+                        name="walletAddress"
+                        class="form-control ps-15 p-10"
+                        placeholder="Wallet Address"
+                        id="walletAddress"
+                        pattern="^(0x)?[A-Fa-f0-9]{40}$"
+                        title="Please enter a valid wallet address"
+                        required
+                      />
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-primary-light"
+                        data-bs-dismiss="modal"
+                      >
+                        Close
+                      </button>
+                      <button type="submit" class="btn btn-primary">
+                        Withdraw Now
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <hr>
-      <form class="rform__modified" action="/user/withdrawal" method="post" onsubmit="return validateForm()">
-  <div class="form-group">
-    <div class="row">
-      <div class="col-7">
-        <input
-          type="number"
-          name="authCode"
-          class="form-control ps-15 p-10"
-          placeholder="Enter 2FA"
-          id="authCode"
-          onblur="checkAuthCodeValidity()"
-          required
-        />
-        <span id="errorText" style="color: red; display: none;">.</span>
-      </div>
-      <div class="col-5">
-        <span class="btn btn-info" id="generateCodeBtn">Generate Code</span>
       </div>
     </div>
-  </div>
-  <div class="form-group">
-    <input
-      type="number"
-      name="amount"
-      class="form-control ps-15 p-10"
-      placeholder="You can only Withdraw $100 a day"
-      id="amount"
-      min="100"
-     
-      required
-    />
-  </div>
-  <div class="input-group mb-20">
-    <select
-      class="form-control select2"
-      style="width: 100%"
-      name="method"
-      id="method"
-      required
-      onchange="checkFormValidity()"
-    >
-      <option value="" selected disabled>Select Wallet Type</option>
-      <option value="BTC" data-icon="BTC">Bitcoin</option>
-      <option value="ETH" data-icon="ETH">Ethereum</option>
-      <option value="USDT" data-icon="USDT">Tether USD TRC20</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <input
-  type="text"
-  name="walletAddress"
-  class="form-control ps-15 p-10"
-  placeholder="Wallet Address"
-  id="walletAddress"
-  pattern="^(0x)?[A-Fa-f0-9]{40}$" 
-  title="Please enter a valid wallet address"
-  required
-/>
 
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-primary-light" data-bs-dismiss="modal">Close</button>
-    <button type="submit" class="btn btn-primary">Withdraw Now</button>
-  </div>
-</form>
-      </div>
-    </div>
-  </div>
-</div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      // Event handler for the "Generate Code" button
+      document
+        .getElementById('generateCodeBtn')
+        .addEventListener('click', function () {
+          // Retrieve the value from the 2FA input field
+          var twoFactorValue = document.getElementById('authCode').value;
 
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script>
-  // Event handler for the "Generate Code" button
-  document.getElementById('generateCodeBtn').addEventListener('click', function() {
-    // Retrieve the value from the 2FA input field
-    var twoFactorValue = document.getElementById('authCode').value;
+          // Make a POST request to the "user/2factor" endpoint
+          axios
+            .post('/user/two-factor', { twoFactorValue })
+            .then(function (response) {
+              // Handle the response from the server
+              console.log(response.data);
+              // Perform any necessary actions based on the response
+            })
+            .catch(function (error) {
+              // Handle errors
+              console.error(error);
+            });
+        });
 
-    // Make a POST request to the "user/2factor" endpoint
-    axios.post('/user/two-factor', { twoFactorValue })
-      .then(function(response) {
-        // Handle the response from the server
-        console.log(response.data);
-        // Perform any necessary actions based on the response
-      })
-      .catch(function(error) {
-        // Handle errors
-        console.error(error);
-      });
-  });
-// function checkAuthCodeValidity() {
-//   const inputAuthCode = document.getElementById('authCode').value;
+      function checkAuthCodeValidity() {
+        const inputAuthCode = document.getElementById('authCode').value;
 
-//   axios.get('/user/activity')
-//     .then(function(response) {
-//       const twofactorCode = response.data.twofactorCode;
-//       const validAuthCode = response.data.authCode;
+        axios
+          .get('/user/activity')
+          .then(function (response) {
+            const twofactorCode = response.data.twofactorCode;
+            const validAuthCode = response.data.authCode;
+            const errorText = document.getElementById('errorText');
 
-//       if (!twofactorCode.code || !validAuthCode) {
-//         document.getElementById('errorText').textContent = 'Invalid OTP';
-//         document.getElementById('errorText').style.display = 'block';
-//       } else if (inputAuthCode === validAuthCode && inputAuthCode === twofactorCode.code) {
-//         document.getElementById('errorText').textContent = 'OTP has already been used';
-//         document.getElementById('errorText').style.display = 'block';
-//       } else {
-//         const currentAuthCode = document.getElementById('authCode').value;
-//         if (inputAuthCode === currentAuthCode) {
-//           document.getElementById('authCode').value = '';
-//           alert('The authentication code has expired. Please generate another one.');
-//         }
-//       }
-//     })
-//     .catch(function(error) {
-//       console.error(error);
-//       // Handle error
-//     });
-// }
-function checkAuthCodeValidity() {
-  const inputAuthCode = document.getElementById('authCode').value;
-
-  axios.get('/user/activity')
-    .then(function(response) {
-      const twofactorCode = response.data.twofactorCode;
-      const validAuthCode = response.data.authCode;
-      const errorText = document.getElementById('errorText');
-
-      if (!twofactorCode.code || !validAuthCode) {
-        errorText.textContent = 'Invalid OTP';
-        errorText.style.display = 'block';
-      } else if (inputAuthCode === validAuthCode && inputAuthCode === twofactorCode.code) {
-        errorText.textContent = 'OTP has already been used';
-        errorText.style.display = 'block';
-      } else {
-        errorText.textContent = '';
-        errorText.style.display = 'none';
+            if (!twofactorCode.code || !validAuthCode) {
+              errorText.textContent = 'Invalid OTP';
+              errorText.style.display = 'block';
+            } else if (
+              inputAuthCode === validAuthCode &&
+              inputAuthCode === twofactorCode.code
+            ) {
+              errorText.textContent = 'OTP has already been used';
+              errorText.style.display = 'block';
+            } else {
+              errorText.textContent = '';
+              errorText.style.display = 'none';
+            }
+          })
+          .catch(function (error) {
+            console.error(error);
+            // Handle error
+          });
       }
-    })
-    .catch(function(error) {
-      console.error(error);
-      // Handle error
-    });
-}
 
-  function checkFormValidity() {
-    const authCode = document.getElementById('authCode').value;
-    const amount = document.getElementById('amount').value;
-    const currency = document.getElementById('currency').value;
-    const walletAddress = document.getElementById('walletAddress').value;
+      function checkFormValidity() {
+        const authCode = document.getElementById('authCode').value;
+        const amount = document.getElementById('amount').value;
+        const currency = document.getElementById('currency').value;
+        const walletAddress = document.getElementById('walletAddress').value;
 
-    return authCode && amount && currency && walletAddress;
-  }
+        return authCode && amount && currency && walletAddress;
+      }
 
-  function validateForm() {
-    if (!checkFormValidity()) {
-      alert('Please fill in all the required fields.');
-      return false;
-    }
-    return true;
-  }
-</script>
+      function validateForm() {
+        if (!checkFormValidity()) {
+          alert('Please fill in all the required fields.');
+          return false;
+        }
+        return true;
+      }
+
+      // Sample data for the donut chart
+      const donutData = {
+        datasets: [
+          {
+            data: [75, 25],
+            backgroundColor: ['#28a745', '#f8f9fa'], // Success color is green (#28a745)
+          },
+        ],
+      };
+
+      // Draw the donut chart
+      const donutCtx = document.getElementById('donutChart').getContext('2d');
+      new Chart(donutCtx, {
+        type: 'doughnut',
+        data: donutData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '80%', // Make it look like a donut
+          plugins: {
+            legend: {
+              display: false, // Hide the legend
+            },
+          },
+          elements: {
+            arc: {
+              borderWidth: 1, // Custom border width for the arcs
+            },
+          },
+        },
+      });
+
+      // Sample data for the three line charts
+      const activePort = {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [
+          {
+            data: [10, 25, 15, 35, 20, 30],
+            borderColor: '#28a745', // Success color is green (#28a745)
+            backgroundColor: 'rgba(40, 167, 69, 0.2)',
+            fill: true,
+          },
+        ],
+      };
+
+      const rDevedent = {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [
+          {
+            data: [10, 25, 15, 35, 20, 30],
+            borderColor: '#28a745',
+            backgroundColor: '#28a745',
+            borderWidth: 1,
+          },
+        ],
+      };
+
+      const rDeventx = document.getElementById('rdevent').getContext('2d');
+      new Chart(rDeventx, {
+        type: 'line',
+        data: rDevedent,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              display: false, // Hide x-axis
+            },
+            y: {
+              display: false, // Hide y-axis
+            },
+          },
+          plugins: {
+            legend: {
+              display: false,
+            },
+          },
+        },
+      });
+
+      const cDevent = {
+        datasets: [
+          {
+            data: [30, 40, 35, 55, 50, 60],
+            borderColor: '#28a745', // Success color is green (#28a745)
+            backgroundColor: 'rgba(40, 167, 69, 0.2)',
+            fill: true,
+          },
+        ],
+      };
+
+      const profitChat = {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [
+          {
+            data: [0, 18, 25, 23, 29, 32, 34],
+            borderColor: '#28a745', // Yellow color (#ffc107)
+            backgroundColor: 'rgba(40, 167, 69, 0.2)',
+            fill: true,
+          },
+        ],
+      };
+
+      const optionpie = {
+        responsive: true,
+        maintainAspectRatio: false,
+      };
+
+      // Draw the three line charts
+      const activePortx = document.getElementById('lineport').getContext('2d');
+      new Chart(activePortx, {
+        type: 'line',
+        data: activePort,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              display: false, // Hide x-axis
+            },
+            y: {
+              display: false, // Hide y-axis
+            },
+          },
+          plugins: {
+            legend: {
+              display: false,
+            },
+          },
+        },
+      });
+      const cdDevent = document.getElementById('cdevent').getContext('2d');
+      new Chart(cdDevent, {
+        type: 'pie',
+        data: cDevent,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false, // Hide the legend
+            },
+          },
+        },
+      });
+
+      const profitChartx = document
+        .getElementById('lineChart3')
+        .getContext('2d');
+      new Chart(profitChartx, {
+        type: 'line',
+        data: profitChat,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false, // Hide the legend
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+    </script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/dashboard.js"></script>
 

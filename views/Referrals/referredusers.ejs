@@ -18,22 +18,13 @@
       <div class="content-wrapper">
         <div class="container-full">
           <section class="content">
-            <div class="col-12 col-xl-12">
-              <div class="card">
-                <div class="card-header">
-                  <h5 class="card-title"><%= title %></h5>
-                </div>
-                <div class="row" style="margin-right: 10px">
-                  <div class="col-5"></div>
-                  <div class="col-7">
+            <h5 class="card-title"><%= title %></h5>
+            <div class="col-9 col-xl-9">
+              <div class="card mt-20">
+                <div class="row m-10" style="margin-left: 10px">
+                  <div class="col-12 margin-left-10">
                     <div class="input-group" style="gap: 20px">
-                      <div
-                        style="
-                          border: 1px solid blue;
-
-                          padding: 19px 0px;
-                        "
-                      >
+                      <div style="border: 1px solid blue; padding: 19px 0px">
                         Referal Link:
                         <span
                           id="referralCode"
@@ -44,7 +35,7 @@
                             border-radius: 10px;
                           "
                         >
-                          <%= url %>/<%=referringUser.referralCode %>
+                          <%= url %>/<%= referringUser.referralCode %>
                         </span>
                       </div>
                       <button
@@ -58,14 +49,22 @@
                   </div>
                 </div>
                 <div class="card-body">
-                  <table class="table table-striped">
-                    <thead>
-                      <tr>
-                        <th style="width: 5%">SN</th>
-                        <th style="width: 15%">Full Name</th>
-                        <th style="width: 20%">Email</th>
-                        <th style="width: 30%">Invested</th>
-                        <th style="width: 10%">Status</th>
+                  <table class="table table-striped b-1 border-secondary">
+                    <thead class="bg-dark">
+                      <tr class="p-10">
+                        <th style="width: 15%; border-right: #fff2f2 1px solid">
+                          SN
+                        </th>
+                        <th style="width: 15%; border-right: #fff2f2 1px solid">
+                          Full Name
+                        </th>
+                        <th style="width: 40%; border-right: #fff2f2 1px solid">
+                          Email
+                        </th>
+                        <th style="width: 20%; border-right: #fff2f2 1px solid">
+                          Invested
+                        </th>
+                        <th>Status</th>
                       </tr>
                     </thead>
                     <!-- ...existing code... -->
@@ -73,10 +72,16 @@
                       <% if (referredUsers.length > 0) { %> <%
                       referredUsers.forEach((user, index) => { %>
                       <tr>
-                        <td><%= index + 1 %></td>
-                        <td><%= user.profile.fullName %></td>
-                        <td><%= user.user.email %></td>
-                        <td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= index + 1 %>
+                        </td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= user.profile.fullName %>
+                        </td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= user.user.email %>
+                        </td>
+                        <td style="border-right: #d1d1d1 1px solid">
                           <% if (user.buyPortfolio &&
                           user.buyPortfolio.depositAmount) { %>
                           <span class="badge badge-warning">Pending</span>
@@ -103,7 +108,7 @@
                     id="example_paginate"
                   >
                     <% if (totalPages > 1) { %>
-                    <ul class="pagination">
+                    <ul class="pagination mb-0 mt-20">
                       <% if (currentPage > 1) { %>
                       <li class="paginate_button page-item previous">
                         <a
@@ -112,8 +117,10 @@
                           >Previous</a
                         >
                       </li>
-                      <% } %> <% for (let i = 1; i <= totalPages; i++) { %> <%
-                      if (i === currentPage) { %>
+                      <% } %> <% for (let i = 1; i <= 4 && i <= totalPages; i++)
+                      { %>
+                      <!-- Adjusted the for loop condition -->
+                      <% if (i === currentPage) { %>
                       <li class="paginate_button page-item active">
                         <a href="#" class="page-link"><%= i %></a>
                       </li>
