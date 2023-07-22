@@ -20,12 +20,11 @@
       <div class="content-wrapper">
         <div class="container-full">
           <section class="content">
+            <h5 class="card-title mb-20"><%=title%></h5>
             <div class="col-9 col-xl-9">
               <div class="card">
-                <div class="card-header">
-                  <h5 class="card-title"><%=title%></h5>
-                </div>
-                <div>
+              
+                <div class="m-10 mb-0">
                   <a
                     href="/portfolio/create-portfolio"
                     type="button"
@@ -35,11 +34,11 @@
                   </a>
                 </div>
                 <div class="card-body">
-                  <table class="table table-striped">
-                    <thead>
+                  <table class="table table-striped b-1 border-secondary">
+                    <thead class="bg-dark">
                       <tr>
-                        <th style="width: 5%">SN</th>
-                        <th style="width: 85%">Portfolio Name</th>
+                        <th style="width: 5%; border-right: #fff2f2 1px solid">SN</th>
+                        <th style="width: 85%; border-right: #fff2f2 1px solid">Portfolio Name</th>
 
                         <th style="width: 10%">Actions</th>
                       </tr>
@@ -51,8 +50,8 @@
 
                       <% } else { %> <% portfolio.forEach((item) => { %>
                       <tr>
-                        <td><%= item.sn %></td>
-                        <td><%= item.portfolioTitle %></td>
+                        <td style="border-right: #d1d1d1 1px solid"><%= item.sn %></td>
+                        <td style="border-right: #d1d1d1 1px solid"><%= item.portfolioTitle %></td>
                         <td class="table-action min-w-100">
                           <a
                             href="/portfolio/<%= item._id %>"
@@ -85,7 +84,7 @@
                     class="dataTables_paginate paging_simple_numbers align-right"
                     id="example_paginate"
                   >
-                    <ul class="pagination">
+                    <ul class="pagination mb-0 mt-20">
                       <li
                         class="paginate_button page-item previous <%= currentPage === 1 ? 'disabled' : '' %>"
                         id="example_previous"

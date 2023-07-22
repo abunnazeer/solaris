@@ -20,19 +20,22 @@
       <div class="content-wrapper">
         <div class="container-full">
           <section class="content">
+            <h5 class="card-title"><%= title %></h5>
             <div class="col-9 col-xl-9">
-              <div class="card">
-                <div class="card-header">
-                  <h5 class="card-title"><%=title%></h5>
-                </div>
-
+              <div class="card mt-20">
                 <div class="card-body">
-                  <table class="table table-striped">
-                    <thead>
-                      <tr>
-                        <th style="width: 30%">User Name</th>
-                        <th style="width: 30%">Portfolio Name</th>
-                        <th style="width: 30%">Date of Purchase</th>
+                  <table class="table table-striped b-1 border-secondary">
+                    <thead class="bg-dark">
+                      <tr class="p-10">
+                        <th style="width: 30%; border-right: #fff2f2 1px solid">
+                          User Name
+                        </th>
+                        <th style="width: 30%; border-right: #fff2f2 1px solid">
+                          Portfolio Name
+                        </th>
+                        <th style="width: 30%; border-right: #fff2f2 1px solid">
+                          Date of Purchase
+                        </th>
 
                         <th style="width: 10%">Status</th>
                       </tr>
@@ -41,9 +44,13 @@
                     <tbody>
                       <% userObjects.forEach((item) => { %>
                       <tr>
-                        <td><%= item.userProfile.fullName %></td>
-                        <td><%= item.userDetails.portfolioName %></td>
-                        <td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= item.userProfile.fullName %>
+                        </td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= item.userDetails.portfolioName %>
+                        </td>
+                        <td style="border-right: #d1d1d1 1px solid">
                           <%= new
                           Date(item.userDetails.dateOfPurchase).toLocaleDateString('en-US',
                           { month: 'short', day: 'numeric', year: 'numeric', })
@@ -69,7 +76,7 @@
                     class="dataTables_paginate paging_simple_numbers align-right"
                     id="example_paginate"
                   >
-                    <ul class="pagination">
+                    <ul class="pagination mb-0 m-10">
                       <li
                         class="paginate_button page-item previous <%= currentPage === 1 ? 'disabled' : '' %>"
                         id="example_previous"

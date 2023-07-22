@@ -18,14 +18,11 @@
       <div class="content-wrapper">
         <div class="container-full">
           <section class="content">
-            <div class="col-12 col-xl-12">
-              <div class="card">
-                <div class="card-header">
-                  <h5 class="card-title"><%= title %></h5>
-                </div>
-                <div class="row" style="margin-right: 10px">
-                  <div class="col-5"></div>
-                  <div class="col-7">
+            <h5 class="card-title"><%= title %></h5>
+            <div class="col-9 col-xl-9">
+              <div class="card mt-20">
+                <div class="row m-10" style="margin-left: 10px">
+                  <div class="col-12 margin-left-10">
                     <div class="input-group" style="gap: 20px">
                       <div style="border: 1px solid blue; padding: 19px 0px">
                         Referal Link:
@@ -52,13 +49,22 @@
                   </div>
                 </div>
                 <div class="card-body">
-                  <table class="table table-striped">
-                    <thead>
-                      <tr>
-                        <th style="width: 5%">SN</th>
-                        <th style="width: 15%">Date</th>
-                        <th style="width: 70%">Details</th>
-                        <th style="width: 30%">Amount</th>
+                  <table class="table table-striped b-1 border-secondary">
+                    <thead class="bg-dark">
+                      <tr class="p-10">
+                        <th style="width: 5%; border-right: #fff2f2 1px solid">
+                          SN
+                        </th>
+                        <th style="width: 20%; border-right: #fff2f2 1px solid">
+                          Date
+                        </th>
+                        <th style="width: 60%; border-right: #fff2f2 1px solid">
+                          Details
+                        </th>
+
+                        <th style="width: 15%; border-right: #fff2f2 1px solid">
+                          Amount
+                        </th>
                         <th style="width: 10%">Status</th>
                       </tr>
                     </thead>
@@ -66,14 +72,20 @@
                       <% if (referredUsers.length > 0) { %> <%
                       referredUsers.forEach((user, index) => { %>
                       <tr>
-                        <td><%= index + 1 %></td>
-                        <td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= index + 1 %>
+                        </td>
+                        <td style="border-right: #d1d1d1 1px solid">
                           <%= user.createdAt.toLocaleString('en-US', { day:
                           'numeric', month: 'long', year: 'numeric', hour:
                           'numeric', minute: 'numeric' }) %>
                         </td>
-                        <td><%= user.description %></td>
-                        <td>$<%= user.bonusAmount %></td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= user.description %>
+                        </td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          $<%= user.bonusAmount %>
+                        </td>
                         <td><!-- Display the status --></td>
                       </tr>
                       <% }) %> <% } else { %>
@@ -89,7 +101,7 @@
                     id="example_paginate"
                   >
                     <% if (totalPages > 1) { %>
-                    <ul class="pagination">
+                    <ul class="pagination mb-0 mt-20">
                       <% if (currentPage > 1) { %>
                       <li class="paginate_button page-item previous">
                         <a

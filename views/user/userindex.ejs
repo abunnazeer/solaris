@@ -20,12 +20,10 @@
       <div class="content-wrapper">
         <div class="container-full">
           <section class="content">
+            <h5 class="card-title"><%= title %></h5>
             <div class="col-9 col-xl-9">
-              <div class="card">
-                <div class="card-header">
-                  <h5 class="card-title"><%=title%></h5>
-                </div>
-                <div>
+              <div class="card mt-20">
+                <div class="m-10 mb-0">
                   <a
                     href="/user/users/create-user"
                     type="button"
@@ -35,12 +33,18 @@
                   </a>
                 </div>
                 <div class="card-body">
-                  <table class="table table-striped">
-                    <thead>
-                      <tr>
-                        <th style="width: 40%">User Name</th>
-                        <th style="width: 30%">User Email</th>
-                        <th style="width: 20%">User Email</th>
+                  <table class="table table-striped b-1 border-secondary">
+                    <thead class="bg-dark">
+                      <tr class="p-10">
+                        <th style="width: 40%; border-right: #fff2f2 1px solid">
+                          User Name
+                        </th>
+                        <th style="width: 30%; border-right: #fff2f2 1px solid">
+                          User Email
+                        </th>
+                        <th style="width: 20%; border-right: #fff2f2 1px solid">
+                          User Email
+                        </th>
 
                         <th style="width: 10%">Actions</th>
                       </tr>
@@ -49,9 +53,15 @@
                     <tbody>
                       <% users.forEach((item) => { %>
                       <tr>
-                        <td><%= item.fullName %></td>
-                        <td><%= item.email %></td>
-                        <td><%= item.role %></td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= item.fullName %>
+                        </td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= item.email %>
+                        </td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= item.role %>
+                        </td>
 
                         <td class="table-action min-w-100">
                           <a
@@ -78,7 +88,7 @@
                     class="dataTables_paginate paging_simple_numbers align-right"
                     id="example_paginate"
                   >
-                    <ul class="pagination">
+                    <ul class="pagination mb-0 mt-20">
                       <li
                         class="paginate_button page-item previous <%= currentPage === 1 ? 'disabled' : '' %>"
                         id="example_previous"
