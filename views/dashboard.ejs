@@ -203,10 +203,17 @@
                       </h1>
                       <!-- Display the compBalance value with a unique identifier -->
                       <hr style="margin: 2px 77px 3px 77px" />
+                      <div style="height: 80px; width: 80%; margin: auto">
+                        <canvas
+                          id="withdChart"
+                          width="400"
+                          height="200"
+                        ></canvas>
+                      </div>
                       <div class="mt-10 mt-md-0">
                         <button
                           type="button"
-                          class="btn btn-primary"
+                          class="btn bg-gradient-info-dark w-100"
                           data-bs-toggle="modal"
                           data-bs-target="#standard-modal"
                         >
@@ -259,6 +266,7 @@
                     </div>
                   </div>
                   <hr />
+                  <hr />
                   <form
                     class="rform__modified"
                     action="/user/withdrawal"
@@ -266,8 +274,10 @@
                     onsubmit="return validateForm()"
                   >
                     <div class="form-group">
-                      <div class="row">
-                        <div class="col-7">
+                      <div
+                        class="d-md-flex justify-content-between align-items-center"
+                      >
+                        <div class="col-8">
                           <input
                             type="number"
                             name="authCode"
@@ -281,8 +291,10 @@
                             >.</span
                           >
                         </div>
-                        <div class="col-5">
-                          <span class="btn btn-info" id="generateCodeBtn"
+                        <div>
+                          <span
+                            class="btn bg-gradient-info-dark"
+                            id="generateCodeBtn"
                             >Generate Code</span
                           >
                         </div>
@@ -301,8 +313,10 @@
                     </div>
                     <div class="input-group mb-20">
                       <select
-                        class="form-control select2"
+                        class="form-control select2 select2-hidden-accessible"
                         style="width: 100%"
+                        tabindex="-1"
+                        aria-hidden="true"
                         name="method"
                         id="method"
                         required
@@ -330,15 +344,16 @@
                         required
                       />
                     </div>
-                    <div class="modal-footer">
+                    <hr />
+                    <div class="mt-10">
                       <button
                         type="button"
-                        class="btn btn-primary-light"
+                        class="btn btn-secondary"
                         data-bs-dismiss="modal"
                       >
                         Close
                       </button>
-                      <button type="submit" class="btn btn-primary">
+                      <button type="submit" class="btn btn btn-warning">
                         Withdraw Now
                       </button>
                     </div>
@@ -421,112 +436,17 @@
         return true;
       }
 
-      // Sample data for the donut chart
-      const donutData = {
-        datasets: [
-          {
-            data: [75, 25],
-            backgroundColor: ['#28a745', '#f8f9fa'], // Success color is green (#28a745)
-          },
-        ],
-      };
-
-      // Draw the donut chart
-      const donutCtx = document.getElementById('donutChart').getContext('2d');
-      new Chart(donutCtx, {
-        type: 'doughnut',
-        data: donutData,
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: '80%', // Make it look like a donut
-          plugins: {
-            legend: {
-              display: false, // Hide the legend
-            },
-          },
-          elements: {
-            arc: {
-              borderWidth: 1, // Custom border width for the arcs
-            },
-          },
-        },
-      });
-
       // Sample data for the three line charts
       const activePort = {
         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
         datasets: [
           {
             data: [10, 25, 15, 35, 20, 30],
-            borderColor: '#28a745', // Success color is green (#28a745)
+            borderColor: '#000080', // Success color is green (#28a745)
             backgroundColor: 'rgba(40, 167, 69, 0.2)',
-            fill: true,
-          },
-        ],
-      };
-
-      const rDevedent = {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        datasets: [
-          {
-            data: [10, 25, 15, 35, 20, 30],
-            borderColor: '#28a745',
-            backgroundColor: '#28a745',
             borderWidth: 1,
           },
         ],
-      };
-
-      const rDeventx = document.getElementById('rdevent').getContext('2d');
-      new Chart(rDeventx, {
-        type: 'line',
-        data: rDevedent,
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: {
-              display: false, // Hide x-axis
-            },
-            y: {
-              display: false, // Hide y-axis
-            },
-          },
-          plugins: {
-            legend: {
-              display: false,
-            },
-          },
-        },
-      });
-
-      const cDevent = {
-        datasets: [
-          {
-            data: [30, 40, 35, 55, 50, 60],
-            borderColor: '#28a745', // Success color is green (#28a745)
-            backgroundColor: 'rgba(40, 167, 69, 0.2)',
-            fill: true,
-          },
-        ],
-      };
-
-      const profitChat = {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        datasets: [
-          {
-            data: [0, 18, 25, 23, 29, 32, 34],
-            borderColor: '#28a745', // Yellow color (#ffc107)
-            backgroundColor: 'rgba(40, 167, 69, 0.2)',
-            fill: true,
-          },
-        ],
-      };
-
-      const optionpie = {
-        responsive: true,
-        maintainAspectRatio: false,
       };
 
       // Draw the three line charts
@@ -552,20 +472,163 @@
           },
         },
       });
-      const cdDevent = document.getElementById('cdevent').getContext('2d');
-      new Chart(cdDevent, {
-        type: 'pie',
-        data: cDevent,
+
+      const withdrawalChart = {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [
+          {
+            data: [50, 5, 15, 35, 20, 30],
+            borderColor: '#000080', // Success color is green (#28a745)
+            backgroundColor: 'rgba(40, 167, 69, 0.2)',
+            borderWidth: 1,
+          },
+        ],
+      };
+
+      const wthChart = document.getElementById('withdChart').getContext('2d');
+      new Chart(wthChart, {
+        type: 'line',
+        data: withdrawalChart,
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          scales: {
+            x: {
+              display: false, // Hide x-axis
+            },
+            y: {
+              display: false, // Hide y-axis
+            },
+          },
           plugins: {
             legend: {
-              display: false, // Hide the legend
+              display: false,
             },
           },
         },
       });
+      const referralChart = {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [
+          {
+            data: [10, 25, 15, 35, 20, 30],
+            borderColor: '#000080',
+            backgroundColor: 'rgba(40, 167, 69, 0.2)',
+            borderWidth: 1,
+          },
+        ],
+      };
+
+      const refaralChartConfig = document
+        .getElementById('donutChart')
+        .getContext('2d');
+      new Chart(refaralChartConfig, {
+        type: 'line',
+        data: referralChart,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              display: false, // Hide x-axis
+            },
+            y: {
+              display: false, // Hide y-axis
+            },
+          },
+          plugins: {
+            legend: {
+              display: false,
+            },
+          },
+        },
+      });
+
+      const rDevedent = {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [
+          {
+            data: [10, 25, 15, 35, 20, 30],
+            borderColor: '#000080',
+            backgroundColor: 'rgba(40, 167, 69, 0.2)',
+            borderWidth: 1,
+          },
+        ],
+      };
+      const rDeventx = document.getElementById('rdevent').getContext('2d');
+      new Chart(rDeventx, {
+        type: 'line',
+        data: rDevedent,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              display: false, // Hide x-axis
+            },
+            y: {
+              display: false, // Hide y-axis
+            },
+          },
+          plugins: {
+            legend: {
+              display: false,
+            },
+          },
+        },
+      });
+
+      const cDevent = {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [
+          {
+            data: [10, 25, 15, 35, 20, 30],
+            borderColor: '#000080',
+            backgroundColor: 'rgba(40, 167, 69, 0.2)',
+            borderWidth: 1,
+          },
+        ],
+      };
+
+      const cdDevent = document.getElementById('cdevent').getContext('2d');
+      new Chart(cdDevent, {
+        type: 'line',
+        data: cDevent,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              display: false, // Hide x-axis
+            },
+            y: {
+              display: false, // Hide y-axis
+            },
+          },
+          plugins: {
+            legend: {
+              display: false,
+            },
+          },
+        },
+      });
+
+      const profitChat = {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [
+          {
+            data: [0, 18, 25, 23, 29, 32, 34],
+            borderColor: '#28a745', // Yellow color (#ffc107)
+            backgroundColor: 'rgba(40, 167, 69, 0.2)',
+            fill: true,
+          },
+        ],
+      };
+
+      const optionpie = {
+        responsive: true,
+        maintainAspectRatio: false,
+      };
 
       const profitChartx = document
         .getElementById('lineChart3')
