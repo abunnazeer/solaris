@@ -10,19 +10,31 @@
         <%- include('../layouts/header') %>
       </header>
 
-      <aside class="main-sidebar">
+      <aside
+        class="main-sidebar"
+        style="border-right: 1px solid rgb(203, 203, 203)"
+      >
         <!-- sidebar-->
         <%- include('../layouts/aside') %>
       </aside>
-
-      <div class="content-wrapper">
-        <div class="container-full">
+      <div
+        class="content-wrapper bg-white"
+        style="border-radius: 0; border-top: 1px solid #cbcbcb"
+      >
+        <div class="container mt-30">
+          <img src="/images/header/Account_Web.png" alt="refaral" srcset="" />
           <section class="content">
-            <h5 class="card-title"><%= title %></h5>
-            <div class="col-9 col-xl-9">
-              <div class="card mt-20">
+            <div class="col-12 col-xl-12">
+              <div
+                class="d-md-flex justify-content-between align-items-center mb-10"
+              >
+                <div class="col-5">
+                  <h2 class="title fw-600"><%= title %></h2>
+                </div>
+              </div>
+              <div class="mt-20" style="border: 1px solid #cbcbcb">
                 <div class="card-body">
-                  <table class="table table-striped b-1 border-secondary">
+                  <table class="table table-striped b-1 border-gray-700">
                     <thead class="bg-dark">
                       <tr class="p-10">
                         <th style="width: 5%; border-right: #fff2f2 1px solid">
@@ -139,7 +151,7 @@
         </div>
       </div>
 
-      <footer class="main-footer">
+      <footer class="main-footer bg-white">
         <!-- footer-->
         <%- include('../layouts/footer') %>
       </footer>

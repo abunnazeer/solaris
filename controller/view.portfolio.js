@@ -99,7 +99,7 @@ const getPayment = catchAsync(async (req, res) => {
         price: portfolio.amount,
       },
       {
-        name: 'Tether',
+        name: 'USDT',
         symbol: 'USDT',
         url: '/qr/usdt.jpeg',
         address: 'TLyFun55QXxxk8qqtfhwG2wvfhpN1Poh4M',
