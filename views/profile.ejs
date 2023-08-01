@@ -16,56 +16,76 @@
       <%- include('layouts/header') %>
     </header>
 
-    <!-- Left side column. contains the logo and sidebar -->
-    <aside class="main-sidebar">
-      <!-- sidebar-->
-      <%- include('layouts/aside') %>
-    </aside>
-
-    <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper">
-      <div class="container-full">
-        <!-- Main content -->
-        <section class="content">
-          <div class="row">
-            <div class="col-xl-6 col-lg-6">
-              <div class="card text-center">
+       <aside
+        class="main-sidebar"
+        style="border-right: 1px solid rgb(203, 203, 203)"
+      >
+        <!-- sidebar-->
+        <%- include('layouts/aside') %>
+      </aside>
+      <div
+        class="content-wrapper bg-white"
+        style="border-radius: 0; border-top: 1px solid #cbcbcb"
+      >
+        <div class="container mt-30">
+          <img
+            src="/images/header/Profile_Web.png"
+            alt="refaral"
+            srcset=""
+          />
+          <section class="content">
+            <div class="row">
+            <div class="col-xl-4">
+              <div class="card text-center b-groove">
                 <div class="card-body">
-                  <img id="profileImagePreview" src="<%= userProfile.profilePicture ? '/profile/' + userProfile.profilePicture : '../../../images/avatar/avatar-13.png' %>" class="bg-light w-100 h-100 rounded-circle avatar-lg img-thumbnail" alt="profile-image" />
+                  <h5 class="mb-4 text-uppercase text-left" style="text-align: left;">
+                      <i class="mdi mdi-account-circle me-1 text-left" style="text-align: left;"></i> My Profile
+                    </h5>
+                    <hr>
+                  <img id="profileImagePreview" src="<%= userProfile.profilePicture ? '/profile/' + userProfile.profilePicture : '../../../images/avatar/avatar-13.png' %>" class="bg-light w-150 h-150 rounded-circle avatar-lg img-thumbnail" alt="profile-image" />
 
                   <h4 class="mb-0 mt-2"></h4>
                   <p class="text-muted fs-14"></p>
 
-                  <button type="button" class="btn btn-primary btn-sm mb-2" onclick="document.getElementById('profilePicture').click()">Upload Photo</button>
+                
 
-                  <div class="text-start mt-3">
-                    <p class="text-muted mb-2">
-                      <strong class="text-dark">Full Name :</strong>
-                      <span class="ms-2"><%= userProfile.fullName %></span>
-                    </p>
-                    <p class="text-muted mb-2">
-                      <strong class="text-dark">Mobile :</strong>
-                      <span class="ms-2"><%= userProfile.phoneNumber %></span>
-                    </p>
-                    <p class="text-muted mb-2">
-                      <strong class="text-dark">Email :</strong>
-                      <span class="ms-2"><%= userProfile.email %></span> <!-- Assuming the email is present in the userProfile object -->
-                    </p>
-                    <p class="text-muted mb-2">
-                      <strong class="text-dark">Referral Link :</strong>
-                      <span id="referralLink" class="ms-2"><%= url %>/<%=userProfile.referralCode %></span>
-                      <i class="copy-icon far fa-copy ms-1" onclick="copyReferralLink()"></i>
-                    </p>
-                    <p class="text-muted mb-2">
-                      <strong class="text-dark">Referral code :</strong>
-                      <span id="referralCode" class="ms-2"><%=userProfile.referralCode %></span>
-                      <i class="copy-icon far fa-copy ms-1" onclick="copyReferralCode()"></i>
-                    </p>
+                  <div class="text-start mt-3 text-center">
+                  
+                      <h3 class="ms-2 text-center"><%= userProfile.fullName %></h3>
+                 
+                     <hr>
+                     <br>
+                     <br>
+                      <h3 class="ms-2"><%= userProfile.email %></h3> <!-- Assuming the email is present in the userProfile object -->
+                  <br>
+                  <br>
+                    
                   </div>
                 </div>
               </div>
+              <div class="card text-center b-groove">
+             <div class="card-body">
+        
+          
+               <h5 class="mb-4 text-uppercase text-left" style="text-align: left;">
+                      <i class="mdi mdi-account-circle me-1 text-left" style="text-align: left;"></i> Upload Profile Picture
+                    </h5>
+                    <p style="text-align: left;">Click to selete file here</p>
+                    <hr>
+                    <br>
+               <p class="text-muted fs-14"></p>
 
-              <div class="card">
+               <button type="button" class="btn bg-gradient-info-dark btn mb-2" onclick="document.getElementById('profilePicture').click()">Upload Photo</button>
+<br>
+             
+             </div>
+           </div>
+              </div>
+             
+             
+           
+<div class="col-xl-8">
+              <div class="card b-groove">
                 <div class="card-body">
                   <form enctype="multipart/form-data" action="/user/profile/update" method="POST">
                     <h5 class="mb-4 text-uppercase">
@@ -158,7 +178,7 @@
                     <!-- end row -->
 
                     <div class="text-start">
-                      <button type="submit" class="btn btn-primary mt-2 bg-gradient-warning">
+                      <button type="submit" class="btn btn-primary mt-2 bg-gradient-info-dark">
                         <i class="mdi mdi-content-save"></i> Update Profile
                       </button>
                     </div>
@@ -167,6 +187,8 @@
                   <!-- end settings content-->
                 </div>
                 <!-- end card body -->
+              </div>
+              </div>
               </div>
               <!-- end card -->
             </div>
@@ -265,7 +287,7 @@
 </script>
 
 
-    <footer class="main-footer">
+    <footer class="main-footer bg-white">
       <!-- footer -->
       <%- include('layouts/footer') %>
     </footer>

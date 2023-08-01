@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('../layouts/head') %>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <style>
+      .password-toggle {
+        position: absolute;
+        left: 95%;
+      }
+      .passwordConfirm-toggle {
+        position: absolute;
+        left: 95%;
+      }
+    </style>
+  </head>
+
+  <body
+    class="hold-transition theme-primary bg-img"
+    style="background-image: url(../../../images/auth-bg/bg-16.jpg)"
+  >
+    <div class="container h-p100">
+      <div class="row align-items-center justify-content-md-center h-p100">
+        <div class="col-12">
+          <div class="row justify-content-center g-0">
+            <div class="col-lg-5 col-md-5 col-12">
+              <div class="bg-white rounded10">
+                <a href="http://solarisfinance.com/">
+                  <i
+                    class="fa fa-home"
+                    style="
+                      padding-left: 10px;
+                      padding-top: 10px;
+                      font-size: 30px;
+                    "
+                    aria-hidden="true"
+                  ></i
+                ></a>
+                <div class="p-40">
+                  <h3 style="text-align: center">
+                    Please verify your email...
+                  </h3>
+                </div>
+                <div class="text-center">
+                  <p class="mt-15 mb-0 text-fade">
+                    <a href="/user/login" class="text-primary ms-5 text-warning"
+                      >Sign In</a
+                    >
+                    |
+                    <a
+                      href="/user/register"
+                      class="text-primary ms-5 text-warning"
+                      >Register</a
+                    >
+                  </p>
+                  <br />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vendor JS -->
+
+    <script src="/js/validation.js"></script>
+    <script src="/js/vendors.min.js"></script>
+    <script src="/js/pages/chat-popup.js"></script>
+    <script src="/assets/icons/feather-icons/feather.min.js"></script>
+  </body>
+</html>

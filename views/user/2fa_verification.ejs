@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>2FA Verification</title>
+    <%- include('../layouts/head') %>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <style>
+      .password-toggle {
+        position: absolute;
+        left: 95%;
+      }
+      .passwordConfirm-toggle {
+        position: absolute;
+        left: 95%;
+      }
+    </style>
+  </head>
+
+  <body
+    class="hold-transition theme-primary bg-img"
+    style="background-image: url(../../../images/auth-bg/bg-16.jpg)"
+  >
+    <div class="container h-p100">
+      <div class="row align-items-center justify-content-md-center h-p100">
+        <div class="col-12">
+          <div class="row justify-content-center g-0">
+            <div class="col-lg-5 col-md-5 col-12">
+              <div class="bg-white rounded10 shadow-lg">
+                <div class="p-40">
+                  <form action="/user/2fa-verify" method="post">
+                    <div class="form-group">
+                      <label for="twoFactorAuthCode"
+                        >Enter 2FA Code from Authenticator App:</label
+                      >
+                      <br />
+                      <br />
+                      <br />
+                      <div class="input-group mb-3" id="password__error">
+                        <span class="input-group-text"
+                          ><i class="text-fade ti-lock"></i
+                        ></span>
+                        <input
+                          type="text"
+                          class="form-control ps-15 p-10"
+                          style="width: 92%"
+                          id="twoFactorAuthCode"
+                          placeholder="2fa code"
+                          name="twoFactorAuthCode"
+                          required
+                        />
+                      </div>
+                      <div class="error" id="passwordError"></div>
+                    </div>
+                    <input type="hidden" name="email" value="<%= email %>" />
+                    <input
+                      type="hidden"
+                      name="password"
+                      value="<%= password %>"
+                    />
+
+                    <div class="row">
+                      <div class="col-12 text-center">
+                        <button
+                          type="submit"
+                          class="waves-effect waves-light btn mb-5 bg-gradient-warning w-p100 mt-10"
+                        >
+                          Verify 2FA Code
+                        </button>
+                      </div>
+                      <!-- /.col -->
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

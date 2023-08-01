@@ -147,19 +147,16 @@
                           <hr style="margin-bottom: 0px;" />
                       </div>
                         <div
-                      class="<%= isProfileComplete ? 'waves-effect waves-light btn btn-social btn-bitbucket' : '' %>" style="width: 98%; border-radius: 1px; margin: 0 10px 0 10px;"
+                      class="<%= isProfileComplete ? 'waves-effect waves-light btn btn-social btn-bitbucket' : 'waves-effect waves-light btn btn-social btn-bitbucket' %>" style="width: 98%; border-radius: 1px; margin: 0 10px 0 10px;"
                     >
                       <% if (isProfileComplete) { %>
                       <a href="/portfolio/<%= portfolio._id %>" class="text-white"
                         >Get Started with <%= portfolio.portfolioTitle %></a
                       >
                       <% } else { %>
-                      <p>
-                        Complete your profile to access portfolio fund details,
-                        webinar, fund document, and more
-                      </p>
-                      <i data-feather="lock" class=""></i><br />
-                      <a href="/user/profile">Complete your profile</a>
+                     
+                    
+                      <a href="/user/profile" class="text-white">Complete your profile</a>
                       <% } %>
                     </div>
                       <!-- end card-body-->

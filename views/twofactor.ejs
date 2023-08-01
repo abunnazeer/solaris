@@ -12,33 +12,51 @@
         <!-- header -->
         <%- include('layouts/header') %>
       </header>
-
-      <!-- Left side column. contains the logo and sidebar -->
-      <aside class="main-sidebar">
+      <aside
+        class="main-sidebar"
+        style="border-right: 1px solid rgb(203, 203, 203)"
+      >
         <!-- sidebar-->
         <%- include('layouts/aside') %>
       </aside>
+      <div
+        class="content-wrapper bg-white"
+        style="border-radius: 0; border-top: 1px solid #cbcbcb"
+      >
+        <div class="container mt-30">
+          <img
+            src="/images/header/2FA_Web_113732.png"
+            alt="refaral"
+            srcset=""
+          />
+          <section class="content">
+<div class="col-xl-4 col-lg-4 offset-md-4">
+<div class="card">
+    <div class="card-body text-center">
+      
+      
+      <% if (user.twoFactorSecret && user.isTwoFactorEnabled && user.isTwoFactorSetupComplete) { %>
+        <!-- Form to disable 2FA -->
+        <h3>To disable 2fa click on this button </h3>
+        <br>
+        <form action="/user/2fa-disable" method="post">
+          <button  class="btn bg-gradient-danger"type="submit">Disable 2FA</button>
+        </form>
+<br>
+      <% } else { %>
+        <!-- Form to enable 2FA -->
+        <h3>To enable 2fa click on this button </h3>
+        <br>
+        <form action="/user/2fa-generate" method="get">
+          <button  class="btn bg-gradient-info-dark" type="submit">Enable 2FA</button>
+        </form>
+        <br>
+      <% } %>
 
-      <!-- Content Wrapper. Contains page content -->
-      <div class="content-wrapper">
-        <div class="container-full">
-        
+</div>
+  </div> <!-- end card -->
+</div> <!-- end col -->
 
-          	<!-- Main content -->
-		<section class="content">
-			<div class="row">
-				
-
-				<div class="col-xl-12 col-lg-7">
-					<div class="card">
-						<div class="card-body">
-							<h1>Authenticate your account</h1>
-					
-
-						
-						</div> <!-- end card body -->
-					</div> <!-- end card -->
-				</div> <!-- end col -->
 			</div>
 			<!-- end row-->
 
@@ -48,14 +66,12 @@
       </div>
       <!-- /.content-wrapper -->
 
-      <footer class="main-footer">
+      <footer class="main-footer bg-white">
         <!-- footer -->
         <%- include('layouts/footer') %>
       </footer>
-      
-    <!-- Vendor JS -->
-    <%- include('layouts/script') %>
+    
   </body>
-  <script src="/js/bundle.js"></script>
+  
  
 </html>
