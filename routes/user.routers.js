@@ -16,7 +16,9 @@ const {
   getActivePortfolio,
   getInvestHistory,
   getShortTermForm,
+
   getDetailsPage,
+  activation,
 } = require('../controller/view.controller');
 
 const {
@@ -33,6 +35,16 @@ const {
   logout,
   changePassword,
   postTwoFactor,
+  authenticator,
+  // getTwoFaCode,
+  // enableTwofactor,
+  // setupTwofactor,
+  generateTwoFaCode,
+  // enableTwoFactor,
+  setupTwoFactor,
+  verifyTwoFactor,
+  enable2FA,
+  disable2FA,
 } = require('../controller/auth.controller');
 const { updateProfile, uploadProfilePhoto } = require('./user.controller');
 // const { getMe } = require('./user.controller');
@@ -47,6 +59,7 @@ const {
   uploadPicture,
   getVerification,
 } = require('../controller/view.user');
+
 const router = express();
 
 router.use(isLoggedIn);
@@ -88,6 +101,7 @@ router.post(
 router.get('/register/:referredByCode?', getRegistrationForm);
 // router.get('/biz-register', getBizForm);
 
+router.get('/activation', activation);
 router.get('/login', getLoginForm);
 router.get('/logout', logout);
 
@@ -102,6 +116,13 @@ router.get('/change-password', protect, getChangePasswordForm);
 
 router.post('/two-factor', protect, postTwoFactor);
 router.get('/two-factor', getTwoFactor);
+
+// first step
+router.get('/2fa-generate', protect, generateTwoFaCode);
+// router.post('/2fa-enable', protect, enable2FA);
+router.post('/2fa-disable', protect, disable2FA);
+router.post('/2fa-setup', protect, setupTwoFactor);
+router.post('/2fa-verify', login);
 router.get('/success', getSuccess);
 router.get('/registration', getRegOption);
 

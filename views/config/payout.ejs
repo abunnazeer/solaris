@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('../layouts/head') %>
+  </head>
+
+  <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
+    <div class="wrapper">
+      <!-- <div id="loader"></div> -->
+
+      <header class="main-header">
+        <!-- header -->
+        <%- include('../layouts/header') %>
+      </header>
+
+      <aside class="main-sidebar" style="border-right: 1px solid #cbcbcb">
+        <!-- sidebar-->
+        <%- include('../layouts/aside') %>
+      </aside>
+
+      <div
+        class="content-wrapper bg-white"
+        style="border-radius: 0; border-top: 1px solid #cbcbcb"
+      >
+        <div class="container mt-30">
+          <img
+            src="/images/header/Payout_Settings_Web.png"
+            alt="referral"
+            srcset=""
+          />
+          <section class="content">
+            <div class="row">
+              <div class="col-4 col-xl-4">
+                <div
+                  class="d-md-flex justify-content-between align-items-center"
+                >
+                  <div>
+                    <h2 class="title fw-600">Payout Label</h2>
+                  </div>
+                  <div>
+                    <button
+                      type="button"
+                      class="btn bg-gradient-info-dark"
+                      data-bs-toggle="modal"
+                      data-bs-target="#bs-example-modal-sm"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div class="mt-20" style="border: 1px solid #cbcbcb">
+                  <div class="card-body">
+                    <table class="table table-striped b-1 border-gray-700">
+                      <thead class="bg-dark">
+                        <tr class="p-10">
+                          <th style="width: 1%">SN</th>
+                          <th style="width: 40%">Payout Label</th>
+
+                          <th style="width: 1%">Edit</th>
+                          <th style="width: 1%">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% payouts.forEach((payout) => { %>
+                        <tr>
+                          <td><%= payout.payout[0].sn %></td>
+                          <td><%= payout.payout[0].label %></td>
+
+                          <td class="table-action min-w-100">
+                            <i
+                              data-feather="edit"
+                              type="button"
+                              data-bs-toggle="modal"
+                              data-bs-target="#editModal<%= payout._id %>"
+                            ></i>
+                            <!-- Add edit modal for each payout using its ID -->
+                          </td>
+                          <td class="table-action min-w-100">
+                            <button
+                              id="<%= payout._id %>"
+                              type="button"
+                              class="btn btn-sm btn-toggle <%= payout.payout[0].payoutStatus === 'used' ? 'btn-success active' : 'btn-warning-light' %>"
+                              data-bs-toggle="button"
+                              aria-pressed="<%= payout.payout[0].payoutStatus === 'used' ? 'true' : 'false' %>"
+                              onclick="togglePayoutStatus('<%= payout._id %>', '<%= payout.payout[0].payoutStatus %>')"
+                            >
+                              <span class="handle"></span>
+                            </button>
+                          </td>
+                        </tr>
+                        <% }); %>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="col-8 col-xl-8">
+                <div
+                  class="d-md-flex justify-content-between align-items-center"
+                >
+                  <div>
+                    <h2 class="title fw-600">Payout Percentage</h2>
+                  </div>
+                </div>
+                <div class="mt-20" style="border: 1px solid #cbcbcb">
+                  <div class="card-body">
+                    <table class="table table-striped b-1 border-gray-700">
+                      <thead class="bg-dark">
+                        <tr class="p-10">
+                          <th style="width: 5%">SN</th>
+                          <th style="width: 40%">Portfolio Name</th>
+                          <th style="width: 5%">ROI</th>
+                          <th style="width: 5%">Compounding</th>
+                          <th style="width: 5%">Edit</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% portfolio.forEach((item) => { %>
+                        <tr>
+                          <td><%= item.sn %></td>
+                          <td><%= item.portfolioTitle %></td>
+                          <td><%= item.returnOnInvestment.rioPercentage %></td>
+                          <td><%= item.compounding.cPercentage %></td>
+
+                          <td class="table-action min-w-100">
+                            <i
+                              data-feather="edit"
+                              type="button"
+                              data-bs-toggle="modal"
+                              data-bs-target="#editModal<%= item._id %>"
+                            ></i>
+                            <!-- Add edit modal for each payout using its ID -->
+                          </td>
+                        </tr>
+                        <% }); %>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <!-- /.content -->
+        </div>
+      </div>
+      <!-- /.content-wrapper -->
+
+      <footer class="main-footer bg-white">
+        <!-- footer -->
+        <%- include('../layouts/footer') %>
+      </footer>
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+      <script>
+        function togglePayoutStatus(payoutId, currentStatus) {
+          const newStatus = currentStatus === 'used' ? 'not used' : 'used';
+
+          // Make an Axios POST request to update the payout status
+          axios
+            .post(`/user/update-payoutStatus/${payoutId}`, {
+              payoutStatus: newStatus,
+            })
+            .then(response => {
+              // Handle the response if needed
+              console.log(response.data); // Assuming you want to log the response
+
+              // Reload the window on success
+              window.location.reload();
+            })
+            .catch(error => {
+              console.error('Error updating payout status:', error);
+              // Handle errors, e.g., show an error message to the user
+            });
+        }
+      </script>
+    </div>
+    <!-- /.wrapper -->
+
+    <!-- Add your edit modal template for each payout -->
+
+    <% portfolio.forEach(item => { %>
+    <div
+      class="modal fade"
+      id="editModal<%= item._id %>"
+      tabindex="-1"
+      role="dialog"
+    >
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="mySmallModalLabel">Percentage</h4>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-hidden="true"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form
+              action="/user/update-percentage/<%= item._id %>"
+              method="POST"
+            >
+              <label for="rpercentage" class="form-label"
+                >ROI Percentage:</label
+              >
+              <input
+                type="text"
+                id="rpercentage"
+                class="form-control"
+                name="rioPercentage"
+                value="<%= item.returnOnInvestment.rioPercentage %>"
+                placeholder="Rio Percentage"
+                required
+              />
+              <br />
+              <label for="cpercentage" class="form-label"
+                >Compounding Percentage:</label
+              >
+              <input
+                type="text"
+                id="cpercentage"
+                class="form-control"
+                name="cPercentage"
+                value="<%= item.compounding.cPercentage  %>"
+                placeholder="Compounding Percentage"
+                required
+              />
+              <br />
+              <button type="submit" class="btn bg-gradient-info-dark">
+                Save Changes
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% }) %> <% payouts.forEach(payout => { %>
+    <div
+      class="modal fade"
+      id="editModal<%= payout._id %>"
+      tabindex="-1"
+      role="dialog"
+    >
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="mySmallModalLabel">Payout</h4>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-hidden="true"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form action="/user/update-payout/<%= payout._id %>" method="POST">
+              <label for="payoutlabel" class="form-label">Payout Label:</label>
+              <input
+                type="text"
+                id="payoutlabel"
+                class="form-control"
+                name="label"
+                value="<%= payout.payout[0].label %>"
+                placeholder="payout Label"
+                required
+              />
+              <br />
+
+              <br />
+              <button type="submit" class="btn bg-gradient-info-dark">
+                Save Changes
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% }) %>
+
+    <!-- Small modal -->
+    <div
+      class="modal fade"
+      id="bs-example-modal-sm"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="mySmallModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="mySmallModalLabel">Payout</h4>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-hidden="true"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form action="/user/create-payouts" method="POST" id="payoutForm">
+              <label for="payoutlabel" class="form-label">Payout Label:</label>
+              <input
+                type="text"
+                class="form-control"
+                id="payoutlabel"
+                name="label"
+                placeholder="Payout Label"
+              />
+              <br />
+
+              <br />
+              <button type="submit" class="btn bg-gradient-info-dark">
+                Add
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

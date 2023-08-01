@@ -7,6 +7,7 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const Bonus = require('../models/user/referralBonus.model');
 const buyPortfolio = require('../models/portfolio/buyportfolio.model');
+const ReferralConfig = require('../models/user/referralConfig.model');
 
 const getReferral = async (req, res, next) => {
   const id = req.user._id;
@@ -100,8 +101,153 @@ const getReferralBonus = async (req, res, next) => {
     next(err);
   }
 };
+const getAllReferral = catchAsync(async (req, res) => {
+  try {
+    const allReferral = await ReferralConfig.find();
+
+    res.status(200).render('config/referral', {
+      title: 'Referral Settings',
+      referrals: allReferral,
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .render('response/status', { message: 'Error fetching referral data' });
+  }
+});
+
+// const createReferralPercent = catchAsync(async (req, res) => {
+//   try {
+//     // Validate input data
+
+//     const { firstLevel, secondLevel, thirdLevel } = req.body;
+
+//     if (!label) {
+//       return res.status(500).render('response/status', {
+//         message: 'Invalid Refferal Percentage data',
+//       });
+//     }
+
+//     // Get the maximum existing sn from the database
+//     const maxSnReferal = await ReferralCofing.findOne()
+//       .sort({ sn: -1 })
+//       .limit(1);
+
+//     // Calculate the next serial number (sn)
+//     const nextSn = maxSnReferal ? maxSnPayout.maxSnReferal.sn + 1 : 0;
+
+//     // Create a new payout using the PayoutConfig model and provide the calculated sn
+//     const newReferralPercentage = await ReferralCofing.create({
+//       payout: [
+//         {
+//           sn: nextSn, // Set the serial number (sn)
+//           firstLabel: 0.1,
+//           secondLevel: 0.05,
+//           thirdLevel: 0.025,
+//         },
+//       ],
+//     });
+
+//     // Redirect to the payout settings route upon successful creation
+//     return res.redirect('/user/payout-settings');
+//   } catch (err) {
+//     console.error(err); // Log the error for debugging purposes
+
+//     return res
+//       .status(500)
+//       .render('response/status', { message: 'Error creating payout' });
+//   }
+// });
+
+// Function to initialize the referral configuration if it doesn't exist in the database
+const initializeReferralConfig = async () => {
+  try {
+    const existingConfig = await ReferralConfig.findOne();
+    if (!existingConfig) {
+      // Create and save the initial configuration
+      await ReferralConfig.create({
+        firstLevel: 0.1,
+        secondLevel: 0.05,
+        thirdLevel: 0.025,
+      });
+    }
+  } catch (err) {
+    console.error('Error initializing referral configuration:', err);
+  }
+};
+
+// Call this function once in your application to initialize the configuration
+initializeReferralConfig();
+
+// Function to update the referral percentage configuration
+const updateReferralConfig = catchAsync(async (req, res) => {
+  try {
+    // Validate input data
+    const { firstLevel, secondLevel, thirdLevel } = req.body;
+
+    // Find the existing configuration
+    const existingConfig = await ReferralConfig.findOne();
+
+    if (!existingConfig) {
+      return res.status(404).render('response/status', {
+        message: 'Referral Configuration not found',
+      });
+    }
+
+    // Update the values
+    existingConfig.firstLevel = firstLevel;
+    existingConfig.secondLevel = secondLevel;
+    existingConfig.thirdLevel = thirdLevel;
+
+    // Save the updated configuration
+    await existingConfig.save();
+
+    // Redirect to the payout settings route upon successful update
+    return res.redirect('/user/payout-settings');
+  } catch (err) {
+    console.error('Error updating referral configuration:', err);
+    return res
+      .status(500)
+      .render('response/status', { message: 'Error updating payout' });
+  }
+});
+
+// Update an existing payout configuration
+const updateReferralPercentage = catchAsync(async (req, res) => {
+  const { referralId } = req.params;
+  const { firstLevel, secondLevel, thirdLevel } = req.body;
+
+  try {
+    // Find the existing payout by its ID and update it in the database
+    const existingReferral = await ReferralConfig.findById(referralId);
+
+    if (!existingReferral) {
+      return res.status(404).json({ message: 'Referal Percentage not found' });
+    }
+
+    // Update the 'firstLevel,secondLevel,thirdLevel' and 'percentage' fields
+    existingReferral.firstLevel = firstLevel;
+    existingReferral.secondLevel = secondLevel;
+    existingReferral.thirdLevel = thirdLevel;
+
+    // Save the updated document back to the database
+    await existingReferral.save();
+
+    // return res.status(200).json({ message: 'success' });
+    return res.redirect('/user/referral-settings');
+  } catch (err) {
+    // Log the error
+    console.error('Error updating Referral:', err);
+
+    // Handle errors
+    return res.status(500).json({ message: 'Error updating referal' });
+  }
+});
 
 module.exports = {
   getReferral,
   getReferralBonus,
+  getAllReferral,
+  updateReferralPercentage,
+  updateReferralConfig,
 };

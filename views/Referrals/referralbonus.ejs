@@ -10,46 +10,68 @@
         <%- include('../layouts/header') %>
       </header>
 
-      <aside class="main-sidebar">
+      <aside
+        class="main-sidebar"
+        style="border-right: 1px solid rgb(203, 203, 203)"
+      >
         <!-- sidebar-->
         <%- include('../layouts/aside') %>
       </aside>
-
-      <div class="content-wrapper">
-        <div class="container-full">
+      <div
+        class="content-wrapper bg-white"
+        style="border-radius: 0; border-top: 1px solid #cbcbcb"
+      >
+        <div class="container mt-30">
+          <img
+            src="/images/header/Referral_Bonus_Web.png"
+            alt="refaral"
+            srcset=""
+          />
           <section class="content">
-            <h5 class="card-title"><%= title %></h5>
-            <div class="col-9 col-xl-9">
-              <div class="card mt-20">
-                <div class="row m-10" style="margin-left: 10px">
-                  <div class="col-12 margin-left-10">
-                    <div class="input-group" style="gap: 20px">
-                      <div style="border: 1px solid blue; padding: 19px 0px">
-                        Referal Link:
-                        <span
-                          id="referralCode"
-                          style="
-                            background: #fff2f2;
-                            padding: 15px;
-                            margin: 5px;
-                            border-radius: 10px;
-                          "
-                        >
-                          <%= url %>/<%= referringUser.referralCode %>
-                        </span>
-                      </div>
-                      <button
-                        id="copyReferralLinkButton"
-                        class="waves-effect waves-light btn btn-success"
-                        type="button"
+            <div class="col-12 col-xl-12">
+              <div
+                class="d-md-flex justify-content-between align-items-center mb-10"
+              >
+                <div class="col-5">
+                  <h2 class="title fw-600"><%= title %></h2>
+                </div>
+                <div class="col-5">
+                  <div class="input-group">
+                    <div
+                      style="
+                        border: 1px solid #8c8c8d;
+                        padding: 14px 3px;
+                        border-radius: 10px;
+                      "
+                    >
+                      Referal Link:
+                      <span
+                        id="referralCode"
+                        style="
+                          background: #fff8f8;
+                          padding: 14px;
+                          margin: 3px;
+                          border-radius: 10px;
+                        "
                       >
-                        Copy Referral Link
-                      </button>
+                        <%= url %>/<%= referringUser.referralCode %>
+                      </span>
                     </div>
                   </div>
                 </div>
+                <div style="width: 100%; text-align: right">
+                  <button
+                    id="copyReferralLinkButton"
+                    class="waves-effect waves-light btn btn bg-gradient-info-dark mb-0"
+                    type="button"
+                  >
+                    Copy Referral Link
+                  </button>
+                </div>
+              </div>
+              <div class="mt-20" style="border: 1px solid #cbcbcb">
                 <div class="card-body">
-                  <table class="table table-striped b-1 border-secondary">
+                  <table class="table table-striped b-1 border-gray-700">
                     <thead class="bg-dark">
                       <tr class="p-10">
                         <th style="width: 5%; border-right: #fff2f2 1px solid">
@@ -160,7 +182,7 @@
         copyReferralLinkButton.addEventListener('click', copyReferralLink);
       </script>
 
-      <footer class="main-footer">
+      <footer class="main-footer bg-white">
         <!-- footer-->
         <%- include('../layouts/footer') %>
       </footer>

@@ -3,12 +3,15 @@ const BuyPortfolio = require('../models/portfolio/buyportfolio.model');
 const User = require('../models/user/user.model');
 const Transactions = require('../models/portfolio/transaction.model');
 const Referralbonus = require('../models/user/referralBonus.model');
+const PayoutConfig = require('../models/portfolio/payoutConfig.model');
 
 const Profile = require('../models/user/profile.model');
 const catchAsync = require('../utils/catchAsync');
 const sendEmail = require('../utils/email');
 const axios = require('axios');
 const { Plisio } = require('@plisio/api-client');
+const ReferralConfig = require('../models/user/referralConfig.model');
+
 // const AppError = require('../utils/appError');
 const secretKey =
   '6C0-0DVUxLblgkhe7ViRCGI1DslhOjErhaoeuWkLRTrm4cIHEqwkHhSOkN9ywVhj';
@@ -99,7 +102,7 @@ const getPayment = catchAsync(async (req, res) => {
         price: portfolio.amount,
       },
       {
-        name: 'Tether',
+        name: 'USDT',
         symbol: 'USDT',
         url: '/qr/usdt.jpeg',
         address: 'TLyFun55QXxxk8qqtfhwG2wvfhpN1Poh4M',
@@ -180,7 +183,7 @@ const paymentComfirmation = catchAsync(async (req, res) => {
     if (!portfoliodetail) {
       return res.status(404).json({ message: 'Portfolio not found' });
     }
-
+    const allReferral = await ReferralConfig.find();
     const userId = portfoliodetail.userId;
     const userDetail = await User.findOne({ _id: userId });
 
@@ -199,7 +202,8 @@ const paymentComfirmation = catchAsync(async (req, res) => {
     // If the user was referred by someone, create a Referralbonus
     if (userDetail.referredBy) {
       const referringUserId = userDetail.referredBy;
-      const bonusAmount = portfoliodetail.depositAmount * 0.1; // 10% of depositAmount
+      const bonusAmount =
+        portfoliodetail.depositAmount * allReferral.firstLevel; // 10% of depositAmount
 
       const { _id } = await User.findOne({ _id: userId });
       const userProfile = await Profile.findOne({ _id: userId });
@@ -220,7 +224,8 @@ const paymentComfirmation = catchAsync(async (req, res) => {
 
       if (referringUser && referringUser.referredBy) {
         const secondLevelReferrerId = referringUser.referredBy;
-        const secondLevelBonusAmount = portfoliodetail.depositAmount * 0.05; // 5% of depositAmount
+        const secondLevelBonusAmount =
+          portfoliodetail.depositAmount * allReferral.secondLevel; // 5% of depositAmount
 
         const { _id: secondLevelReferrerUserId } = await User.findOne({
           _id: referringUserId,
@@ -244,7 +249,8 @@ const paymentComfirmation = catchAsync(async (req, res) => {
 
         if (secondLevelReferrerUser && secondLevelReferrerUser.referredBy) {
           const thirdLevelReferrerId = secondLevelReferrerUser.referredBy;
-          const thirdLevelBonusAmount = portfoliodetail.depositAmount * 0.025; // 2.5% of depositAmount
+          const thirdLevelBonusAmount =
+            portfoliodetail.depositAmount * allReferral.thirdLevel; // 2.5% of depositAmount
 
           const { _id: thirdLevelReferrerUserId } = await User.findOne({
             _id: secondLevelReferrerId,
@@ -287,68 +293,32 @@ const paymentComfirmation = catchAsync(async (req, res) => {
   }
 });
 
-// const paymentComfirmation = catchAsync(async (req, res) => {
+// const getBuyPortfolioForm = catchAsync(async (req, res) => {
 //   const { id } = req.params;
-//   const { status, dateOfPurchase, dateOfExpiry } = req.body;
 
 //   try {
-//     const portfoliodetail = await BuyPortfolio.findById(id);
+//     const portfolio = await Portfolio.findById(id);
 
-//     if (!portfoliodetail) {
-//       return res.status(404).json({ message: 'Portfolio not found' });
+//     if (!portfolio) {
+//       return res
+//         .status(404)
+//         .render('response/status', { message: 'Portfolio not found' });
 //     }
-//     const userId = portfoliodetail.userId;
-//     const userDetail = await User.findOne({ _id: userId });
-
-//     const buyPortfolio = await BuyPortfolio.findByIdAndUpdate(
-//       id,
-//       {
-//         amount: portfoliodetail.depositAmount,
-//         status,
-//         depositAmount: 0,
-//         dateOfPurchase,
-//         dateOfExpiry,
-//       },
-//       { new: true }
+//     const allPayouts = await PayoutConfig.find();
+//     const minimumCapital = Number(
+//       portfolio.minimumCapital.replace(/[\$,]/g, '').trim()
 //     );
 
-//     // If the user was referred by someone, create a Referralbonus
-//     if (userDetail.referredBy) {
-//       const referringUserId = userDetail.referredBy;
-//       const bonusAmount = portfoliodetail.depositAmount * 0.1; // 10% of depositAmount
-
-//       const { _id } = await User.findOne({ _id: userDetail });
-
-//       const referralBonus = new Referralbonus({
-//         referringUserId, // The user who referred the current user
-//         bonusAmount,
-//         referredUserId: _id, // The current user who was referred
-//       });
-
-//       // Save it without validation
-//       await referralBonus.save({ validateBeforeSave: false });
-//     }
-
-//     if (!buyPortfolio) {
-//       return res.status(404).json({ message: 'BuyPortfolio not found' });
-//     }
-
-//     const emailContent = `Your payment for ${portfoliodetail.portfolioName} has been confirmed, and your portfolio has been activated`;
-
-//     // Send email to the user
-//     await sendEmail({
-//       email: userDetail.email,
-//       subject: 'Payment confirmed, Portfolio Activation successful',
-//       message: emailContent,
-//     });
-
-//     return res.json({
-//       message: 'Status updated successfully',
-//       portfolio: buyPortfolio,
+//     res.render('portfolio/user/buyportfolio', {
+//       title: 'Buy Portfolio',
+//       portfolio,
+//       minimumCapital: minimumCapital,
+//       payouts: allPayouts,
 //     });
 //   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ message: 'Failed to update status' });
+//     res
+//       .status(500)
+//       .render('response/status', { message: 'Failed to fetch portfolio' });
 //   }
 // });
 
@@ -364,6 +334,7 @@ const getBuyPortfolioForm = catchAsync(async (req, res) => {
         .render('response/status', { message: 'Portfolio not found' });
     }
 
+    const allPayouts = await PayoutConfig.find();
     const minimumCapital = Number(
       portfolio.minimumCapital.replace(/[\$,]/g, '').trim()
     );
@@ -372,6 +343,7 @@ const getBuyPortfolioForm = catchAsync(async (req, res) => {
       title: 'Buy Portfolio',
       portfolio,
       minimumCapital: minimumCapital,
+      payouts: allPayouts,
     });
   } catch (error) {
     res

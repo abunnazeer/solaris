@@ -32,9 +32,10 @@ const buyPortfolioSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+
   payout: {
     type: String,
-    enum: ['daily', 'compounding'],
+    // enum: ['daily', 'compounding'],
     required: true,
   },
   currency: {

@@ -124,17 +124,21 @@
                         </div>
                       </div>
                       <div class="row">
-                        <div class="col-md-6">
-                          <div class="mb-3">
-                            <label for="country" class="form-label">Country</label>
-                            <input type="text" class="form-control" id="country" value="<%= userProfile.country %>" name="country" />
-                          </div>
+ <div class="col-md-6">
+    <div class="mb-3">
+      <label for="country" class="form-label">Country</label>
+      <select  class="form-control select2 select2-hidden-accessible" id="country" name="country" style="width: 100%;" tabindex="-1" aria-hidden="true">
+        <option value="" disabled selected><%= userProfile.country %></option>
+        <!-- JavaScript code to populate the options with all countries -->
+      </select>
+    </div>
+  </div>
                         </div>
 
                         <div class="col-md-6">
                           <div class="mb-3">
                             <label for="role" class="form-label">Role</label>
-                            <select class="form-select" id="role" name="role">
+                            <select class="form-control select2 select2-hidden-accessible" id="role" name="role" style="width: 100%;" tabindex="-1" aria-hidden="true">
                               <option value="" disabled selected>Select a role</option>
                               <option value="personal" <%= userProfile.role === "personal" ? "selected" : "" %>>Personal</option>
                               <option value="business" <%= userProfile.role === "business" ? "selected" : "" %>>Business</option>
@@ -230,6 +234,31 @@
           document.execCommand('copy');
           window.getSelection().removeAllRanges();
         }
+  async function fetchAllCountries() {
+      try {
+        const response = await fetch('https://restcountries.com/v2/all');
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Error fetching countries:', error);
+        return [];
+      }
+    }
+
+    // Function to populate the country select options
+    async function populateCountrySelect() {
+      const countrySelect = document.getElementById('country');
+      const countries = await fetchAllCountries();
+
+      countries.forEach(country => {
+        const option = document.createElement('option');
+        option.textContent = country.name;
+        countrySelect.appendChild(option);
+      });
+    }
+
+    // Call the function to populate the country select on page load
+    window.addEventListener('load', populateCountrySelect);
         </script>
 
 

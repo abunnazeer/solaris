@@ -52,6 +52,18 @@ const userSchema = new mongoose.Schema({
     type: String,
     lowercase: true,
   },
+  twoFactorSecret: {
+    type: String,
+    select: true,
+  },
+  isTwoFactorEnabled: {
+    type: Boolean,
+    default: false,
+  },
+  isTwoFactorSetupComplete: {
+    type: Boolean,
+    default: false,
+  },
   referralCode: {
     type: String,
     minlength: 6,

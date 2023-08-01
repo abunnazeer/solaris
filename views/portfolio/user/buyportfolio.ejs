@@ -99,29 +99,30 @@
 
                           <!-- ... -->
 
-                          <div class="form-group">
-                            <label class="form-label" for="payout"
-                              >Payout:</label
-                            >
-                            <div class="input-group mb-20">
-                              <select
-                                class="form-control select2"
-                                style="width: 100%"
-                                name="payout"
-                                id="payout"
-                                required
-                                onchange="checkFormValidity()"
-                              >
-                                <option value="" selected disabled>
-                                  Select Payout
-                                </option>
-                                <option value="daily">Daily Payout</option>
-                                <option value="compounding">
-                                  12 Months Compounding
-                                </option>
-                              </select>
-                            </div>
-                          </div>
+                     <div class="form-group">
+  <label class="form-label" for="payout">Payout:</label>
+  <div class="input-group mb-20">
+    <% const usedPayouts = payouts.filter(payout => payout.payout[0].payoutStatus === 'used'); %>
+    <% if (usedPayouts.length > 0) { %>
+      <select
+        class="form-control select2"
+        style="width: 100%"
+        name="payout"
+        id="payout"
+        required
+        onchange="checkFormValidity()"
+      >
+        <option value="" selected disabled>Select Payout</option>
+        <% usedPayouts.forEach(payout => { %>
+          <option value="<%= payout.payout[0].label %>"><%= payout.payout[0].label %></option>
+        <% }); %>
+      </select>
+    <% } else { %>
+      <p>No payout found</p>
+    <% } %>
+  </div>
+</div>
+
 
                           <div class="form-group">
                             <label class="form-label" for="currency"

@@ -1,112 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <%- include('../layouts/head') %>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <link rel="stylesheet" href="/css/addedstyles.css" />
   </head>
   <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
     <div class="wrapper">
-      <!-- <div id="loader"></div> -->
-
       <header class="main-header">
         <!-- header -->
         <%- include('../layouts/header') %>
       </header>
 
-      <!-- Left side column. contains the logo and sidebar -->
-      <aside class="main-sidebar">
+     
+      <aside class="main-sidebar" style="border-right: 1px solid #cbcbcb">
         <!-- sidebar-->
         <%- include('../layouts/aside') %>
       </aside>
 
-      <!-- Content Wrapper. Contains page content -->
-      <div class="content-wrapper">
-        <div class="container-full">
-          <!-- Main content -->
+      <div
+        class="content-wrapper bg-white"
+        style="border-radius: 0; border-top: 1px solid #cbcbcb"
+      >
+        <div class="container mt-30">
+          <img
+            src="/images/header/Withdrawal_history_Web.png"
+            alt="refaral"
+            srcset=""
+          />
           <section class="content">
+            <h2 class="title fw-600"><%= title %></h2>
+            <div class="col-12 col-xl-12">
+              <div class="mt-20" style="border: 1px solid #cbcbcb">
+                <div class="card-body">
             <div class="row">
-              <h1>The Defensive Portfolio</h1>
-              <% portfolios.forEach((portfolio) => { %>
+              <% if (portfolios.length === 0) { %>
+              <div class="col-lg-11">
+                <div class="card force__position">
+                  <h1 style="padding: 20px">
+                    No Portfolio has been created yet
+                  </h1>
+                </div>
+              </div>
+              <% } else { %> <% portfolios.forEach((portfolio) => { %>
 
-              <div class="row relat__position">
-                <div class="col-lg-12">
-                  <div class="card">
-                    <div class="row g-0 align-items-center">
-                      <div class="col-md-2">
-                        <img
-                          src="/portfolio/<%= portfolio.imageName %>"
-                          class="card-img cardimg__extra"
-                          alt="<%= portfolio.imageName %>"
-                          srcset=""
-                        />
-                        <% if (portfolio.closingSoon) { %>
-                        <div class="custom__bell">
-                          <i data-feather="bell"></i>
-                          <p>Closing Soon</p>
-                        </div>
-                        <% } %>
+              <div class="col-lg-11">
+                <div class="card force__position">
+                  <% if(portfolio.length >= 0){ %>
+                  <div class="card force__position">
+                    <h1>No Portfolio has been created yet</h1>
+                  </div>
+                  <% } else { %>
+                  <div class="row g-0 align-items-center">
+                    <div class="col-md-2">
+                      <img
+                        src="/portfolio/<%= portfolio.imageName %>"
+                        class="card-img h-350"
+                        alt="<%= portfolio.imageName %>"
+                      />
+                    </div>
 
-                        <div class="custom__bell">
-                          <i data-feather="bell"></i>
-                          <p>Coming Soon</p>
-                        </div>
-                      </div>
-                      <div class="col-md-8">
-                        <div class="card-body">
-                          <h5 class="custom__title"></h5>
-                          <p class="card-text text-gray-600 custom__p">
-                            <%= portfolio.description %>.
-                          </p>
-                          <div class="flex__container_custom">
-                            <div class="flexbox__custom">
-                              <h1>Portfolio Duration</h1>
-                              <p><%= portfolio.portfolioDuration %></p>
+                    <div class="col-md-9 col-sm-6">
+                      <div class="card-body">
+                        <h1
+                          class="card-title fs-40 fw-500 mb-5"
+                          style="width: 70%"
+                        >
+                          <%= portfolio.portfolioTitle %>
+                          <hr />
+                        </h1>
+                        <p
+                          class="card-text text-gray-600 mt-20"
+                          style="width: 70%"
+                        >
+                          <%= portfolio.description %>
+                        </p>
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+
+                        <div class="col-lg-12">
+                          <div class="row" style="text-align: center">
+                            <div
+                              class="col-md-3"
+                              style="border-right: 1px solid #808080"
+                            >
+                              <h2>
+                                <%= portfolio.duration %><br />
+                                <small>Duration</small>
+                              </h2>
                             </div>
-                            <div class="flexbox__custom">
-                              <h1>Return on investment</h1>
-                              <p><%= portfolio.returnOnInvestment %></p>
+                            <div
+                              class="col-md-3"
+                              style="border-right: 1px solid #b4b4b4"
+                            >
+                              <h2>
+                                <%= portfolio.returnOnInvestment.rioPText %><br />
+                                <small>Return on investment </small>
+                              </h2>
                             </div>
-                            <div class="flexbox__custom">
-                              <h1>Minimum Capital</h1>
-                              <p><%= portfolio.minimumCapital %></p>
+                            <div
+                              class="col-md-3"
+                              style="border-right: 1px solid #b4b4b4"
+                            >
+                              <h2>
+                                <%= portfolio.minimumCapital %><br />
+                                <small>Min Capital</small>
+                              </h2>
+                            </div>
+                            <div
+                              class="col-md-3"
+                              style="border-right: 1px solid #b4b4b4"
+                            >
+                              <h2>
+                                <%= portfolio.compounding.cPText %><br />
+                                <small> Compounding Percentage</small>
+                              </h2>
                             </div>
                           </div>
                         </div>
-                        <!-- end card-body-->
                       </div>
-                      <!-- end col -->
+                      <!-- end card-body-->
                     </div>
-                    <!-- end row-->
-                  </div>
-                  <!-- end card-->
-                  <div class="right__image">
-                    <img
-                      src="/portfolio/chartbasic.png"
-                      class="card-img image__right__img"
-                      alt="..."
-                    />
-                  </div>
-                  <div
-                    class="<%= isProfileComplete ? 'port_unlocked' : 'port_locked' %>"
-                  >
-                    <% if (isProfileComplete) { %>
-                    <a href="/portfolio/<%= portfolio._id %>"
-                      >View portfolio details</a
-                    >
-                    <% } else { %>
-                    <p>
-                      Complete your profile to access portfolio fund details,
-                      webinar, fund document, and more
-                    </p>
-                    <i data-feather="lock" class="locked__class"></i><br />
-                    <a href="/user/profile">Complete your profile</a>
-                    <% } %>
-                  </div>
-                </div>
-                <!-- end col-->
-              </div>
 
-              <% }) %>
+                    <div
+                      class="<%= isProfileComplete ? 'port_unlocked' : 'port_locked' %>"
+                    >
+                      <img
+                        src="/portfolio/chartbasic.png"
+                        alt="..."
+                        style="max-width: 300px; width: 270px"
+                      />
+                    </div>
+                    <div
+                      class="<%= isProfileComplete ? 'port_unlocked' : 'port_locked' %>"
+                    >
+                      <% if (isProfileComplete) { %>
+                      <a href="/portfolio/<%= portfolio._id %>"
+                        >View portfolio details</a
+                      >
+                      <% } else { %>
+                      <p>
+                        Complete your profile to access portfolio fund details,
+                        webinar, fund document, and more
+                      </p>
+                      <i data-feather="lock" class="locked__class"></i><br />
+                      <a href="/user/profile">Complete your profile</a>
+                      <% } %>
+                    </div>
+
+                    <!-- end col -->
+                  </div>
+                  <!-- end row-->
+                  <% } %>
+                </div>
+                <!-- end card-->
+              </div>
+              <% }) %> <% } %>
             </div>
             <!-- end row-->
           </section>
@@ -119,10 +170,6 @@
         <!-- footer -->
         <%- include('../layouts/footer') %>
       </footer>
-
-      <!-- Vendor JS -->
-      <%- include('../layouts/script') %>
-      <script src="/js/bundle.js"></script>
     </div>
   </body>
 </html>

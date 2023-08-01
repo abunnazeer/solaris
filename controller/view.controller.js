@@ -195,6 +195,10 @@ const getShortTermForm = (req, res) => {
     .render('portfolio/shorttermfunds', { title: 'Short Term Open Funds' });
 };
 
+const activation = (req, res) => {
+  res.status(200).render('user/activation', { title: 'Short Term Open Funds' });
+};
+
 module.exports = {
   getRegistrationForm,
   getLoginForm,
@@ -213,4 +217,5 @@ module.exports = {
   getInvestHistory,
   getShortTermForm,
   getDetailsPage,
+  activation,
 };

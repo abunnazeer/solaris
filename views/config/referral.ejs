@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('../layouts/head') %>
+  </head>
+
+  <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
+    <div class="wrapper">
+      <!-- <div id="loader"></div> -->
+
+      <header class="main-header">
+        <!-- header -->
+        <%- include('../layouts/header') %>
+      </header>
+
+      <aside class="main-sidebar" style="border-right: 1px solid #cbcbcb">
+        <!-- sidebar-->
+        <%- include('../layouts/aside') %>
+      </aside>
+
+      <div
+        class="content-wrapper bg-white"
+        style="border-radius: 0; border-top: 1px solid #cbcbcb"
+      >
+        <div class="container mt-30">
+          <img
+            src="/images/header/Payout_Settings_Web.png"
+            alt="referral"
+            srcset=""
+          />
+          <section class="content">
+            <div class="row">
+              <div class="col-7 col-xl-7">
+                <div
+                  class="d-md-flex justify-content-between align-items-center"
+                >
+                  <div>
+                    <h2 class="title fw-600">Referral Percentage Setting</h2>
+                  </div>
+                  <div>
+                    <% referrals.forEach((item) => { %>
+                    <button
+                      type="button"
+                      class="btn bg-gradient-info-dark"
+                      data-bs-toggle="modal"
+                      data-bs-target="#editModal<%= item._id %>"
+                    >
+                      Edit
+                    </button>
+                  </div>
+                </div>
+                <div class="mt-20" style="border: 1px solid #cbcbcb">
+                  <div class="card-body">
+                    <table class="table table-striped b-1 border-gray-700">
+                      <thead class="bg-dark">
+                        <tr class="p-10">
+                          <th style="width: 30%">First Level</th>
+                          <th style="width: 40%">Second Level</th>
+                          <th style="width: 30%">Third Level</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><%= item.firstLevel %></td>
+                          <td><%= item.secondLevel%></td>
+                          <td><%= item.thirdLevel %></td>
+                        </tr>
+                        <% }); %>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <!-- /.content -->
+        </div>
+      </div>
+      <!-- /.content-wrapper -->
+
+      <footer class="main-footer bg-white">
+        <!-- footer -->
+        <%- include('../layouts/footer') %>
+      </footer>
+    </div>
+    <!-- /.wrapper -->
+
+    <!-- Add your edit modal template for each payout -->
+
+    <% referrals.forEach(item => { %>
+    <div
+      class="modal fade"
+      id="editModal<%= item._id %>"
+      tabindex="-1"
+      role="dialog"
+    >
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="mySmallModalLabel">Percentage</h4>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-hidden="true"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form
+              action="/user/update-referral-percentage/<%= item._id %>"
+              method="POST"
+            >
+              <label for="rpercentage" class="form-label"
+                >First Level Percentage:</label
+              >
+              <input
+                type="text"
+                id="rpercentage"
+                class="form-control"
+                name="firstLevel"
+                value="<%= item.firstLevel %>"
+                placeholder="First Percentage"
+                required
+              />
+              <br />
+              <label for="spercentage" class="form-label"
+                >Second Level Percentage:</label
+              >
+              <input
+                type="text"
+                id="spercentage"
+                class="form-control"
+                name="secondLevel"
+                value="<%= item.secondLevel %>"
+                placeholder="Second Level Percentage"
+                required
+              />
+              <br />
+              <label for="tpercentage" class="form-label"
+                >Third Level Percentage:</label
+              >
+              <input
+                type="text"
+                id="tpercentage"
+                class="form-control"
+                name="thirdLevel"
+                value="<%= item.thirdLevel %>"
+                placeholder="Third Level Percentage"
+                required
+              />
+              <br />
+
+              <button type="submit" class="btn bg-gradient-info-dark">
+                Save Changes
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% }); %>
+    <!-- Small modal -->
+    <div
+      class="modal fade"
+      id="bs-example-modal-sm"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="mySmallModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="mySmallModalLabel">
+              Refferal Percentage
+            </h4>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-hidden="true"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form action="/user/create-referral-percentage" method="POST">
+              <label for="rpercentage" class="form-label"
+                >First Level Percentage:</label
+              >
+              <input
+                type="text"
+                id="rpercentage"
+                class="form-control"
+                name="firstLevel"
+                placeholder="First Percentage"
+                required
+              />
+              <br />
+              <label for="spercentage" class="form-label"
+                >Second Level Percentage:</label
+              >
+              <input
+                type="text"
+                id="spercentage"
+                class="form-control"
+                name="secondLevel"
+                placeholder="Second Level Percentage"
+                required
+              />
+              <br />
+              <label for="tpercentage" class="form-label"
+                >Third Level Percentage:</label
+              >
+              <input
+                type="text"
+                id="tpercentage"
+                class="form-control"
+                name="thirdLevel"
+                value=""
+                placeholder="Third Level Percentage"
+                required
+              />
+              <br />
+
+              <button type="submit" class="btn bg-gradient-info-dark">
+                Add
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

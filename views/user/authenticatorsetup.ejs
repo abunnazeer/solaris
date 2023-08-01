@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+  </head>
+
+  <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
+    <div class="wrapper">
+      <!-- <div id="loader"></div> -->
+
+      <header class="main-header">
+        <!-- header-->
+        <%- include('../layouts/header') %>
+      </header>
+      <aside
+        class="main-sidebar"
+        style="border-right: 1px solid rgb(203, 203, 203)"
+      >
+        <!-- sidebar-->
+        <%- include('../layouts/aside') %>
+      </aside>
+      <div
+        class="content-wrapper bg-white"
+        style="border-radius: 0; border-top: 1px solid #cbcbcb"
+      >
+        <div class="container mt-30">
+          <img
+            src="/images/header/2FA_Setup_Web_113738.png"
+            alt="refaral"
+            srcset=""
+          />
+          <section class="content">
+            <div class="col-md-4 offset-md-4">
+              <div class="card b-groove">
+                <br>
+                <p class="text-center" style="margin: 10px 10px 0px 10px;">
+                  Scan this QR code with the authenticator app to enable 2FA.
+                </p>
+                <div class="card-body">
+                  <div class="text-center mb-1">
+                    <img  class=" w-150 h-150" src="<%= qrCodeUrl %>" alt="2FA QR Code" />
+                  </div>
+
+                  <!-- Display the user.twoFactorSecret below the QR code -->
+                  <div class="text-center">
+                    <p id="twoFactorSecret"><%= user.twoFactorSecret %></p>
+                    <button
+                      type="button"
+                     class="btn bg-gradient-info-dark
+                      id="copyButton"
+                    >
+                      Copy 2FA
+                    </button>
+                  </div>
+<br>
+<br>
+
+                  <form action="/user/2fa-setup" method="post">
+                    <div class="form-group">
+                     
+                      <input
+                        type="text"
+                        class="form-control"
+                        name="twoFactorAuthCode"
+                        id="twoFactorAuthCode"
+                        required
+                        placeholder="Enter 2FA Code from Authenticator App:"
+                      />
+                    </div>
+
+                    <div class="text-center">
+                      <button type="submit" class="btn bg-gradient-info-dark">
+                        Verify and Enable 2FA
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+    <!-- Include Clipboard.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+
+    <!-- Initialize Clipboard.js -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const copyButton = document.getElementById('copyButton');
+        const twoFactorSecret = document.getElementById('twoFactorSecret');
+
+        const clipboard = new ClipboardJS(copyButton, {
+          text: function () {
+            return twoFactorSecret.textContent;
+          },
+        });
+
+        clipboard.on('success', function (e) {
+          alert('2FA Secret copied to clipboard!');
+        });
+
+        clipboard.on('error', function (e) {
+          alert('Failed to copy 2FA Secret to clipboard.');
+        });
+      });
+    </script>
+
+    <footer class="main-footer bg-white">
+      <!-- footer-->
+      <%- include('../layouts/footer') %>
+    </footer>
+  </body>
+</html>
