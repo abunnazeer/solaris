@@ -34,14 +34,14 @@
           />
           <section class="content">
             <div class="col-md-4 offset-md-4">
-              <div class="card">
+              <div class="card b-groove">
                 <br>
                 <p class="text-center" style="margin: 10px 10px 0px 10px;">
                   Scan this QR code with the authenticator app to enable 2FA.
                 </p>
                 <div class="card-body">
                   <div class="text-center mb-1">
-                    <img src="<%= qrCodeUrl %>" alt="2FA QR Code" />
+                    <img  class=" w-150 h-150" src="<%= qrCodeUrl %>" alt="2FA QR Code" />
                   </div>
 
                   <!-- Display the user.twoFactorSecret below the QR code -->
@@ -57,19 +57,17 @@
                   </div>
 <br>
 <br>
-<br>
+
                   <form action="/user/2fa-setup" method="post">
                     <div class="form-group">
-                      <label for="twoFactorAuthCode"
-                        >Enter 2FA Code from Authenticator App:</label
-                      >
+                     
                       <input
                         type="text"
                         class="form-control"
                         name="twoFactorAuthCode"
                         id="twoFactorAuthCode"
                         required
-                        placeholder="Enter the code from your authenticator app"
+                        placeholder="Enter 2FA Code from Authenticator App:"
                       />
                     </div>
 

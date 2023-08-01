@@ -31,7 +31,7 @@
           />
           <section class="content">
 <div class="col-xl-4 col-lg-4 offset-md-4">
-<div class="card">
+<div class="card  b-groove">
     <div class="card-body text-center">
       
       
@@ -39,17 +39,23 @@
         <!-- Form to disable 2FA -->
         <h3>To disable 2fa click on this button </h3>
         <br>
+        <br>
+       
         <form action="/user/2fa-disable" method="post">
           <button  class="btn bg-gradient-danger"type="submit">Disable 2FA</button>
         </form>
+<br>
 <br>
       <% } else { %>
         <!-- Form to enable 2FA -->
         <h3>To enable 2fa click on this button </h3>
         <br>
+        <br>
+       
         <form action="/user/2fa-generate" method="get">
           <button  class="btn bg-gradient-info-dark" type="submit">Enable 2FA</button>
         </form>
+        <br>
         <br>
       <% } %>
 
