@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= title %></title>
+  </head>
+  <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
+    <div class="wrapper">
+      <header class="main-header">
+        <!-- header-->
+        <%- include('../layouts/header') %>
+        <style>
+          .select2-dropdown--below {
+            z-index: 999999;
+          }
+        </style>
+      </header>
+
+      <aside class="main-sidebar" style="border-right: 1px solid #cbcbcb">
+        <!-- sidebar-->
+        <%- include('../layouts/aside') %>
+      </aside>
+
+      <div
+        class="content-wrapper bg-white"
+        style="border-radius: 0; border-top: 1px solid #cbcbcb"
+      >
+        <div class="container mt-30">
+          <img
+            src="/images/header/Withdrawal_request_Web.png"
+            alt="refaral"
+            srcset=""
+          />
+          <section class="content">
+            <div class="d-md-flex justify-content-between align-items-center">
+              <div>
+                <h2 class="title fw-600"><%= title %></h2>
+              </div>
+              <div>
+                <button
+                  type="button"
+                  class="btn bg-gradient-info-dark"
+                  data-bs-toggle="modal"
+                  data-bs-target="#standard-modal"
+                >
+                  Make Withdrawal
+                </button>
+              </div>
+            </div>
+
+            <div class="col-12 col-xl-12">
+              <div class="mt-20" style="border: 1px solid #cbcbcb">
+                <div class="card-body">
+                  <table class="table table-striped b-1 border-gray-700">
+                    <thead class="bg-dark">
+                      <tr class="p-10">
+                        <th style="width: 10%; border-right: #fff2f2 1px solid">
+                          SN
+                        </th>
+                        <th style="width: 20%; border-right: #fff2f2 1px solid">
+                          Date
+                        </th>
+                        <th style="width: 9%; border-right: #fff2f2 1px solid">
+                          Method
+                        </th>
+                        <th style="width: 11%; border-right: #fff2f2 1px solid">
+                          Amount Paid
+                        </th>
+                        <th style="width: 42%; border-right: #fff2f2 1px solid">
+                          Wallet Address
+                        </th>
+                        <th style="width: 8%">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% let count = 0; %> <% if (activities.length > 0) { %> <%
+                      activities.forEach(activity => { %> <% if (activity.status
+                      === 'Pending Approval') { %> <% count++; %> <% if (count
+                      <= 9) { %>
+                      <tr>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= activity.sn %>
+                        </td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= new Date(activity.date).toLocaleString('en-US', {
+                          weekday: 'short', month: 'short', day: 'numeric',
+                          year: 'numeric', hour: 'numeric', minute: 'numeric',
+                          hour12: true }) %>
+                        </td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= activity.method %>
+                        </td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          $<%= activity.amount %>
+                        </td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= activity.walletAddress %>
+                        </td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <% if (activity.status === 'Approved') { %>
+                          <span class="badge badge-success">Approved</span>
+                          <% } else if (activity.status === 'Pending Approval')
+                          { %>
+                          <span class="badge badge-danger"
+                            >Pending Approval</span
+                          >
+                          <% } %>
+                        </td>
+                      </tr>
+                      <% } %> <% } %> <% }); %> <% if (count === 0) { %>
+                      <tr>
+                        <td colspan="6">No records found</td>
+                      </tr>
+                      <% } %> <% } else { %>
+                      <tr>
+                        <td colspan="6">No records found</td>
+                      </tr>
+                      <% } %>
+                    </tbody>
+                  </table>
+
+                  <% if (count > 9) { %>
+                  <div
+                    class="dataTables_paginate paging_simple_numbers align-right"
+                    id="example_paginate"
+                  >
+                    <% if (totalPages > 1) { %>
+                    <ul class="pagination mb-0 mt-20">
+                      <% if (currentPage > 1) { %>
+                      <li class="paginate_button page-item previous">
+                        <a
+                          href="?page=<%= currentPage - 1 %>&limit=<%= limit %>"
+                          class="page-link"
+                          >Previous</a
+                        >
+                      </li>
+                      <% } %> <% for (let i = 1; i <= 4 && i <= totalPages; i++)
+                      { %>
+                      <!-- Adjusted the for loop condition -->
+                      <% if (i === currentPage) { %>
+                      <li class="paginate_button page-item active">
+                        <a href="#" class="page-link"><%= i %></a>
+                      </li>
+                      <% } else { %>
+                      <li class="paginate_button page-item">
+                        <a
+                          href="?page=<%= i %>&limit=<%= limit %>"
+                          class="page-link"
+                          ><%= i %></a
+                        >
+                      </li>
+                      <% } %> <% } %> <% if (currentPage < totalPages) { %>
+                      <li class="paginate_button page-item next">
+                        <a
+                          href="?page=<%= currentPage + 1 %>&limit=<%= limit %>"
+                          class="page-link"
+                          >Next</a
+                        >
+                      </li>
+                      <% } %>
+                    </ul>
+                    <% } %>
+                  </div>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+            <div
+              id="standard-modal"
+              class="modal fade"
+              tabindex="-1"
+              role="dialog"
+              aria-labelledby="standard-modalLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header bg-black">
+                    <h4 class="modal-title" id="standard-modalLabel">
+                      Withdrawal Request
+                    </h4>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="row">
+                      <div class="col-6">
+                        <h5>Main Wallet Balance</h5>
+                        <h3>$</h3>
+                      </div>
+                      <div class="col-6">
+                        <h5>Compounding Dividends</h5>
+                        <h3>$</h3>
+                      </div>
+                    </div>
+                    <hr />
+                    <form
+                      class="rform__modified"
+                      action="/user/withdrawal"
+                      method="post"
+                      onsubmit="return validateForm()"
+                    >
+                      <div class="form-group">
+                        <div
+                          class="d-md-flex justify-content-between align-items-center"
+                        >
+                          <div class="col-8">
+                            <input
+                              type="number"
+                              name="authCode"
+                              class="form-control ps-15 p-10"
+                              placeholder="Enter 2FA"
+                              id="authCode"
+                              onblur="checkAuthCodeValidity()"
+                              required
+                            />
+                            <span
+                              id="errorText"
+                              style="color: red; display: none"
+                              >.</span
+                            >
+                          </div>
+                          <div>
+                            <span
+                              class="btn bg-gradient-info-dark"
+                              id="generateCodeBtn"
+                              >Generate Code</span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <input
+                          type="number"
+                          name="amount"
+                          class="form-control ps-15 p-10"
+                          placeholder="You can only Withdraw $100 a day"
+                          id="amount"
+                          min="100"
+                          required
+                        />
+                      </div>
+                      <div class="input-group mb-20">
+                        <select
+                          class="form-control select2 select2-hidden-accessible"
+                          style="width: 100%"
+                          tabindex="-1"
+                          aria-hidden="true"
+                          name="method"
+                          id="method"
+                          required
+                          onchange="checkFormValidity()"
+                        >
+                          <option value="" selected disabled>
+                            Select Wallet Type
+                          </option>
+                          <option value="BTC" data-icon="BTC">Bitcoin</option>
+                          <option value="ETH" data-icon="ETH">Ethereum</option>
+                          <option value="USDT" data-icon="USDT">
+                            Tether USD TRC20
+                          </option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <input
+                          type="text"
+                          name="walletAddress"
+                          class="form-control ps-15 p-10"
+                          placeholder="Wallet Address"
+                          id="walletAddress"
+                          pattern="^(0x)?[A-Fa-f0-9]{40}$"
+                          title="Please enter a valid wallet address"
+                          required
+                        />
+                      </div>
+                      <hr />
+                      <div class="mt-10">
+                        <button
+                          type="button"
+                          class="btn btn-secondary"
+                          data-bs-dismiss="modal"
+                        >
+                          Close
+                        </button>
+                        <button type="submit" class="btn btn btn-warning">
+                          Withdraw Now
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+      <footer class="main-footer">
+        <!-- footer-->
+        <%- include('../layouts/footer') %>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script>
+          // Event handler for the "Generate Code" button
+          document
+            .getElementById('generateCodeBtn')
+            .addEventListener('click', function () {
+              // Retrieve the value from the 2FA input field
+              var twoFactorValue = document.getElementById('authCode').value;
+
+              // Make a POST request to the "user/2factor" endpoint
+              axios
+                .post('/user/two-factor', { twoFactorValue })
+                .then(function (response) {
+                  // Handle the response from the server
+                  console.log(response.data);
+                  // Perform any necessary actions based on the response
+                })
+                .catch(function (error) {
+                  // Handle errors
+                  console.error(error);
+                });
+            });
+
+          function checkAuthCodeValidity() {
+            const inputAuthCode = document.getElementById('authCode').value;
+
+            axios
+              .get('/user/activity')
+              .then(function (response) {
+                const twofactorCode = response.data.twofactorCode;
+                const validAuthCode = response.data.authCode;
+                const errorText = document.getElementById('errorText');
+
+                if (!twofactorCode.code || !validAuthCode) {
+                  errorText.textContent = 'Invalid OTP';
+                  errorText.style.display = 'block';
+                } else if (
+                  inputAuthCode === validAuthCode &&
+                  inputAuthCode === twofactorCode.code
+                ) {
+                  errorText.textContent = 'OTP has already been used';
+                  errorText.style.display = 'block';
+                } else {
+                  errorText.textContent = '';
+                  errorText.style.display = 'none';
+                }
+              })
+              .catch(function (error) {
+                console.error(error);
+                // Handle error
+              });
+          }
+
+          function checkFormValidity() {
+            const authCode = document.getElementById('authCode').value;
+            const amount = document.getElementById('amount').value;
+            const currency = document.getElementById('currency').value;
+            const walletAddress =
+              document.getElementById('walletAddress').value;
+
+            return authCode && amount && currency && walletAddress;
+          }
+
+          function validateForm() {
+            if (!checkFormValidity()) {
+              alert('Please fill in all the required fields.');
+              return false;
+            }
+            return true;
+          }
+        </script>
+      </footer>
+    </div>
+  </body>
+</html>
