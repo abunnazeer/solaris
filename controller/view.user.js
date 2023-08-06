@@ -8,7 +8,7 @@ const catchAsync = require('../utils/catchAsync');
 const sendEmail = require('../utils/email');
 const multer = require('multer');
 
-const createSendToken = (user, _profile, statusCode, res, redirectUrl) => {
+const createSendToken = (user, statusCode, res, redirectUrl) => {
   user.password = undefined;
 
   res.status(statusCode).redirect(redirectUrl);
@@ -57,7 +57,9 @@ const getUserIndex = catchAsync(async (req, res) => {
     if (userProfile) {
       return {
         _id: user._id,
-        fullName: userProfile.fullName,
+        firstName: userProfile.firstName,
+        middleName: userProfile.middleName,
+        lastName: userProfile.lastName,
         profilePicture: userProfile.profilePicture,
         phoneNumber: userProfile.phoneNumber,
         email: user.email,
@@ -92,7 +94,9 @@ const viewUser = catchAsync(async (req, res) => {
 
     const userWithProfile = {
       _id: user._id,
-      fullName: userProfile.fullName,
+      firstName: userProfile.firstName,
+      middleName: userProfile.middleName,
+      lastName: userProfile.lastName,
       profilePicture: userProfile.profilePicture,
       phoneNumber: userProfile.phoneNumber,
       email: user.email,
@@ -165,7 +169,9 @@ const adminUpdateProfile = catchAsync(async (req, res, next) => {
 
     // Retrieve the updated profile data from the request body
     const {
-      fullName,
+      firstName,
+      middleName,
+      lastName,
       phoneNumber,
       street,
       city,
@@ -179,11 +185,25 @@ const adminUpdateProfile = catchAsync(async (req, res, next) => {
     const changedValues = {};
 
     // Compare and update the fields with the new values
-    if (fullName !== userProfile.fullName) {
-      userProfile.fullName = fullName;
-      changedValues.fullName = {
-        field: 'Full Name',
-        value: fullName,
+    if (firstName !== userProfile.firstName) {
+      userProfile.firstName = firstName;
+      changedValues.firstName = {
+        field: 'First Name',
+        value: firstName,
+      };
+    }
+    if (middleName !== userProfile.middleName) {
+      userProfile.middleName = middleName;
+      changedValues.middleName = {
+        field: 'Middle Name',
+        value: middleName,
+      };
+    }
+    if (lastName !== userProfile.lastName) {
+      userProfile.lastName = lastName;
+      changedValues.lastName = {
+        field: 'Last Name',
+        value: lastName,
       };
     }
 
@@ -260,7 +280,7 @@ const adminUpdateProfile = catchAsync(async (req, res, next) => {
       await userDetails.save({ validateBeforeSave: false });
 
       // Send email to the user
-      const userMessage = `Dear ${userProfile.fullName},\n\nYour profile has been successfully updated.`;
+      const userMessage = `Dear ${userProfile.firstName},\n\nYour profile has been successfully updated.`;
       await sendEmail({
         email: userDetails.email, // Use the email field from the user details model
         subject: 'Profile Updated',
@@ -328,12 +348,12 @@ const createUsers = catchAsync(async (req, res, next) => {
   });
 
   // Create user profile while creating user
-  const newProfile = await Profile.create({
-    // Assigning user id to profile id
-    _id: newUser._id,
-    fullName: req.body.fullName,
-    role: newUser.role,
-  });
+  // const newProfile = await Profile.create({
+  //   // Assigning user id to profile id
+  //   _id: newUser._id,
+  //   fullName: req.body.fullName,
+  //   role: newUser.role,
+  // });
 
   const getUser = await User.findOne({ _id: adminRole });
 
@@ -359,11 +379,11 @@ const createUsers = catchAsync(async (req, res, next) => {
   console.log(getUser.role);
 
   const user = newUser;
-  const profile = newProfile;
+  // const profile = newProfile;
   const statusCode = 201;
   const redirectUrl = '/user/users';
 
-  createSendToken(user, profile, statusCode, res, redirectUrl);
+  createSendToken(user, statusCode, res, redirectUrl);
 });
 
 const getVerification = (req, res) => {

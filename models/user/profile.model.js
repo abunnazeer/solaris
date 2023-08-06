@@ -2,9 +2,17 @@ const mongoose = require('mongoose');
 
 const userProfileSchema = new mongoose.Schema({
   _id: String,
-  fullName: {
+  firstName: {
     type: String,
-    required: [true, 'please provide your full name'],
+    required: [true, 'please provide your first name'],
+  },
+  middleName: {
+    type: String,
+    required: [true, 'please provide your middle name'],
+  },
+  lastName: {
+    type: String,
+    required: [true, 'please provide your last name'],
   },
   profilePicture: {
     type: String,
@@ -12,9 +20,9 @@ const userProfileSchema = new mongoose.Schema({
     default: '../../../images/avatar/avatar-13.png',
   },
   phoneNumber: {
-    type: String,
+    type: Number,
     required: [true, 'please provide your phone number'],
-    default: '0800000000000',
+    default: 0800000000000,
   },
   address: {
     street: { type: String, default: 'your street' },
@@ -22,6 +30,43 @@ const userProfileSchema = new mongoose.Schema({
     state: { type: String, default: 'your state' },
     country: { type: String, default: 'your country' },
     zipCode: { type: String, default: 'your zip' },
+  },
+  idCard: {
+    cardNumber: {
+      type: String,
+      required: [true, 'please provide your ID card number'],
+    },
+    iDCardType: {
+      type: String,
+      required: [true, 'please specify the type of ID card'],
+    },
+
+    idCardImage: {
+      type: String,
+      required: [true, 'please upload an image of your ID card'],
+    },
+  },
+  proofOfAddress: {
+    proofType: {
+      type: String,
+      required: [true, 'please specify the type of proof'],
+    },
+    proofImage: {
+      type: String,
+      required: [true, 'please upload an image of your proof of address'],
+    },
+  },
+  verification: {
+    type: Boolean,
+    default: false,
+  },
+  verificationFailed: {
+    type: Boolean,
+    default: false,
+  },
+  submittedDate: {
+    type: String,
+    required: true,
   },
   role: {
     type: String,

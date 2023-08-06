@@ -105,7 +105,7 @@
                     <div
                       class="d-flex align-items-center justify-content-between"
                     >
-                      <h4 class="fw-500">Total referral commission</h4>
+                      <h4 class="fw-500">Referral commission history</h4>
                     </div>
                     <div class="row align-items-center mt-10">
                       <div class="col-6">
@@ -131,7 +131,7 @@
                     <div
                       class="d-flex align-items-center justify-content-between"
                     >
-                      <h4 class="fw-500">Retirement Dividends</h4>
+                      <h4 class="fw-500">Accumulated Dividends</h4>
                     </div>
                     <div class="row align-items-center mt-10">
                       <div class="col-6">
@@ -167,7 +167,7 @@
                     <div
                       class="d-flex align-items-center justify-content-between"
                     >
-                      <h4 class="fw-500">Retirement Dividends</h4>
+                      <h4 class="fw-500">Total referral Members</h4>
                     </div>
                     <div class="row align-items-center mt-10">
                       <div class="col-6">
@@ -191,7 +191,7 @@
                   style="height: 271px; position: relative"
                 >
                   <div class="box-header with-border">
-                    <h4 class="fw-500">Balance for withdrawal</h4>
+                    <h4 class="fw-500">Account Balance</h4>
                   </div>
                   <div class="box-body p-0">
                     <div class="text-center">
@@ -255,14 +255,10 @@
                 <div class="modal-body">
                   <div class="row">
                     <div class="col-6">
-                      <h5>Main Wallet Balance</h5>
+                      <h5>Account Balance</h5>
                       <h3>
                         $<%= totalBalanceForWithdrawal.toLocaleString() %>
                       </h3>
-                    </div>
-                    <div class="col-6">
-                      <h5>Compounding Dividends</h5>
-                      <h3>$<%= totalCompBalance.toLocaleString() %></h3>
                     </div>
                   </div>
                   <hr />
@@ -305,15 +301,15 @@
                         type="number"
                         name="amount"
                         class="form-control ps-15 p-10"
-                        placeholder="You can only Withdraw $100 a day"
+                        placeholder="You can only Withdraw $10 a day"
                         id="amount"
-                        min="100"
+                        min="10"
                         required
                       />
                     </div>
                     <div class="input-group mb-20">
                       <select
-                        class="form-control select2 select2-hidden-accessible"
+                        class="form-control select2"
                         style="width: 100%"
                         tabindex="-1"
                         aria-hidden="true"
@@ -339,7 +335,6 @@
                         class="form-control ps-15 p-10"
                         placeholder="Wallet Address"
                         id="walletAddress"
-                        pattern="^(0x)?[A-Fa-f0-9]{40}$"
                         title="Please enter a valid wallet address"
                         required
                       />

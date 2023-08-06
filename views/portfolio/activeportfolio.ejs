@@ -10,13 +10,17 @@
         <%- include('../layouts/header') %>
       </header>
 
-      <aside class="main-sidebar">
-        <!-- sidebar -->
+      <aside class="main-sidebar" style="border-right: 1px solid #cbcbcb">
+        <!-- sidebar-->
         <%- include('../layouts/aside') %>
       </aside>
 
-      <div class="content-wrapper">
-        <div class="container-full">
+      <div
+        class="content-wrapper bg-white"
+        style="border-radius: 0; border-top: 1px solid #cbcbcb"
+      >
+        <div class="container">
+          <!-- Main content -->
           <section class="content">
             <% let activePortfolioFound = false; %> <%
             buyPortfolios.forEach(function(buyPortfolio) { %> <% if
@@ -25,7 +29,7 @@
             <div class="active__portfolio">
               <div class="row">
                 <div class="col-xl-8 col-lg-7">
-                  <div class="card">
+                  <div class="card b-groove">
                     <div class="card-body">
                       <h3 class="text-center mb-2">
                         <%= buyPortfolio.portfolioName %>
@@ -39,8 +43,8 @@
                       </p>
                       <div class="row">
                         <div class="col-12 col-md-4 mt-20">
-                          <div class="box text-center">
-                            <div class="box-body py-5">
+                          <div class="text-center">
+                            <div class="">
                               <p class="fs-17">$<%= buyPortfolio.amount %></p>
                               <p class="fw-500 fs-18">
                                 <span class="path1"></span>
@@ -51,7 +55,7 @@
                           </div>
                         </div>
                         <div class="col-12 col-md-4 mt-20">
-                          <div class="box text-center">
+                          <div class="text-center">
                             <div class="box-body py-5">
                               <p class="fs-17"><%= buyPortfolio.payout %></p>
                               <p class="fw-500 fs-18">
@@ -63,7 +67,7 @@
                           </div>
                         </div>
                         <div class="col-12 col-md-4 mt-20">
-                          <div class="box text-center">
+                          <div class="text-center">
                             <div class="box-body py-5">
                               <p class="fs-17">12 months</p>
                               <p class="fw-500 fs-18">
@@ -90,7 +94,7 @@
                                 type="button"
                                 class="waves-effect waves-light btn btn-warning mb-5"
                               >
-                                Withdraw
+                                Make Withdrawal
                               </button>
                             </div>
                           </div>
@@ -100,10 +104,10 @@
                   </div>
                 </div>
                 <div class="col-12 col-xl-4">
-                  <div class="box">
+                  <div class="box b-groove">
                     <div
                       class="box-body mt-0 mb-0"
-                      style="padding-top: 52px; padding-bottom: 70px"
+                      style="padding-top: 52px; padding-bottom: 50px"
                     >
                       <h3 class="text-center">-</h3>
                       <hr />
@@ -155,7 +159,7 @@
         </div>
       </div>
 
-      <footer class="main-footer">
+      <footer class="main-footer bg-white">
         <!-- footer -->
         <%- include('../layouts/footer') %>
       </footer>

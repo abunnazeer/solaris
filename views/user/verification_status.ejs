@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= title %></title>
+  </head>
+  <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
+    <div class="wrapper">
+      <header class="main-header">
+        <!-- header-->
+        <%- include('../layouts/header') %>
+      </header>
+
+      <aside class="main-sidebar" style="border-right: 1px solid #cbcbcb">
+        <!-- sidebar-->
+        <%- include('../layouts/aside') %>
+      </aside>
+
+      <div
+        class="content-wrapper bg-white"
+        style="border-radius: 0; border-top: 1px solid #cbcbcb"
+      >
+        <div class="container mt-30">
+          <img
+            src="/images/header/Withdrawal_history_Web.png"
+            alt="refaral"
+            srcset=""
+          />
+          <section class="content">
+            <h2 class="title fw-600"></h2>
+            <div class="col-7 col-xl-7 offset-md-2">
+              <div class="mt-20" style="border: 1px solid #cbcbcb">
+                <div class="card-body">
+                  <h1 class="text-center"><%= heading %></h1>
+                  <p style="font-style: italic; font-size: 17px">
+                    <%= message%>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <footer class="main-footer bg-white">
+        <!-- footer-->
+        <%- include('../layouts/footer') %>
+      </footer>
+    </div>
+  </body>
+</html>

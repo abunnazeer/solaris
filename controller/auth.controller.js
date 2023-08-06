@@ -16,7 +16,7 @@ const signToken = id => {
   });
 };
 
-const createSendToken = (user, profile, statusCode, res, redirectUrl) => {
+const createSendToken = (user, statusCode, res, redirectUrl) => {
   const token = signToken(user._id);
 
   const cookieOptions = {
@@ -94,13 +94,13 @@ const register = catchAsync(async (req, res, next) => {
     downlines: [], // Initialize the downlines array
   });
 
-  // Create user profile while creating user
-  const newProfile = await Profile.create({
-    // Assigning user id to profile id
-    _id: newUser._id,
-    fullName: req.body.fullName,
-    role: newUser.role,
-  });
+  // // Create user profile while creating user
+  // const newProfile = await Profile.create({
+  //   // Assigning user id to profile id
+  //   _id: newUser._id,
+  //   fullName: req.body.fullName,
+  //   role: newUser.role,
+  // });
 
   // Add the new user as a downline to the referring user (if exists)
   if (referredByUser) {
@@ -132,10 +132,10 @@ const register = catchAsync(async (req, res, next) => {
   newUser.password = undefined;
 
   const user = newUser;
-  const profile = newProfile;
+  // const profile = newProfile;
   const statusCode = 201;
   const redirectUrl = '/user/success';
-  createSendToken(user, profile, statusCode, res, redirectUrl);
+  createSendToken(user, statusCode, res, redirectUrl);
 });
 
 // Email verification endpoint
@@ -215,53 +215,8 @@ const login = catchAsync(async (req, res, next) => {
   // If everything is ok, send token to client
   const statusCode = 201;
   const redirectUrl = '/dashboard';
-  createSendToken(user, null, statusCode, res, redirectUrl);
+  createSendToken(user, statusCode, res, redirectUrl);
 });
-
-// const login = catchAsync(async (req, res, next) => {
-//   const { email, password, twoFactorAuthCode } = req.body; // Add the 'twoFactorAuthCode' to the request body
-
-//   // Check if email and password are provided
-//   if (!email || !password) {
-//     return next(new AppError('Please provide email and password.', 400));
-//   }
-
-//   // Check if the user's account is activated
-//   const user = await User.findOne({ email }).select('+password');
-
-//   if (!user || !(await user.correctPassword(password, user.password))) {
-//     return next(new AppError('Incorrect email or password.', 401));
-//   }
-
-//   // Check if the user's email is verified and the account is active
-//   if (!user.isActive) {
-//     return res.redirect('/user/activation'); // Redirect the user to the activation page
-//   }
-
-//   if (user.twoFactorSecret) {
-//     if (!twoFactorAuthCode) {
-//       return res.render('user/2fa_verification', {
-//         userId: user._id,
-//         email,
-//         password,
-//       });
-//     }
-//     const isTwoFactorCodeValid = speakeasy.totp.verify({
-//       secret: user.twoFactorSecret,
-//       encoding: 'base32',
-//       token: twoFactorAuthCode,
-//     });
-
-//     if (!isTwoFactorCodeValid) {
-//       return next(new AppError('Invalid 2FA code.', 401));
-//     }
-//   }
-
-//   // If everything is ok, send token to client
-//   const statusCode = 201;
-//   const redirectUrl = '/dashboard';
-//   createSendToken(user, null, statusCode, res, redirectUrl);
-// });
 
 const logout = (req, res) => {
   // Clear the 'jwt' cookie by setting it to an empty string and expiring it in the past
@@ -745,6 +700,59 @@ const enable2FA = async (req, res, next) => {
   }
 };
 
+// Identity verification
+// const verificationMiddleWare = catchAsync(async (req, res, next) => {
+//   const userProfile = await Profile.findOne({ _id: req.user._id });
+//   //1. check if the userProfile has value in the following fields   userProfile._id,userProfile.firstName,userProfile.lastName,userProfile.idCard.cardNumber,userProfile.idCard.iDCardType,userProfile.idCard.idCardImage,userProfile.proofOfAddress.proofType,userProfile.proofOfAddress.proofImage and userProfile.verification === false
+//   //2. then redirect to /user/verification-status
+//   //3. if   //1. check if the userProfile has value in the following fields   userProfile._id,userProfile.firstName,userProfile.lastName,userProfile.idCard.cardNumber,userProfile.idCard.iDCardType,userProfile.idCard.idCardImage,userProfile.proofOfAddress.proofType,userProfile.proofOfAddress.proofImage and userProfile.verification === true then allow then to access all routes that means you disable the middleware from redirecting to this /user/profileVerification' or this /user/verification-status
+//   //4.  //1. check if the userProfile has value in the following fields   userProfile._id,userProfile.firstName,userProfile.lastName,userProfile.idCard.cardNumber,userProfile.idCard.iDCardType,userProfile.idCard.idCardImage,userProfile.proofOfAddress.proofType,userProfile.proofOfAddress.proofImage and userProfile.verificationFailed === true then redirect to /user/uupdate-verification
+//   //5. if the req.user.role === 'admin' then disable the middleware  that means he can access every routes
+//   if (!userProfile || userProfile.verification === false) {
+//     return res.redirect('/user/profileVerification');
+//   }
+
+//   if (req.user.role === 'admin') {
+//     return next();
+//   }
+
+//   return res.status(403).send('Access denied.'); // Forbidden status for non-admin users
+// });
+const verificationMiddleWare = catchAsync(async (req, res, next) => {
+  if (req.user.role === 'admin') {
+    // Step 5: Admin can access all routes
+    return next();
+  }
+
+  const userProfile = await Profile.findOne({ _id: req.user._id });
+
+  if (!userProfile) {
+    // Step 1: Redirect to profile verification if userProfile is missing
+    return res.redirect('/user/profileVerification');
+  }
+  if (userProfile.verificationFailed === true) {
+    // Step 4: Redirect if verification has failed
+    return res.redirect('/user/update-verification');
+  }
+
+  if (
+    !userProfile.firstName ||
+    !userProfile.lastName ||
+    !userProfile.idCard.cardNumber ||
+    !userProfile.idCard.iDCardType ||
+    !userProfile.idCard.idCardImage ||
+    !userProfile.proofOfAddress.proofType ||
+    !userProfile.proofOfAddress.proofImage ||
+    userProfile.verification === false
+  ) {
+    // Step 2: Redirect to verification status if required fields are missing or verification is false
+    return res.redirect('/user/verification-status');
+  }
+
+  // Step 3: If userProfile has all values and verification is true, allow access to all routes
+  return next();
+});
+
 module.exports = {
   register,
   verifyEmail,
@@ -764,4 +772,5 @@ module.exports = {
   setupTwoFactor,
   verifyTwoFactor,
   disable2FA,
+  verificationMiddleWare,
 };

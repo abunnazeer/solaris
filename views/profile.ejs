@@ -51,7 +51,7 @@
 
                   <div class="text-start mt-3 text-center">
                   
-                      <h3 class="ms-2 text-center"><%= userProfile.fullName %></h3>
+                      <h3 class="ms-2 text-center"><%= userProfile.firstName +  userProfile.lastName%>  </h3>
                  
                      <hr>
                      <br>
@@ -94,8 +94,20 @@
 
                     <div class="col-md-12">
                       <div class="mb-3">
-                        <label for="fullName" class="form-label">Full Name</label>
-                        <input type="text" class="form-control" id="fullName" value="<%= userProfile.fullName %>" name="fullName" />
+                        <label for="firstName" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="firstName" value="<%= userProfile.firstName %>" name="firstName" />
+                      </div>
+                    </div>
+                     <div class="col-md-12">
+                      <div class="mb-3">
+                        <label for="middleName" class="form-label">Middle Name</label>
+                        <input type="text" class="form-control" id="middleName" value="<%= userProfile.middleName %>" name="middleName" />
+                      </div>
+                    </div>
+                     <div class="col-md-12">
+                      <div class="mb-3">
+                        <label for="lastName" class="form-label">SurName</label>
+                        <input type="text" class="form-control" id="lastName" value="<%= userProfile.lastName %>" name="lastName" />
                       </div>
                     </div>
 

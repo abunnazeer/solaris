@@ -46,21 +46,44 @@ const updateProfile = catchAsync(async (req, res, next) => {
     }
 
     // Retrieve the updated profile data from the request body
-    const { fullName, phoneNumber, street, city, state, country, zipCode } =
-      req.body;
+    const {
+      firstName,
+      middleName,
+      lastName,
+      phoneNumber,
+      street,
+      city,
+      state,
+      country,
+      zipCode,
+    } = req.body;
 
     // Prepare an object to store the changed values
     const changedValues = {};
 
     // Compare and update the fields with the new values
-    if (fullName !== userProfile.fullName) {
-      userProfile.fullName = fullName;
-      changedValues.fullName = {
-        field: 'Full Name',
-        value: fullName,
+
+    if (firstName !== userProfile.firstName) {
+      userProfile.firstName = firstName;
+      changedValues.firstName = {
+        field: 'First Name',
+        value: firstName,
       };
     }
-
+    if (middleName !== userProfile.middleName) {
+      userProfile.middleName = middleName;
+      changedValues.middleName = {
+        field: 'Middle Name',
+        value: middleName,
+      };
+    }
+    if (lastName !== userProfile.lastName) {
+      userProfile.lastName = lastName;
+      changedValues.lastName = {
+        field: 'Last Name',
+        value: lastName,
+      };
+    }
     if (phoneNumber !== userProfile.phoneNumber) {
       userProfile.phoneNumber = phoneNumber;
       changedValues.phoneNumber = {
@@ -125,7 +148,7 @@ const updateProfile = catchAsync(async (req, res, next) => {
       const updatedProfile = await userProfile.save();
 
       // Send email to the user
-      const userMessage = `Dear ${userProfile.fullName},\n\nYour profile has been successfully updated.`;
+      const userMessage = `Dear ${userProfile.firstName},\n\nYour profile has been successfully updated.`;
       await sendEmail({
         email: req.user.email, // Assuming you have an email field in the user profile model
         subject: 'Profile Updated',

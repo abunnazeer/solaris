@@ -20,7 +20,8 @@ const sendEmail = async options => {
     from: 'Solaris Finance <no-reply@solarisfinance.com>',
     to: options.email,
     subject: options.subject,
-    text: options.message,
+    // text: options.message,
+    html: options.message,
   };
   //send the email
   await transporter.sendMail(mailOptions);

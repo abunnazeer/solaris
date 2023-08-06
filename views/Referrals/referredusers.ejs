@@ -84,13 +84,12 @@
                         <th style="width: 40%; border-right: #fff2f2 1px solid">
                           Email
                         </th>
-                        <th style="width: 20%; border-right: #fff2f2 1px solid">
-                          Invested
+                        <th style="width: 15%; border-right: #fff2f2 1px solid">
+                          Status
                         </th>
-                        <th>Status</th>
+                        <th style="width: 20%">Reg Date</th>
                       </tr>
                     </thead>
-                    <!-- ...existing code... -->
                     <tbody>
                       <% if (referredUsers.length > 0) { %> <%
                       referredUsers.forEach((user, index) => { %>
@@ -99,7 +98,7 @@
                           <%= index + 1 %>
                         </td>
                         <td style="border-right: #d1d1d1 1px solid">
-                          <%= user.profile.fullName %>
+                          <%= user.profile.firstName + user.profile.lastName %>
                         </td>
                         <td style="border-right: #d1d1d1 1px solid">
                           <%= user.user.email %>
