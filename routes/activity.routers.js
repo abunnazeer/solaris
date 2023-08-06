@@ -7,6 +7,7 @@ const {
   postWithdrawal,
   getWithdrawalRequest,
   getwithdrawalHistory,
+  getwithdrawalStatus,
 } = require('../controller/activity.controller');
 const {
   restrictTo,
@@ -28,5 +29,6 @@ router.get('/transfer', protect, getTransfer);
 // Withdrawal Routes
 router.get('/withdrawal-request', protect, getWithdrawalRequest);
 router.get('/withdrawal-history', protect, getwithdrawalHistory);
+router.get('/withdrawal-status', protect, getwithdrawalStatus);
 // router.delete('/update-profile/:id', protect, updateProfile);
 module.exports = router;

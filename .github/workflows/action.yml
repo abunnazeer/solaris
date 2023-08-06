@@ -1,4 +1,4 @@
-name: 🚀 Deploy website on push
+name: Automated Website Deployment upon Git Push
 
 on:
   push:
@@ -6,23 +6,23 @@ on:
       - main
 
 jobs:
-  web-deploy:
-    name: 🎉 Deploy
+  website-deployment:
+    name: Execute Deployment Process
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🚚 Get latest code
+      - name: Retrieve Latest Source Code
         uses: actions/checkout@v2.3.2
 
-      - name: Use Node.js 18
+      - name: Utilize Node.js v18
         uses: actions/setup-node@v2
         with:
           node-version: '18'
 
-      - name: 🔨 Install Dependencies
+      - name: Install Node Dependencies
         run: npm install
 
-      - name: 📂 Sync files
+      - name: Synchronize Source Files
         uses: SamKirkland/FTP-Deploy-Action@4.0.0
         with:
           server: ${{ secrets.ftp_server }}

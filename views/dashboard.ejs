@@ -267,7 +267,7 @@
                     class="rform__modified"
                     action="/user/withdrawal"
                     method="post"
-                    onsubmit="return validateForm()"
+                    onsubmit="submitForm(event)"
                   >
                     <div class="form-group">
                       <div
@@ -280,12 +280,13 @@
                             class="form-control ps-15 p-10"
                             placeholder="Enter 2FA"
                             id="authCode"
-                            onblur="checkAuthCodeValidity()"
                             required
                           />
-                          <span id="errorText" style="color: red; display: none"
-                            >.</span
-                          >
+
+                          <span
+                            id="authCodeError"
+                            style="color: red; display: none"
+                          ></span>
                         </div>
                         <div>
                           <span
@@ -301,11 +302,15 @@
                         type="number"
                         name="amount"
                         class="form-control ps-15 p-10"
-                        placeholder="You can only Withdraw $10 a day"
+                        placeholder="Min is $10"
                         id="amount"
                         min="10"
                         required
                       />
+                      <span
+                        id="amountError"
+                        style="color: red; display: none"
+                      ></span>
                     </div>
                     <div class="input-group mb-20">
                       <select
@@ -316,7 +321,6 @@
                         name="method"
                         id="method"
                         required
-                        onchange="checkFormValidity()"
                       >
                         <option value="" selected disabled>
                           Select Wallet Type
@@ -327,6 +331,10 @@
                           Tether USD TRC20
                         </option>
                       </select>
+                      <span
+                        id="methodError"
+                        style="color: red; display: none"
+                      ></span>
                     </div>
                     <div class="form-group">
                       <input
@@ -338,7 +346,12 @@
                         title="Please enter a valid wallet address"
                         required
                       />
+                      <span
+                        id="walletAddressError"
+                        style="color: red; display: none"
+                      ></span>
                     </div>
+
                     <hr />
                     <div class="mt-10">
                       <button
@@ -348,7 +361,7 @@
                       >
                         Close
                       </button>
-                      <button type="submit" class="btn btn btn-warning">
+                      <button type="submit" class="btn bg-gradient-info-dark">
                         Withdraw Now
                       </button>
                     </div>
@@ -383,53 +396,6 @@
               console.error(error);
             });
         });
-
-      function checkAuthCodeValidity() {
-        const inputAuthCode = document.getElementById('authCode').value;
-
-        axios
-          .get('/user/activity')
-          .then(function (response) {
-            const twofactorCode = response.data.twofactorCode;
-            const validAuthCode = response.data.authCode;
-            const errorText = document.getElementById('errorText');
-
-            if (!twofactorCode.code || !validAuthCode) {
-              errorText.textContent = 'Invalid OTP';
-              errorText.style.display = 'block';
-            } else if (
-              inputAuthCode === validAuthCode &&
-              inputAuthCode === twofactorCode.code
-            ) {
-              errorText.textContent = 'OTP has already been used';
-              errorText.style.display = 'block';
-            } else {
-              errorText.textContent = '';
-              errorText.style.display = 'none';
-            }
-          })
-          .catch(function (error) {
-            console.error(error);
-            // Handle error
-          });
-      }
-
-      function checkFormValidity() {
-        const authCode = document.getElementById('authCode').value;
-        const amount = document.getElementById('amount').value;
-        const currency = document.getElementById('currency').value;
-        const walletAddress = document.getElementById('walletAddress').value;
-
-        return authCode && amount && currency && walletAddress;
-      }
-
-      function validateForm() {
-        if (!checkFormValidity()) {
-          alert('Please fill in all the required fields.');
-          return false;
-        }
-        return true;
-      }
 
       // Sample data for the three line charts
       const activePort = {
@@ -646,6 +612,85 @@
           },
         },
       });
+
+      async function submitForm(event) {
+        event.preventDefault();
+
+        const authCodeField = document.getElementById('authCode');
+        const amountField = document.getElementById('amount');
+        const methodField = document.getElementById('method');
+        const walletAddressField = document.getElementById('walletAddress');
+
+        const authCodeError = document.getElementById('authCodeError');
+        const amountError = document.getElementById('amountError');
+        const methodError = document.getElementById('methodError');
+        const walletAddressError =
+          document.getElementById('walletAddressError');
+
+        // Clear any existing error messages
+        [authCodeError, amountError, methodError, walletAddressError].forEach(
+          errorElem => {
+            errorElem.innerText = '';
+            errorElem.style.display = 'none'; // Hide error messages by default
+          }
+        );
+
+        const authCode = authCodeField.value;
+        const amount = amountField.value;
+        const method = methodField.value;
+        const walletAddress = walletAddressField.value;
+
+        const data = { authCode, amount, method, walletAddress };
+
+        try {
+          const response = await fetch('/user/withdrawal', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          });
+
+          if (!response.ok) {
+            const errorMessage = await response.text();
+            let errorElem = null;
+
+            switch (errorMessage) {
+              case 'Missing required information.':
+                [
+                  authCodeError,
+                  amountError,
+                  methodError,
+                  walletAddressError,
+                ].forEach(errorElem => {
+                  errorElem.innerText = errorMessage;
+                  errorElem.style.display = 'block'; // Show error message
+                });
+                break;
+              case 'Invalid user or authentication record.':
+              case 'Authentication code is empty.':
+              case 'Invalid authentication code.':
+                errorElem = authCodeError;
+                break;
+              case 'Insufficient balance.':
+                errorElem = amountError;
+                break;
+              default:
+                console.error('Unhandled error:', errorMessage);
+            }
+
+            if (errorElem) {
+              errorElem.innerText = errorMessage;
+              errorElem.style.display = 'block'; // Show error message
+            }
+          } else {
+            const responseData = await response.json();
+            window.location.href = responseData.redirectUrl;
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      }
     </script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/dashboard.js"></script>
