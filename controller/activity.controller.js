@@ -81,8 +81,11 @@ const postWithdrawal = async (req, res) => {
     userId: id,
   });
 
-  // Check if the auth code exists and if the user ID matches
-  if (!authRecord || authRecord.userId !== id) {
+  console.log(` You logged id ${id}`);
+
+  console.log(`2Factor userid ${!authRecord || authRecord.userId} `);
+  //Check if the auth code exists and if the user ID matches
+  if (!authRecord || authRecord.userId.toString() !== id.toString()) {
     console.log('Invalid user or authentication record.'); // Log invalid user or authentication record
     return res.status(400).send('Invalid user or authentication record.');
   }
@@ -94,7 +97,7 @@ const postWithdrawal = async (req, res) => {
   }
 
   // Compare the authCode from the form with the stored code
-  if (authCode !== authRecord.code) {
+  if (Number(authCode) !== Number(authRecord.code)) {
     console.log('Invalid authentication code.'); // Log invalid authentication code
     return res.status(400).send('Invalid authentication code.');
   }
@@ -112,7 +115,7 @@ const postWithdrawal = async (req, res) => {
 
     // Find the buy portfolio
     const portfolioBuy = await buyPortfolio.findOne({
-      payout: 'daily',
+      payout: 'Daily Payout',
       balance: { $ne: 0 },
       userId: id,
     });
@@ -149,7 +152,8 @@ const postWithdrawal = async (req, res) => {
 
     // Save the TransactionsActivity document
     await transActivity.save();
-
+    // Delete the TwoFactor authentication record
+    await TwoFactor.deleteOne({ userId: id });
     // Redirect to user activity with a confirmation message
     console.log('Withdrawal successfully processed for user:', id); // Log successful processing
     res.status(200).json({
@@ -161,76 +165,6 @@ const postWithdrawal = async (req, res) => {
     res.status(500).send('An error occurred while processing the withdrawal.');
   }
 };
-
-// const postWithdrawal = async (req, res) => {
-//   const { id } = req.user;
-//   const { amount, walletAddress, authCode, method } = req.body;
-
-//   // Validate input data
-//   if (!amount || !walletAddress || !authCode || !method) {
-//     return res.status(400).send('Missing required information.');
-//   }
-
-//   try {
-//     // Generate a serial number
-//     function generateRandomNumber() {
-//       const min = 10000;
-//       const max = 99999;
-//       return Math.floor(Math.random() * (max - min + 1)) + min;
-//     }
-
-//     // Get the current date
-//     const date = new Date();
-
-//     // Find the buy portfolio
-//     const portfolioBuy = await buyPortfolio.findOne({
-//       payout: 'daily',
-//       balance: { $ne: 0 },
-//       userId: id,
-//     });
-
-//     // Check for sufficient balance
-//     if (portfolioBuy && portfolioBuy.balance < amount) {
-//       return res.status(400).send('Insufficient balance.');
-//     }
-
-//     let buyPortfolioId = portfolioBuy ? portfolioBuy._id : null;
-
-//     // Subtract `amount` from `buyPortfolio.balance`
-//     if (buyPortfolioId) {
-//       await buyPortfolio.updateOne(
-//         { _id: buyPortfolioId },
-//         { $inc: { balance: -amount } }
-//       );
-//     }
-
-//     // Create a new TransactionsActivity document
-//     const transActivity = new Transactions({
-//       sn: generateRandomNumber(),
-//       date: date,
-//       description: 'Withdrawal',
-//       buyPortfolioId: buyPortfolioId,
-//       status: buyPortfolioId ? 'Pending Approval' : 'Approved',
-//       amount: amount,
-//       authCode: authCode,
-//       walletAddress: walletAddress,
-//       method: method,
-//       userId: id,
-//     });
-
-//     // Save the TransactionsActivity document
-//     await transActivity.save();
-
-//     // Redirect to user activity with a confirmation message
-//     res.status(200).json({
-//       message: 'Withdrawal successfully processed.',
-//       redirectUrl: '/user/withdrawal-history',
-//     });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).send('An error occurred while processing the withdrawal.');
-//   }
-// };
 
 const getTransfer = (req, res) => {
   res.status(200).render('activities/transfer', {
