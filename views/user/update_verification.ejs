@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
+    <div class="wrapper">
+      <!-- <div id="loader"></div> -->
+
+      <header class="main-header">
+        <!-- header -->
+        <%- include('../layouts/header') %>
+        <style>
+          /* Your custom CSS styles go here */
+
+          /* Hide all steps by default */
+          .step {
+            display: none;
+          }
+
+          /* Show active step */
+          .step.active {
+            display: block;
+          }
+
+          .based__container {
+            position: relative;
+          }
+          .header__top1,
+          .header__top2,
+          .header__top3,
+          .header__top4 {
+            position: absolute;
+            border-radius: 5px;
+            font-size: 14px;
+
+            border-bottom: 2px solid #020080;
+            /* background-color: #46bc5c; */
+            display: block;
+            width: 30%;
+            color: #000000;
+            top: 0px;
+            padding: 15px 10px;
+          }
+
+          .header__topspan {
+            border: 2px solid #020080;
+            color: #040404;
+
+            padding: 10px 17px;
+            text-align: center;
+            border: 50%;
+          }
+        </style>
+      </header>
+
+      <aside class="main-sidebar" style="border-right: 1px solid #cbcbcb">
+        <!-- sidebar-->
+        <%- include('../layouts/aside') %>
+      </aside>
+
+      <div
+        class="content-wrapper bg-white"
+        style="border-radius: 0; border-top: 1px solid #cbcbcb"
+      >
+        <!-- Four-Step Form -->
+        <section class="content">
+          <div class="col-xl-8 col-8 offset-md-2">
+            <div class="box based__container">
+              <div class="box-body b-groove">
+                <form
+                  action="/user/update-verification"
+                  enctype="multipart/form-data"
+                  method="POST"
+                >
+                  <!-- Step 3: ID Verification -->
+                  <div class="step" id="step1">
+                    <h3 class="header__top3">
+                      <span class="header__topspan">3</span> ID Verification
+                    </h3>
+                    <section>
+                      <div class="form-group mt-60">
+                        <label for="idCardType" class="form-label"
+                          >Select Identity type:</label
+                        >
+                        <select
+                          class="form-select"
+                          id="idCardType"
+                          name="idCardType"
+                        >
+                          <option
+                            value="<%= updatedProfile.idCard.iDCardType %>"
+                          >
+                            <%= updatedProfile.idCard.iDCardType %>
+                          </option>
+                          <option value="National Identity Card">
+                            National Identity Card
+                          </option>
+                          <option value="Drivers License">
+                            Drivers License
+                          </option>
+                          <option value="Passport">Passport</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="cardNumber" class="form-label"
+                          >Identity Number
+                        </label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="cardNumber"
+                          name="cardNumber"
+                          placeholder="Identity Number"
+                          value="<%= updatedProfile.idCard.cardNumber %>"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="idCardImage" class="form-label"
+                          >Upload Identity Image</label
+                        >
+                        <input
+                          type="file"
+                          class="form-control"
+                          id="idCardImage"
+                          name="idCardImage"
+                          value="<%= updatedProfile.idCard.idCardImage %>"
+                          accept="image/*,.pdf"
+                        />
+                      </div>
+                    </section>
+                    <button
+                      type="button"
+                      onclick="nextStep(1)"
+                      class="btn bg-gradient-info-dark"
+                    >
+                      Next
+                    </button>
+                  </div>
+
+                  <div class="step" id="step2">
+                    <!-- Step 4: Proof of Address -->
+                    <h3 class="header__top4">
+                      <span class="header__topspan">2</span> Proof of Address
+                    </h3>
+                    <section>
+                      <div class="form-group mt-60">
+                        <label for="proofType" class="form-label"
+                          >Select Proof of Address:</label
+                        >
+                        <select
+                          class="form-select"
+                          id="proofType"
+                          name="proofType"
+                        >
+                          <option
+                            value="<%= updatedProfile.proofOfAddress.proofType %>"
+                          >
+                            <%= updatedProfile.proofOfAddress.proofType %>
+                          </option>
+                          <option value="Electricity bill">
+                            Electricity bill
+                          </option>
+                          <option value="Water bill">Water bill</option>
+                          <option value="Natural gas bill">
+                            Natural gas bill
+                          </option>
+                          <option value="Telephone bill">Telephone bill</option>
+                          <option value="Bank Statement">Bank Statement</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="proofImage" class="form-label"
+                          >Upload Proof Address Image</label
+                        >
+                        <input
+                          type="file"
+                          class="form-control"
+                          id="proofImage"
+                          name="proofImage"
+                          value="<%= updatedProfile.proofOfAddress.proofImage %>"
+                          accept="image/*,.pdf"
+                        />
+                      </div>
+                    </section>
+                    <button
+                      type="button"
+                      onclick="prevStep(2)"
+                      class="btn bg-secondary"
+                    >
+                      Previous
+                    </button>
+                    <button type="submit" class="btn bg-gradient-info-dark">
+                      Submit
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      let currentStep = 1;
+
+      function showStep(stepNumber) {
+        const steps = document.getElementsByClassName('step');
+        for (let i = 0; i < steps.length; i++) {
+          if (i + 1 === stepNumber) {
+            steps[i].classList.add('active');
+          } else {
+            steps[i].classList.remove('active');
+          }
+        }
+      }
+
+      function nextStep(stepNumber) {
+        if (stepNumber < 2) {
+          currentStep = stepNumber + 1;
+          showStep(currentStep);
+        }
+      }
+
+      function prevStep(stepNumber) {
+        if (stepNumber > 1) {
+          currentStep = stepNumber - 1;
+          showStep(currentStep);
+        }
+      }
+
+      // Show the first step initially
+      showStep(currentStep);
+    </script>
+
+    <footer class="main-footer bg-white">
+      <%- include('../layouts/footer') %>
+    </footer>
+  </body>
+</html>

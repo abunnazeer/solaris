@@ -21,7 +21,10 @@ const userRouter = require('./routes/user.routers');
 const portfolioRouter = require('./routes/portfolio.routers');
 const activity = require('./routes/activity.routers');
 const referral = require('./routes/referral.routers');
-const { protect } = require('./controller/auth.controller');
+const {
+  protect,
+  verificationMiddleWare,
+} = require('./controller/auth.controller');
 const config = require('./routes/config.router');
 const globalErrorHandler = require('./controller/error.controller');
 const AppError = require('./utils/appError');
@@ -106,6 +109,7 @@ app.use(
 );
 // app.use(updateCSP);
 // Import and use routers
+
 app.use('/user', userRouter);
 app.use('/portfolio', portfolioRouter);
 app.use('/user', activity);

@@ -7,7 +7,7 @@ const {
   getBizForm,
   getResetPasswordForm,
   getSuccess,
-  getRegOption,
+  getVerifyIndex,
   getChangePasswordForm,
   getTwoFactor,
 
@@ -19,6 +19,15 @@ const {
 
   getDetailsPage,
   activation,
+  getProfileVerification,
+  postProfileVerification,
+  uploadDocument,
+  getVerificationStatus,
+  getUpdateVerification,
+  postUpdateVerification,
+  getVerifyDetail,
+  postApproval,
+  postDisApproval,
 } = require('../controller/view.controller');
 
 const {
@@ -29,22 +38,19 @@ const {
   forgetPassword,
   resetPassword,
   isLoggedIn,
-  // activateAccount,
+
   verifyEmail,
-  // logout,
+
   logout,
   changePassword,
   postTwoFactor,
-  authenticator,
-  // getTwoFaCode,
-  // enableTwofactor,
-  // setupTwofactor,
+
   generateTwoFaCode,
-  // enableTwoFactor,
+
   setupTwoFactor,
-  verifyTwoFactor,
-  enable2FA,
+
   disable2FA,
+  verificationMiddleWare,
 } = require('../controller/auth.controller');
 const { updateProfile, uploadProfilePhoto } = require('./user.controller');
 // const { getMe } = require('./user.controller');
@@ -60,10 +66,10 @@ const {
   getVerification,
 } = require('../controller/view.user');
 
+// const uploadDocument = require('../middleware/uploadDocument');
 const router = express();
 
 router.use(isLoggedIn);
-
 router.patch(
   '/update-profile/:id',
   protect,
@@ -105,6 +111,27 @@ router.get('/activation', activation);
 router.get('/login', getLoginForm);
 router.get('/logout', logout);
 
+router.get('/profileVerification', protect, getProfileVerification);
+router.get('/update-verification', protect, getUpdateVerification);
+router.post(
+  '/update-verification',
+  protect,
+  uploadDocument,
+  postUpdateVerification
+);
+
+router.get('/verify-email/:token', verifyEmail);
+
+router.get('/reset-password/:token', getResetPasswordForm);
+
+router.post(
+  '/profile-verification',
+  protect,
+  uploadDocument,
+  postProfileVerification
+);
+router.get('/verification-status', protect, getVerificationStatus);
+router.use(protect, verificationMiddleWare);
 // router.get()
 // GET ME ROUTE
 router.get('/profile', protect, getProfile);
@@ -124,10 +151,16 @@ router.post('/2fa-disable', protect, disable2FA);
 router.post('/2fa-setup', protect, setupTwoFactor);
 router.post('/2fa-verify', login);
 router.get('/success', getSuccess);
-router.get('/registration', getRegOption);
 
-router.get('/reset-password/:token', getResetPasswordForm);
-router.get('/verify-email/:token', verifyEmail);
+router.get('/user-verify-status', protect, restrictTo('admin'), getVerifyIndex);
+router.post('/approve/:id', protect, restrictTo('admin'), postApproval);
+router.post('/disapprove/:id', protect, restrictTo('admin'), postDisApproval);
+router.get(
+  '/user-verify-detail/:id',
+  protect,
+  restrictTo('admin'),
+  getVerifyDetail
+);
 
 // PORTFOLIO
 router.get('/view-investments-portfolio', protect, getInvestPortfolio);

@@ -64,32 +64,68 @@ const getActivity = async (req, res, next) => {
     next(error);
   }
 };
-
 const postWithdrawal = async (req, res) => {
+  console.log('Processing withdrawal request for user:', req.user.id); // Log the start of the process
+
   const { id } = req.user;
   const { amount, walletAddress, authCode, method } = req.body;
+
+  // Validate input data
+  if (!amount || !walletAddress || !authCode || !method) {
+    console.log('Missing required information.'); // Log missing information error
+    return res.status(400).send('Missing required information.');
+  }
+
+  // Find the two-factor authentication code for the logged-in user
+  const authRecord = await TwoFactor.findOne({
+    userId: id,
+  });
+
+  // Check if the auth code exists and if the user ID matches
+  if (!authRecord || authRecord.userId !== id) {
+    console.log('Invalid user or authentication record.'); // Log invalid user or authentication record
+    return res.status(400).send('Invalid user or authentication record.');
+  }
+
+  // Check if the auth code is empty
+  if (!authRecord.code) {
+    console.log('Authentication code is empty.'); // Log empty authentication code
+    return res.status(400).send('Authentication code is empty.');
+  }
+
+  // Compare the authCode from the form with the stored code
+  if (authCode !== authRecord.code) {
+    console.log('Invalid authentication code.'); // Log invalid authentication code
+    return res.status(400).send('Invalid authentication code.');
+  }
+
   try {
-    // 1. Generate a serial number and assign it to `sn`
+    // Generate a serial number
     function generateRandomNumber() {
       const min = 10000;
       const max = 99999;
       return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    // 2. Get the current date and assign it to `date`
+    // Get the current date
     const date = new Date();
 
-    let buyPortfolioId = null;
+    // Find the buy portfolio
     const portfolioBuy = await buyPortfolio.findOne({
       payout: 'daily',
       balance: { $ne: 0 },
-      userId: id, // Add this condition to match the user's portfolio
+      userId: id,
     });
-    if (portfolioBuy) {
-      buyPortfolioId = portfolioBuy._id;
+
+    // Check for sufficient balance
+    if (portfolioBuy && portfolioBuy.balance < amount) {
+      console.log('Insufficient balance.'); // Log insufficient balance
+      return res.status(400).send('Insufficient balance.');
     }
 
-    // 4. Subtract `amount` from `buyPortfolio.balance`
+    let buyPortfolioId = portfolioBuy ? portfolioBuy._id : null;
+
+    // Subtract `amount` from `buyPortfolio.balance`
     if (buyPortfolioId) {
       await buyPortfolio.updateOne(
         { _id: buyPortfolioId },
@@ -97,7 +133,7 @@ const postWithdrawal = async (req, res) => {
       );
     }
 
-    // 5. Create a new TransactionsActivity document
+    // Create a new TransactionsActivity document
     const transActivity = new Transactions({
       sn: generateRandomNumber(),
       date: date,
@@ -114,13 +150,87 @@ const postWithdrawal = async (req, res) => {
     // Save the TransactionsActivity document
     await transActivity.save();
 
-    // Redirect to user activity after successful withdrawal
-    res.redirect('/user/withdrawal-history');
+    // Redirect to user activity with a confirmation message
+    console.log('Withdrawal successfully processed for user:', id); // Log successful processing
+    res.status(200).json({
+      message: 'Withdrawal successfully processed.',
+      redirectUrl: '/user/withdrawal-history',
+    });
   } catch (err) {
-    console.log(err);
-    // Handle error
+    console.error('An error occurred while processing the withdrawal:', err); // Log the error with details
+    res.status(500).send('An error occurred while processing the withdrawal.');
   }
 };
+
+// const postWithdrawal = async (req, res) => {
+//   const { id } = req.user;
+//   const { amount, walletAddress, authCode, method } = req.body;
+
+//   // Validate input data
+//   if (!amount || !walletAddress || !authCode || !method) {
+//     return res.status(400).send('Missing required information.');
+//   }
+
+//   try {
+//     // Generate a serial number
+//     function generateRandomNumber() {
+//       const min = 10000;
+//       const max = 99999;
+//       return Math.floor(Math.random() * (max - min + 1)) + min;
+//     }
+
+//     // Get the current date
+//     const date = new Date();
+
+//     // Find the buy portfolio
+//     const portfolioBuy = await buyPortfolio.findOne({
+//       payout: 'daily',
+//       balance: { $ne: 0 },
+//       userId: id,
+//     });
+
+//     // Check for sufficient balance
+//     if (portfolioBuy && portfolioBuy.balance < amount) {
+//       return res.status(400).send('Insufficient balance.');
+//     }
+
+//     let buyPortfolioId = portfolioBuy ? portfolioBuy._id : null;
+
+//     // Subtract `amount` from `buyPortfolio.balance`
+//     if (buyPortfolioId) {
+//       await buyPortfolio.updateOne(
+//         { _id: buyPortfolioId },
+//         { $inc: { balance: -amount } }
+//       );
+//     }
+
+//     // Create a new TransactionsActivity document
+//     const transActivity = new Transactions({
+//       sn: generateRandomNumber(),
+//       date: date,
+//       description: 'Withdrawal',
+//       buyPortfolioId: buyPortfolioId,
+//       status: buyPortfolioId ? 'Pending Approval' : 'Approved',
+//       amount: amount,
+//       authCode: authCode,
+//       walletAddress: walletAddress,
+//       method: method,
+//       userId: id,
+//     });
+
+//     // Save the TransactionsActivity document
+//     await transActivity.save();
+
+//     // Redirect to user activity with a confirmation message
+//     res.status(200).json({
+//       message: 'Withdrawal successfully processed.',
+//       redirectUrl: '/user/withdrawal-history',
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send('An error occurred while processing the withdrawal.');
+//   }
+// };
 
 const getTransfer = (req, res) => {
   res.status(200).render('activities/transfer', {

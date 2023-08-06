@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
+    <div class="wrapper">
+      <!-- <div id="loader"></div> -->
+
+      <header class="main-header">
+        <!-- header -->
+        <%- include('../layouts/header') %>
+        <style>
+          /* Your custom CSS styles go here */
+
+          /* Hide all steps by default */
+          .step {
+            display: none;
+          }
+
+          /* Show active step */
+          .step.active {
+            display: block;
+          }
+
+          .based__container {
+            position: relative;
+          }
+          .header__top1,
+          .header__top2,
+          .header__top3,
+          .header__top4 {
+            position: absolute;
+            border-radius: 5px;
+            font-size: 14px;
+
+            border-bottom: 2px solid #020080;
+            /* background-color: #46bc5c; */
+            display: inline-block;
+            color: #000000;
+            top: 0px;
+            padding: 15px 10px;
+          }
+
+          .header__topspan {
+            border: 2px solid #020080;
+            color: #040404;
+
+            padding: 10px 17px;
+            text-align: center;
+            border: 50%;
+          }
+        </style>
+      </header>
+
+      <aside class="main-sidebar" style="border-right: 1px solid #cbcbcb">
+        <!-- sidebar-->
+        <%- include('../layouts/aside') %>
+      </aside>
+
+      <div
+        class="content-wrapper bg-white"
+        style="border-radius: 0; border-top: 1px solid #cbcbcb"
+      >
+        <div class="container mt-30">
+          <img
+            src="/images/header/Withdrawal_history_Web.png"
+            alt="referral"
+            srcset=""
+          />
+
+          <!-- Four-Step Form -->
+          <section class="content">
+            <div class="col-xl-8 col-8">
+              <div class="box based__container">
+                <div class="box-body">
+                  <form
+                    action="/user/profile-verification"
+                    method="post"
+                    enctype="multipart/form-data"
+                  >
+                    <!-- Step 1: Personal Information -->
+
+                    <div class="form-group mt-60">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="firstName"
+                        name="firstName"
+                        placeholder="First Name"
+                        required
+                      />
+                    </div>
+
+                    <div class="form-group">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="middleName"
+                        name="middleName"
+                        placeholder="Middle Name"
+                        required
+                      />
+                    </div>
+                    <div class="form-group">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="lastName"
+                        name="lastName"
+                        placeholder="Last Name"
+                        required
+                      />
+                    </div>
+
+                    <div class="form-group">
+                      <input
+                        type="tel"
+                        class="form-control"
+                        id="phoneNumber"
+                        name="phoneNumber"
+                        placeholder="Phone Number"
+                        required
+                      />
+                    </div>
+
+                    <div class="form-group mt-60">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="addressStreet"
+                        name="addressStreet"
+                        placeholder="Your Address"
+                      />
+                    </div>
+                    <div class="form-group">
+                      <select
+                        class="form-select"
+                        id="addressCountry"
+                        name="addressCountry"
+                      >
+                        <option value="">Select Country</option>
+                        <option value="Amsterdam">India</option>
+                        <option value="Berlin">USA</option>
+                        <option value="Frankfurt">Dubai</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="addressState"
+                        name="addressState"
+                        placeholder="Your State"
+                      />
+                    </div>
+
+                    <div class="form-group">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="addressCity"
+                        name="addressCity"
+                        placeholder="Your City"
+                      />
+                    </div>
+
+                    <div class="form-group">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="addressZipCode"
+                        name="addressZipCode"
+                        placeholder="Zip code"
+                      />
+                    </div>
+
+                    <div class="form-group mt-60">
+                      <select
+                        class="form-select"
+                        id="idCardType"
+                        name="idCardType"
+                      >
+                        <option value="">Select City</option>
+                        <option value="National Identity Card">
+                          National Identity Card
+                        </option>
+                        <option value="Drivers License">Drivers License</option>
+                        <option value="Passport">Passport</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="idCardNumber"
+                        name="idCardNumber"
+                        placeholder="Identity Number"
+                      />
+                    </div>
+
+                    <div class="form-group">
+                      <input
+                        type="file"
+                        class="form-control"
+                        id="idCardImage"
+                        name="idCardImage"
+                      />
+                    </div>
+
+                    <div class="form-group mt-60">
+                      <select
+                        class="form-select"
+                        id="proofType"
+                        name="proofType"
+                      >
+                        <option value="">Select</option>
+                        <option value="Electricity bill">
+                          Electricity bill
+                        </option>
+                        <option value="Water bill">Water bill</option>
+                        <option value="Natural gas bill">
+                          Natural gas bill
+                        </option>
+                        <option value="Telephone bill">Telephone bill</option>
+                        <option value="Bank Statement">Bank Statement</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <input
+                        type="file"
+                        class="form-control"
+                        id="proofImage"
+                        name="proofImage"
+                      />
+                    </div>
+
+                    <button type="submit" class="btn bg-gradient-info-dark">
+                      Submit
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+      <!-- 
+      <script>
+        let currentStep = 1;
+
+        function showStep(stepNumber) {
+          const steps = document.getElementsByClassName('step');
+          for (let i = 0; i < steps.length; i++) {
+            if (i + 1 === stepNumber) {
+              steps[i].classList.add('active');
+            } else {
+              steps[i].classList.remove('active');
+            }
+          }
+        }
+
+        function nextStep(stepNumber) {
+          if (stepNumber < 4) {
+            currentStep = stepNumber + 1;
+            showStep(currentStep);
+          }
+        }
+
+        function prevStep(stepNumber) {
+          if (stepNumber > 1) {
+            currentStep = stepNumber - 1;
+            showStep(currentStep);
+          }
+        }
+
+        // Show the first step initially
+        showStep(currentStep);
+      </script> -->
+    </div>
+
+    <footer class="main-footer bg-white">
+      <%- include('../layouts/footer') %>
+    </footer>
+  </body>
+</html>
