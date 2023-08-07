@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <style>
+      .qr__image {
+        width: 200px;
+        height: 200px;
+      }
+    </style>
+  </head>
+  <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
+    <div class="wrapper">
+      <header class="main-header">
+        <!-- header-->
+        <%- include('../layouts/header') %>
+        <style></style>
+      </header>
+
+      <aside class="main-sidebar" style="border-right: 1px solid #cbcbcb">
+        <!-- sidebar-->
+        <%- include('../layouts/aside') %>
+      </aside>
+
+      <div
+        class="content-wrapper bg-white"
+        style="border-radius: 0; border-top: 1px solid #cbcbcb"
+      >
+        <div class="container mt-30">
+          <img
+            src="/images/header/Withdrawal_request_Web.png"
+            alt="refaral"
+            srcset=""
+          />
+          <section class="content">
+            <div class="col-10 offset-md-1">
+              <div class="mt-20" style="border: 1px solid #cbcbcb">
+                <div class="card-body">
+                  <!-- content herwe -->
+                  <div class="row">
+                    <div class="col-lg-6 col-12">
+                      <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                          <h5>
+                            <strong>Amount to pay:</strong>
+                          </h5>
+                          <h2>$<%= activities.amount%></h2>
+                        </li>
+                        <li class="list-group-item">
+                          <h5><strong>Currency type:</strong></h5>
+                          <h2><%= activities.method%></h2>
+                        </li>
+
+                        <li class="list-group-item">
+                          <h5><strong>In crypto:</strong></h5>
+                          <h2><%= activities.cryptoAmount%></h2>
+                        </li>
+
+                        <li class="list-group-item">
+                          <h5><strong>Wallet Address:</strong></h5>
+                          <div
+                            class="d-md-flex justify-content-between align-items-center"
+                          >
+                            <div class="col-10 col-xl-10">
+                              <input
+                                id="walletAddressInput"
+                                type="text"
+                                value="<%= activities.walletAddress %>"
+                                readonly
+                                data-bts-button-down-class="btn btn-secondary"
+                                data-bts-button-up-class="btn btn-secondary"
+                                class="form-control"
+                                style="
+                                  display: block;
+                                  height: 42px;
+                                  margin-top: 18px;
+                                "
+                              />
+                            </div>
+                            <div>
+                              <span
+                                class="input-group-addon bootstrap-touchspin-postfix"
+                                style="display: none"
+                              >
+                              </span>
+                              <span class="input-group-btn"
+                                ><button
+                                  class="btn btn-secondary bootstrap-touchspin-up mt-10"
+                                  type="button"
+                                  onclick="copyToClipboard()"
+                                >
+                                  <i data-feather="copy"></i></button
+                              ></span>
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="col-lg-6 col-12">
+                      <div class="card p-50 text-center">
+                        <div>
+                          <div class="col-xl-12 col-12 text-center center">
+                            <img
+                              src="<%= qrcodeDataURL %>"
+                              alt="Wallet Address QR Code"
+                              class="qr__image"
+                            />
+                          </div>
+                          <div class="mt-10">
+                            <form
+                              action="/user/approve-payment/<%=activities._id%>"
+                              method="post"
+                              style="display: inline"
+                            >
+                              <button
+                                type="submit"
+                                class="btn btn bg-gradient-info-dark"
+                              >
+                                Approve Payment
+                              </button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- end card-->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+      <footer class="main-footer bg-white">
+        <!-- footer-->
+        <%- include('../layouts/footer') %>
+        <script>
+          function copyToClipboard() {
+            var walletAddressInput =
+              document.getElementById('walletAddressInput');
+            walletAddressInput.select();
+            document.execCommand('copy');
+          }
+        </script>
+      </footer>
+    </div>
+  </body>
+</html>

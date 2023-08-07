@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= title %></title>
+  </head>
+  <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
+    <div class="wrapper">
+      <header class="main-header">
+        <!-- header-->
+        <%- include('../layouts/header') %>
+      </header>
+
+      <aside class="main-sidebar" style="border-right: 1px solid #cbcbcb">
+        <!-- sidebar-->
+        <%- include('../layouts/aside') %>
+      </aside>
+
+      <div
+        class="content-wrapper bg-white"
+        style="border-radius: 0; border-top: 1px solid #cbcbcb"
+      >
+        <div class="container mt-30">
+          <img
+            src="/images/header/Withdrawal_history_Web.png"
+            alt="refaral"
+            srcset=""
+          />
+          <section class="content">
+            <h2 class="title fw-600"><%= title %></h2>
+            <div class="col-12 col-xl-12">
+              <div class="mt-20" style="border: 1px solid #cbcbcb">
+                <div class="card-body">
+                  <table class="table table-striped b-1 border-gray-700">
+                    <thead class="bg-dark">
+                      <tr class="p-10">
+                        <th style="width: 20%; border-right: #fff2f2 1px solid">
+                          Date
+                        </th>
+                        <th style="width: 9%; border-right: #fff2f2 1px solid">
+                          Method
+                        </th>
+                        <th style="width: 11%; border-right: #fff2f2 1px solid">
+                          Amount Paid
+                        </th>
+                        <th style="width: 42%; border-right: #fff2f2 1px solid">
+                          Wallet Address
+                        </th>
+                        <th style="width: 8%; border-right: #fff2f2 1px solid">
+                          Status
+                        </th>
+                        <th style="width: 8%; border-right: #fff2f2 1px solid">
+                          Action
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% let count = 0; %> <% if (activities.length > 0) { %> <%
+                      activities.forEach(activity => { %> <% if (activity.status
+                      === 'Pending Approval' || activity.status === 'Approved')
+                      { %> <% count++; %>
+                      <tr>
+                        <td>
+                          <%= new Date(activity.date).toLocaleString('en-US', {
+                          weekday: 'short', month: 'short', day: 'numeric',
+                          year: 'numeric', hour: 'numeric', minute: 'numeric',
+                          hour12: true }) %>
+                        </td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= activity.method %>
+                        </td>
+                        <td>$<%= activity.amount %></td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= activity.walletAddress %>
+                        </td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <% if (activity.status === 'Approved') { %>
+                          <span class="badge badge-success">Approved</span>
+                          <% } else if (activity.status === 'Pending Approval')
+                          { %>
+                          <span class="badge badge-danger"
+                            >Pending Approval</span
+                          >
+                          <% } %>
+                        </td>
+                        <td class="table-action min-w-100">
+                          <a
+                            href="/user/verify-details/<%= activity._id %>"
+                            class="text-fade hover-primary"
+                          >
+                            <i data-feather="eye" style="color: #308345"></i>
+                          </a>
+                        </td>
+                      </tr>
+                      <% } %> <% }); %> <% } else { %>
+                      <tr>
+                        <td colspan="6">No records found</td>
+                      </tr>
+                      <% } %>
+                    </tbody>
+                  </table>
+
+                  <% if (count >= 9 && totalPages > 1) { %>
+                  <div
+                    class="dataTables_paginate paging_simple_numbers align-right"
+                    id="example_paginate"
+                  >
+                    <% if (totalPages > 1) { %>
+                    <ul class="pagination mb-0 mt-20">
+                      <% if (currentPage > 1) { %>
+                      <li class="paginate_button page-item previous">
+                        <a
+                          href="?page=<%= currentPage - 1 %>&limit=<%= limit %>"
+                          class="page-link"
+                          >Previous</a
+                        >
+                      </li>
+                      <% } %> <% for (let i = 1; i <= 4 && i <= totalPages; i++)
+                      { %>
+                      <!-- Adjusted the for loop condition -->
+                      <% if (i === currentPage) { %>
+                      <li class="paginate_button page-item active">
+                        <a href="#" class="page-link"><%= i %></a>
+                      </li>
+                      <% } else { %>
+                      <li class="paginate_button page-item">
+                        <a
+                          href="?page=<%= i %>&limit=<%= limit %>"
+                          class="page-link"
+                          ><%= i %></a
+                        >
+                      </li>
+                      <% } %> <% } %> <% if (currentPage < totalPages) { %>
+                      <li class="paginate_button page-item next">
+                        <a
+                          href="?page=<%= currentPage + 1 %>&limit=<%= limit %>"
+                          class="page-link"
+                          >Next</a
+                        >
+                      </li>
+                      <% } %>
+                    </ul>
+                    <% } %>
+                  </div>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <footer class="main-footer bg-white">
+        <!-- footer-->
+        <%- include('../layouts/footer') %>
+      </footer>
+    </div>
+  </body>
+</html>
