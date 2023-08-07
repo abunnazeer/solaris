@@ -8,6 +8,9 @@ const {
   getWithdrawalRequest,
   getwithdrawalHistory,
   getwithdrawalStatus,
+  getVerifyWithdrawal,
+  getVerifyDetails,
+  postVerifyWithdrawal,
 } = require('../controller/activity.controller');
 const {
   restrictTo,
@@ -30,5 +33,23 @@ router.get('/transfer', protect, getTransfer);
 router.get('/withdrawal-request', protect, getWithdrawalRequest);
 router.get('/withdrawal-history', protect, getwithdrawalHistory);
 router.get('/withdrawal-status', protect, getwithdrawalStatus);
+router.get(
+  '/verify-withdrawal',
+  protect,
+  restrictTo('admin'),
+  getVerifyWithdrawal
+);
+router.get(
+  '/verify-details/:id',
+  protect,
+  restrictTo('admin'),
+  getVerifyDetails
+);
+router.post(
+  '/approve-payment/:paramId',
+  protect,
+  restrictTo('admin'),
+  postVerifyWithdrawal
+);
 // router.delete('/update-profile/:id', protect, updateProfile);
 module.exports = router;

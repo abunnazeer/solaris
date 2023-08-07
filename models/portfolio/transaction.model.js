@@ -13,6 +13,9 @@ const transactionsActivitySchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  cryptoAmount: {
+    type: Number,
+  },
   authCode: {
     type: Number,
     required: true,
