@@ -59,11 +59,10 @@
                       </tr>
                       <% } else { %>
                       <tr>
-                        <td style="border-right: #d1d1d1 1px solid">
-                          <%= item.userProfile.firstName +
-                          item.userProfile.middleName +
-                          item.userProfile.lastName %>
-                        </td>
+                       <td style="border-right: #d1d1d1 1px solid">
+  <%= item.userProfile.firstName + ' ' + item.userProfile.lastName %>
+</td>
+
                         <td style="border-right: #d1d1d1 1px solid">
                           <%= item.userDetails.portfolioName %>
                         </td>

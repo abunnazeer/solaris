@@ -14,6 +14,11 @@ const userProfileSchema = new mongoose.Schema({
     type: String,
     required: [true, 'please provide your last name'],
   },
+  gender: {
+    type: String,
+    required: [true, 'please specify your gender'],
+    enum: ['male', 'female', 'other'], // Optional: restrict to specific values
+  },
   profilePicture: {
     type: String,
     required: [true, 'please add profile photo'],
@@ -40,7 +45,6 @@ const userProfileSchema = new mongoose.Schema({
       type: String,
       required: [true, 'please specify the type of ID card'],
     },
-
     idCardImage: {
       type: String,
       required: [true, 'please upload an image of your ID card'],

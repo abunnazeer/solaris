@@ -83,62 +83,68 @@
                         <span class="header__topspan">1</span> Personal
                         Information
                       </h3>
-                      <section>
-                        <div class="form-group mt-60">
-                          <label for="firstName" class="form-label"
-                            >First Name :</label
-                          >
-                          <input
-                            type="text"
-                            class="form-control"
-                            id="firstName"
-                            name="firstName"
-                            placeholder="First Name"
-                            required
-                          />
-                        </div>
+                    <section>
+  <div class="form-group mt-60">
+    <label for="firstName" class="form-label">First Name :</label>
+    <input
+      type="text"
+      class="form-control"
+      id="firstName"
+      name="firstName"
+      placeholder="First Name"
+      required
+    />
+  </div>
 
-                        <div class="form-group">
-                          <label for="middleName" class="form-label"
-                            >Middle Name :</label
-                          >
-                          <input
-                            type="text"
-                            class="form-control"
-                            id="middleName"
-                            name="middleName"
-                            placeholder="Middle Name"
-                            required
-                          />
-                        </div>
-                        <div class="form-group">
-                          <label for="lastName" class="form-label"
-                            >Last Name :</label
-                          >
-                          <input
-                            type="text"
-                            class="form-control"
-                            id="lastName"
-                            name="lastName"
-                            placeholder="Last Name"
-                            required
-                          />
-                        </div>
+  <div class="form-group">
+    <label for="middleName" class="form-label">Middle Name :</label>
+    <input
+      type="text"
+      class="form-control"
+      id="middleName"
+      name="middleName"
+      placeholder="Middle Name"
+      required
+    />
+  </div>
 
-                        <div class="form-group">
-                          <label for="phoneNumber" class="form-label"
-                            >Phone Number :</label
-                          >
-                          <input
-                            type="tel"
-                            class="form-control"
-                            id="phoneNumber"
-                            name="phoneNumber"
-                            placeholder="Phone Number"
-                            required
-                          />
-                        </div>
-                      </section>
+  <div class="form-group">
+    <label for="lastName" class="form-label">Last Name :</label>
+    <input
+      type="text"
+      class="form-control"
+      id="lastName"
+      name="lastName"
+      placeholder="Last Name"
+      required
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="gender" class="form-label">Gender :</label>
+
+      <select  class="form-control select2 select2-hidden-accessible" id="gender" name="gender" style="width: 100%;" tabindex="-1" aria-hidden="true">
+    
+      <option value="" disabled selected>Select Gender</option>
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+      <option value="other">Other</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="phoneNumber" class="form-label">Phone Number :</label>
+    <input
+      type="tel"
+      class="form-control"
+      id="phoneNumber"
+      name="phoneNumber"
+      placeholder="Phone Number"
+      required
+    />
+  </div>
+</section>
+
                       <button
                         type="button"
                         onclick="nextStep(1)"
@@ -168,19 +174,11 @@
                           />
                         </div>
                         <div class="form-group">
-                          <label for="addressCountry" class="form-label"
-                            >Country :</label
-                          >
-                          <select
-                            class="form-select"
-                            id="addressCountry"
-                            name="addressCountry"
-                          >
-                            <option value="">Select Country</option>
-                            <option value="Amsterdam">India</option>
-                            <option value="Berlin">USA</option>
-                            <option value="Frankfurt">Dubai</option>
-                          </select>
+                          <label for="country" class="form-label">Country</label>
+      <select  class="form-control select2 select2-hidden-accessible" id="country" name="country" style="width: 100%;" tabindex="-1" aria-hidden="true">
+        <option value="" disabled selected> Select Country</option>
+        <!-- JavaScript code to populate the options with all countries -->
+      </select>
                         </div>
                         <div class="form-group">
                           <label for="addressState" class="form-label"
@@ -247,12 +245,9 @@
                           <label for="idCardType" class="form-label"
                             >Select Identity type :</label
                           >
-                          <select
-                            class="form-select"
-                            id="idCardType"
-                            name="idCardType"
-                          >
-                            <option value="">Select City</option>
+                            <select  class="form-control select2 select2-hidden-accessible" id="idCardType" name="idCardType" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                          
+                            <option value="">Select Identity type</option>
                             <option value="National Identity Card">
                               National Identity Card
                             </option>
@@ -314,12 +309,8 @@
                           <label for="proofType" class="form-label"
                             >Select Proof of Address :</label
                           >
-                          <select
-                            class="form-select"
-                            id="proofType"
-                            name="proofType"
-                          >
-                            <option value="">Select</option>
+                           <select  class="form-control select2 select2-hidden-accessible" id="proofType" name="proofType" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                            <option value="">Select Proof of Address</option>
                             <option value="Electricity bill">
                               Electricity bill
                             </option>
@@ -398,6 +389,31 @@
 
         // Show the first step initially
         showStep(currentStep);
+          async function fetchAllCountries() {
+      try {
+        const response = await fetch('https://restcountries.com/v2/all');
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Error fetching countries:', error);
+        return [];
+      }
+    }
+
+    // Function to populate the country select options
+    async function populateCountrySelect() {
+      const countrySelect = document.getElementById('country');
+      const countries = await fetchAllCountries();
+
+      countries.forEach(country => {
+        const option = document.createElement('option');
+        option.textContent = country.name;
+        countrySelect.appendChild(option);
+      });
+    }
+
+    // Call the function to populate the country select on page load
+    window.addEventListener('load', populateCountrySelect);
       </script>
     </div>
 

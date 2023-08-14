@@ -141,10 +141,12 @@
                       <div class="card p-100 text-center">
                         <div>
                           <h4>Account Balance:</h4>
-                          <h1>$<%= portfolioBuy.balance.toLocaleString() %></h1>
+                          <h1>
+                            $<%= portfolioBuy && portfolioBuy.balance ?
+                            portfolioBuy.balance.toLocaleString() : '0' %>
+                          </h1>
                         </div>
                       </div>
-
                       <!-- end card-->
                     </div>
                   </div>
