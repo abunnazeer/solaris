@@ -9,8 +9,7 @@
         <!-- header -->
         <%- include('../layouts/header') %>
       </header>
-
-      <aside class="main-sidebar" style="border-right: 1px solid #cbcbcb">
+    <aside class="main-sidebar" style="border-right: 1px solid #cbcbcb">
         <!-- sidebar-->
         <%- include('../layouts/aside') %>
       </aside>
@@ -19,12 +18,16 @@
         class="content-wrapper bg-white"
         style="border-radius: 0; border-top: 1px solid #cbcbcb"
       >
-        <div class="container">
-          <!-- Main content -->
+        <div class="container mt-30">
+          <img
+            src="/images/header/active_Investment Portfolio_Web.png"
+            alt="refaral"
+            srcset=""
+          />
           <section class="content">
             <% let activePortfolioFound = false; %> <%
             buyPortfolios.forEach(function(buyPortfolio) { %> <% if
-            (buyPortfolio.status !== 'inactive') { %> <% activePortfolioFound =
+            (buyPortfolio.status === 'active') { %> <% activePortfolioFound =
             true; %>
             <div class="active__portfolio">
               <div class="row">
@@ -36,7 +39,7 @@
                       </h3>
                       <p class="text-center mb-10">
                         <span
-                          class="badge <%= buyPortfolio.status === 'inactive' ? 'bg-warning-light' : 'bg-success-light' %>"
+                          class="badge bg-success-light"
                         >
                           <%= buyPortfolio.status %>
                         </span>
@@ -153,7 +156,8 @@
               </div>
             </div>
             <% } %> <% }); %> <% if (!activePortfolioFound) { %>
-            <h3>No portfolio found</h3>
+            
+            <h3>No Active portfolio found</h3>
             <% } %>
           </section>
         </div>
@@ -164,8 +168,6 @@
         <%- include('../layouts/footer') %>
       </footer>
 
-      <!-- Vendor JS -->
-      <!-- Vendor JS -->
     </div>
   </body>
 </html>

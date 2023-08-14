@@ -12,7 +12,7 @@ const buyPortfolioSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['active', 'inactive'],
+    enum: ['active', 'inactive', 'expired'],
     default: 'inactive',
   },
   amount: {

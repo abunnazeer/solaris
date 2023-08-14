@@ -33,6 +33,10 @@
 				
                       <h3><strong>ID Type:</strong> <%= getDetail.idCard.iDCardType%></h3>
                                  <h3> <strong>ID No:</strong> <%= getDetail.idCard.cardNumber%></h3>
+                                 <h3> <strong>First Name:</strong> <%= getDetail.firstName%></h3>
+                                 <h3> <strong>Middle Name:</strong> <%= getDetail.middleName%></h3>
+                                 <h3> <strong>Last Name:</strong> <%= getDetail.lastName%></h3>
+                                 <h3> <strong>Gender:</strong> <%= getDetail.gender%></h3>
                                 <% if(getDetail.idCard.idCardImage.endsWith('.pdf')) { %>
                                     <embed src="/profile/<%= getDetail.idCard.idCardImage %>" type="application/pdf" width="100%" height="700%" style="height: 50vh;"></embed>
                                 <% } else { %>
@@ -49,7 +53,7 @@
 				  <div class="box-body">
                     
                     <h3><strong>Proof of Address Type:</strong> <%= getDetail.proofOfAddress.proofType%></h3>
-			
+			 <h3> <strong>Address:</strong> <%= getDetail.address.street%></h3>
                                 <% if(getDetail.proofOfAddress.proofImage.endsWith('.pdf')) { %>
                                     <embed src="/profile/<%= getDetail.proofOfAddress.proofImage %>" type="application/pdf" width="100%" height="700%" style="height: 50vh;">></embed>
                                 <% } else { %>

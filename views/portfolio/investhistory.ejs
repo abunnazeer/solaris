@@ -1,58 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
- 
-  
+  <head>
+    <title><%= title %></title>
+  </head>
   <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
     <div class="wrapper">
-      <!-- <div id="loader"></div> -->
-
       <header class="main-header">
         <!-- header -->
         <%- include('../layouts/header') %>
       </header>
-
-      <!-- Left side column. contains the logo and sidebar -->
-      <aside class="main-sidebar">
+    <aside class="main-sidebar" style="border-right: 1px solid #cbcbcb">
         <!-- sidebar-->
         <%- include('../layouts/aside') %>
       </aside>
 
-      <!-- Content Wrapper. Contains page content -->
-      <div class="content-wrapper">
-        <div class="container-full">
-        
+      <div
+        class="content-wrapper bg-white"
+        style="border-radius: 0; border-top: 1px solid #cbcbcb"
+      >
+        <div class="container mt-30">
+          <img
+            src="/images/header/Exp_Investment Portfolio_Web.png"
+            alt="refaral"
+            srcset=""
+          />
+          <section class="content">
+            <% let activePortfolioFound = false; %> <%
+            buyPortfolios.forEach(function(buyPortfolio) { %> <% if
+            (buyPortfolio.status === 'expired') { %> <% activePortfolioFound =
+            true; %>
+            <div class="active__portfolio">
+              <div class="row">
+                <div class="col-xl-8 col-lg-7">
+                  <div class="card b-groove">
+                    <div class="card-body">
+                      <h3 class="text-center mb-2">
+                        <%= buyPortfolio.portfolioName %>
+                      </h3>
+                      <p class="text-center mb-10">
+                        <span
+                          class="badge bg-secondary"
+                        >
+                          <%= buyPortfolio.status %>
+                        </span>
+                      </p>
+                      <div class="row">
+                        <div class="col-12 col-md-4 mt-20">
+                          <div class="text-center">
+                            <div class="">
+                              <p class="fs-17">$<%= buyPortfolio.amount %></p>
+                              <p class="fw-500 fs-18">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                AMOUNT INVESTED
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-12 col-md-4 mt-20">
+                          <div class="text-center">
+                            <div class="box-body py-5">
+                              <p class="fs-17"><%= buyPortfolio.payout %></p>
+                              <p class="fw-500 fs-18">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                PAYOUT
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-12 col-md-4 mt-20">
+                          <div class="text-center">
+                            <div class="box-body py-5">
+                              <p class="fs-17">12 months</p>
+                              <p class="fw-500 fs-18">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                DURATION
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="mt-30">
+                          <div class="row show-grid mb-5">
+                            <div class="col-md-4"></div>
+                            <div class="col-md-8">
+                              <button
+                                type="button"
+                                class="waves-effect waves-light btn btn-success mb-5"
+                                style="margin-right: 30px"
+                                disabled
+                              >
+                                Re-Invest
+                              </button>
 
-          	<!-- Main content -->
-		<section class="content">
-			<div class="row">
-				
-
-				<div class="col-xl-12 col-lg-7">
-					<div class="card">
-						<div class="card-body">
-							<h1>Investments History </h1>
-					
-
-						
-						</div> <!-- end card body -->
-					</div> <!-- end card -->
-				</div> <!-- end col -->
-			</div>
-			<!-- end row-->
-
-		</section>
-		<!-- /.content -->
+                              <button
+                                type="button"
+                                class="waves-effect waves-light btn btn-warning mb-5"
+                                disabled
+                              >
+                                Make Withdrawal
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-xl-4">
+                  <div class="box b-groove">
+                    <div
+                      class="box-body mt-0 mb-0"
+                      style="padding-top: 52px; padding-bottom: 50px"
+                    >
+                      <h3 class="text-center">-</h3>
+                      <hr />
+                      <div class="d-flex align-items-center mb-10">
+                        <div
+                          class="me-15 bg-lightest h-50 w-50 l-h-60 rounded100 text-center"
+                        >
+                          S
+                        </div>
+                        <div class="d-flex flex-column">
+                          <h4 class="text-dark mb-1 fs-16">
+                            Open date:
+                            <span>
+                              <%=
+                              buyPortfolio.dateOfPurchase.toLocaleDateString('en-US',
+                              { weekday: 'short', month: 'short', day:
+                              'numeric', year: 'numeric' }) %>
+                            </span>
+                          </h4>
+                        </div>
+                      </div>
+                      <div class="d-flex align-items-center mb-10">
+                        <div
+                          class="me-15 bg-lightest h-50 w-50 l-h-60 rounded100 text-center"
+                        >
+                          E
+                        </div>
+                        <div class="d-flex flex-column">
+                          <h4 class="text-dark mb-1 fs-16">
+                            Close date:
+                            <span>
+                              <%=
+                              buyPortfolio.dateOfExpiry.toLocaleDateString('en-US',
+                              { weekday: 'short', month: 'short', day:
+                              'numeric', year: 'numeric' }) %>
+                            </span>
+                          </h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% } %> <% }); %> <% if (!activePortfolioFound) { %>
+            
+            <h3>No Expired portfolio found</h3>
+            <% } %>
+          </section>
         </div>
       </div>
-      <!-- /.content-wrapper -->
 
-      <footer class="main-footer">
+      <footer class="main-footer bg-white">
         <!-- footer -->
         <%- include('../layouts/footer') %>
       </footer>
-      
-    
-  </body>
 
- 
+    </div>
+  </body>
 </html>

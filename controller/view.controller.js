@@ -205,6 +205,7 @@ const postProfileVerification = catchAsync(async (req, res) => {
     middleName,
     lastName,
     phoneNumber,
+    gender,
     addressStreet,
     addressCity,
     addressState,
@@ -231,6 +232,7 @@ const postProfileVerification = catchAsync(async (req, res) => {
       _id: user._id,
       role: user.role,
       firstName,
+      gender,
       middleName,
       lastName,
       phoneNumber,
@@ -517,12 +519,15 @@ const getActivePortfolio = catchAsync(async (req, res) => {
     buyPortfolios,
   });
 });
+const getInvestHistory = catchAsync(async (req, res) => {
+  const userId = req.user.id; // Assuming the user ID is stored in req.user.id
+  const buyPortfolios = await buyPortfolio.find({ userId: userId });
 
-const getInvestHistory = (req, res) => {
-  res
-    .status(200)
-    .render('portfolio/investhistory', { title: 'Investment History' });
-};
+  res.status(200).render('portfolio/investhistory', {
+    title: 'Expired Portfolio',
+    buyPortfolios,
+  });
+});
 
 const getDetailsPage = (req, res) => {
   res

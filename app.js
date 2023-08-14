@@ -12,6 +12,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
+const cron = require('node-cron');
 
 // Importing routers
 const Transactions = require('./models/portfolio/transaction.model');
@@ -21,6 +22,8 @@ const userRouter = require('./routes/user.routers');
 const portfolioRouter = require('./routes/portfolio.routers');
 const activity = require('./routes/activity.routers');
 const referral = require('./routes/referral.routers');
+const dailyPayout = require('./controller/paying.controller');
+
 const {
   protect,
   verificationMiddleWare,
@@ -437,6 +440,8 @@ const PORT = process.env.PORT || 9000;
 server.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
 });
+// cron.schedule('0 0 * * *', dailyPayout);
+cron.schedule('* * * * *', dailyPayout);
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', err => {

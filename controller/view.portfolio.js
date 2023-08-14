@@ -453,7 +453,7 @@ const updatePayment = catchAsync(async (req, res) => {
   try {
     const portfolio = await BuyPortfolio.findByIdAndUpdate(
       id,
-      { walletAddress, cryptoAmount }, // Update only the walletAddress and cryptoAmount fields
+      { walletAddress, cryptoAmount },
       { new: true }
     );
 
@@ -463,15 +463,15 @@ const updatePayment = catchAsync(async (req, res) => {
         .render('response/status', { message: 'Payment not found' });
     }
 
-    // 1. Generate a serial number and assign it to `sn`
     function generateRandomNumber() {
       const min = 10000;
       const max = 99999;
       return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    // 2. Get the current date and assign it to `date`
     const date = new Date();
+
+    const statusValue = id ? 'Deposit' : 'Approved'; // Adjust this condition as needed
 
     const transActivity = new Transactions({
       sn: generateRandomNumber(),
@@ -479,10 +479,10 @@ const updatePayment = catchAsync(async (req, res) => {
       title: portfolio.payout,
       description: `Deposit of $${portfolio.depositAmount} made for ${portfolio.portfolioName}`,
       buyPortfolioId: id,
-      status: id ? 'Deposit' : 'Approved',
+      status: statusValue,
       amount: portfolio.depositAmount,
       userId: id,
-      method: portfolio.currency, // Replace 'paymentMethod' with the actual payment method value
+      method: portfolio.currency,
       authCode: 0,
     });
 
@@ -502,17 +502,20 @@ const updatePayment = catchAsync(async (req, res) => {
           });
         }
 
-        console.log('Document saved successfully');
         return res.status(200).render('response/status', {
-          message: 'Document saved successfully',
+          message: 'You have successfully sent your payment.',
         });
       });
     });
 
-    // Get logged-in user email and name
+    if (!req.user) {
+      return res
+        .status(404)
+        .render('response/status', { message: 'User not found' });
+    }
+
     const { email } = req.user;
 
-    // Get user profile
     const userProfile = await Profile.findOne({ user: req.user._id });
 
     if (!userProfile) {
@@ -523,10 +526,9 @@ const updatePayment = catchAsync(async (req, res) => {
 
     const { fullName } = userProfile;
 
-    // Send email to the admin
-    const adminMessage = `User with the following details has sent their payment.\n\nUser details:\nName: ${fullName}\nEmail: ${email}\n\nPayment details:\nAmount: ${portfolio.amount}\nCurrency: ${portfolio.currency}\nCrypto Amount: ${portfolio.cryptoAmount}\nPortfolio Name: ${portfolio.portfolioName}\nWallet Address: ${portfolio.walletAddress}`;
+    const adminMessage = `User with the following details has sent their payment.\n\nUser details:\nName: ${fullName}\nEmail: ${email}\n\nPayment details:\nAmount: ${portfolio.depositAmount}\nCurrency: ${portfolio.currency}\nCrypto Amount: ${portfolio.cryptoAmount}\nPortfolio Name: ${portfolio.portfolioName}\nWallet Address: ${portfolio.walletAddress}`;
     await sendEmail({
-      email: 'admin@solarisfinance.com', // Specify the admin's email address here
+      email: 'admin@solarisfinance.com',
       subject: 'New Payment',
       message: adminMessage,
     });
@@ -542,6 +544,103 @@ const updatePayment = catchAsync(async (req, res) => {
       .render('response/status', { message: 'Failed to update the payment' });
   }
 });
+
+
+// const updatePayment = catchAsync(async (req, res) => {
+//   const { id } = req.params;
+//   const { walletAddress, cryptoAmount } = req.body;
+
+//   try {
+//     const portfolio = await BuyPortfolio.findByIdAndUpdate(
+//       id,
+//       { walletAddress, cryptoAmount }, // Update only the walletAddress and cryptoAmount fields
+//       { new: true }
+//     );
+
+//     if (!portfolio) {
+//       return res
+//         .status(404)
+//         .render('response/status', { message: 'Payment not found' });
+//     }
+
+//     // 1. Generate a serial number and assign it to `sn`
+//     function generateRandomNumber() {
+//       const min = 10000;
+//       const max = 99999;
+//       return Math.floor(Math.random() * (max - min + 1)) + min;
+//     }
+
+//     // 2. Get the current date and assign it to `date`
+//     const date = new Date();
+
+//     const transActivity = new Transactions({
+//       sn: generateRandomNumber(),
+//       date: date,
+//       title: portfolio.payout,
+//       description: `Deposit of $${portfolio.depositAmount} made for ${portfolio.portfolioName}`,
+//       buyPortfolioId: id,
+//       status: id ? 'Deposit' : 'Approved',
+//       amount: portfolio.depositAmount,
+//       userId: id,
+//       method: portfolio.currency, // Replace 'paymentMethod' with the actual payment method value
+//       authCode: 0,
+//     });
+
+//     transActivity.validate(function (error) {
+//       if (error) {
+//         console.error('Validation error:', error);
+//         return res
+//           .status(400)
+//           .render('response/status', { message: 'Validation error' });
+//       }
+
+//       transActivity.save({ runValidators: true }, function (error) {
+//         if (error) {
+//           console.error('Save error:', error);
+//           return res.status(500).render('response/status', {
+//             message: 'Failed to save the document',
+//           });
+//         }
+
+//         return res.status(200).render('response/status', {
+//           message: 'You have successfully sent your payment.',
+//         });
+//       });
+//     });
+
+//     // Get logged-in user email and name
+//     const { email } = req.user;
+
+//     // Get user profile
+//     const userProfile = await Profile.findOne({ user: req.user._id });
+
+//     if (!userProfile) {
+//       return res
+//         .status(404)
+//         .render('response/status', { message: 'User profile not found' });
+//     }
+
+//     const { fullName } = userProfile;
+
+//     // Send email to the admin
+//     const adminMessage = `User with the following details has sent their payment.\n\nUser details:\nName: ${fullName}\nEmail: ${email}\n\nPayment details:\nAmount: ${portfolio.amount}\nCurrency: ${portfolio.currency}\nCrypto Amount: ${portfolio.cryptoAmount}\nPortfolio Name: ${portfolio.portfolioName}\nWallet Address: ${portfolio.walletAddress}`;
+//     await sendEmail({
+//       email: 'admin@solarisfinance.com', // Specify the admin's email address here
+//       subject: 'New Payment',
+//       message: adminMessage,
+//     });
+
+//     return res.status(200).render('response/status', {
+//       message:
+//         'You have sent your payment. Your portfolio will be activated after payment has been confirmed',
+//     });
+//   } catch (error) {
+//     console.error('Failed to update the payment:', error);
+//     return res
+//       .status(500)
+//       .render('response/status', { message: 'Failed to update the payment' });
+//   }
+// });
 
 module.exports = {
   getPortfolioForm,

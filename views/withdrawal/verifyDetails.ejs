@@ -97,6 +97,16 @@
                     </div>
                     <div class="col-lg-6 col-12">
                       <div class="card p-50 text-center">
+                        <% if (activities.status === "Approved") { %>
+
+                        <h1>Paid on</h1>
+                        <span>
+                          <%= new Date(activities.date).toLocaleString('en-US',
+                          { weekday: 'short', month: 'short', day: 'numeric',
+                          year: 'numeric', hour: 'numeric', minute: 'numeric',
+                          hour12: true }) %>
+                        </span>
+                        <% } else { %>
                         <div>
                           <div class="col-xl-12 col-12 text-center center">
                             <img
@@ -107,7 +117,7 @@
                           </div>
                           <div class="mt-10">
                             <form
-                              action="/user/approve-payment/<%=activities._id%>"
+                              action="/user/approve-payment/<%= activities._id %>"
                               method="post"
                               style="display: inline"
                             >
@@ -120,6 +130,7 @@
                             </form>
                           </div>
                         </div>
+                        <% } %>
                       </div>
 
                       <!-- end card-->
