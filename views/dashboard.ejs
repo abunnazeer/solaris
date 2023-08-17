@@ -2,13 +2,63 @@
 <html lang="en">
   <head>
     <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src *; script-src 'unsafe-inline' * 'self'; style-src 'unsafe-inline' * 'self'; img-src * data: 'self'; font-src * data: 'self';"
-    />
+     <meta
+   http-equiv="Content-Security-Policy"
+   content="default-src *; script-src 'unsafe-inline' * 'self'; style-src 'unsafe-inline' * 'self'; img-src * data: 'self'; font-src * data: 'self';"
+ />
+
+
 
     <!-- head and meta-->
     <title><%=title%></title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<style>
+.icon__custom{
+    color: #f89f1e; 
+    font-size: 40px;
+    background: #ffffff;
+    border-radius: 60%;
+    height: 60px;
+    width: 60px;
+    text-align: center;
+    padding-top: 26px;
+}
+.icon__img{
+    height: 60px;
+    width: 60px;
+    background-color: #f89f1e;
+    border-radius: 60px;
+    padding: 4px;
+}
+.icon__img_r{
+    height: 60px;
+    width: 60px;
+    background-color: #ffffff;
+    border-radius: 60px;
+    padding: 4px;
+}
+.icon__img_rx{
+    height: 60px;
+    width: 60px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 4px;
+}
+.icon__img_ru{
+    height: 60px;
+    width: 60px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 4px;
+}
+#donutChart {
+  width: 150px; /* Change to a fixed width temporarily */
+  height: 150px; /* Change to a fixed height temporarily */
+}
+
+</style>
   </head>
 
   <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
@@ -26,7 +76,7 @@
       </aside>
 
       <div
-        class="content-wrapper bg-white"
+        class="content-wrapper"
         style="border-radius: 0; border-top: 1px solid #cbcbcb"
       >
         <div class="container-full">
@@ -35,154 +85,128 @@
             <div class="row">
               <div class="col-xl-3 col-lg-6 col-sm-6 col-12">
                 <div class="box mb-15">
-                  <div class="box-body" style="height: 150px">
+                  <div class="box-body " style="height: 160px; background-color: #0202a2;">
                     <div
                       class="d-flex align-items-center justify-content-between"
                     >
-                      <h4 class="fw-500">Active Portfolio</h4>
+                      <h4 class="fw-500 text-white">Active Portfolio</h4>
                     </div>
                     <div class="row align-items-center mt-10">
-                      <div class="col-6">
-                        <% let activePortfoliosCount = 0; %>
-                        <!-- Initialize a variable to keep track of the count -->
-                        <% portfolios.forEach(function(portfolio) { %> <% if
-                        (portfolio.status === 'active') { %> <%
-                        activePortfoliosCount++; %>
-                        <!-- Increment the count for each active portfolio -->
-                        <% } %> <% }) %>
-                        <h1 class="m-0 fw-600"><%= activePortfoliosCount %></h1>
+                       <div class="col-8">
+                        <h1 class="m-0 fw-600 text-white" style="font-size: 50px;">0</h1>
+                        
                       </div>
 
-                      <div class="col-6">
-                        <div style="height: 80px">
-                          <canvas
-                            id="lineport"
-                            width="400"
-                            height="200"
-                          ></canvas>
-                        </div>
+                      <div class="col-4">
+                       <i class="fa-solid fa-chart-simple fa-2xl icon__custom"></i>
                       </div>
-                      <!-- end row-->
+                 
                     </div>
                   </div>
                 </div>
               </div>
               <div class="col-xl-3 col-lg-6 col-sm-6 col-12">
                 <div class="box mb-15">
-                  <div class="box-body" style="height: 150px">
+                  <div class="box-body " style="height: 160px;">
                     <div
                       class="d-flex align-items-center justify-content-between"
                     >
                       <h4 class="fw-500">Compounding Dividends</h4>
                     </div>
                     <div class="row align-items-center mt-10">
-                      <div class="col-6">
-                        <h1>
-                          <% let totalCompBalance = 0; %> <%
-                          portfolios.forEach(function(portfolio) { %> <%
-                          totalCompBalance += portfolio.compBalance %> <% }); %>
-                          $<%= totalCompBalance.toLocaleString() %>
-                        </h1>
-                        <!-- Display the compBalance value with a unique identifier -->
+                      <div class="col-8">
+                         <h1 class="m-0 fw-600" style="font-size: 50px; color:  #f89f1e;">$2.98</h1>
                       </div>
-                      <div class="col-6">
-                        <div style="height: 80px">
-                          <canvas
-                            id="cdevent"
-                            width="400"
-                            height="200"
-                          ></canvas>
-                        </div>
+
+                      <div class="col-4">
+                       <img src="images/icons/wallet.png" class="icon__img" alt="Compounding" srcset="">
                       </div>
-                      <!-- end row-->
+                  
                     </div>
                   </div>
                 </div>
               </div>
               <div class="col-xl-3 col-lg-6 col-sm-6 col-12">
                 <div class="box mb-15 ">
-                  <div class="box-body" style="height: 150px">
+                  <div class="box-body" style="height: 160px;  background-color: #f89f1e;">
                     <div
                       class="d-flex align-items-center justify-content-between"
                     >
                       <h4 class="fw-500">Referral commission history</h4>
                     </div>
                     <div class="row align-items-center mt-10">
-                      <div class="col-6">
-                        <h1 class="m-0 fw-600">0</h1>
+                      <div class="col-8">
+                       <h1 class="m-0 fw-600 text-white" style="font-size: 50px;">$5.76</h1>
                       </div>
-                      <div class="col-6">
-                        <div style="height: 80px">
-                          <canvas
-                            id="donutChart"
-                            width="300"
-                            height="300"
-                          ></canvas>
-                        </div>
+                      <div class="col-4">
+                        <img src="images/icons/transaction.png" class="icon__img_r" alt="commission" srcset="">
                       </div>
-                      <!-- end row-->
+                    
                     </div>
                   </div>
                 </div>
               </div>
               <div class="col-xl-3 col-lg-6 col-sm-6 col-12">
                 <div class="box mb-15">
-                  <div class="box-body" style="height: 150px">
+                  <div class="box-body" style="height: 160px">
                     <div
                       class="d-flex align-items-center justify-content-between"
                     >
                       <h4 class="fw-500">Accumulated Dividends</h4>
                     </div>
                     <div class="row align-items-center mt-10">
-                      <div class="col-6">
-                        <h1 class="m-0 fw-600">0</h1>
+                      <div class="col-8">
+                        <h1 class="m-0 fw-600" style="font-size: 50px; color: #f89f1e;;">$5.76</h1>
                       </div>
-                      <div class="col-6">
-                        <div style="height: 80px">
-                          <canvas
-                            id="rdevent"
-                            width="300"
-                            height="300"
-                          ></canvas>
-                        </div>
-                      </div>
-                      <!-- end row-->
+                      <div class="col-4">
+                       
+                          <img src="images/icons/cash_money.png" class="icon__img_rx" alt="commission" srcset="">
+                      
+                     
                     </div>
                   </div>
                 </div>
               </div>
+              </div> <!-- Missing closing div tag -->
 
               <div class="col-xl-9 col-lg-10">
-                <!-- to add later -->
+              
                 <div class="box mb-15">
                   <h4 class="fw-500 p-20 pb-10">Wallet Overview</h4>
-                  <div class="box-body" style="height: 380px">
-                    <canvas id="lineChart3" width="400" height="200"></canvas>
-                    </div>
-                    <h4 class="fw-500 p-20 pb-10">Account Summary</h4>
-                    </div>
+                  <div class="box-body" style="height: 370px">
+                        <div class="row align-items-center">
+  <div class="col-6">
+                        <div id="walletOverview" style="width: 100%; height: 180px;"></div>
+                      </div>
+                      <div class="col-6">
+                       
+  <div id="financialOverview" style="width: 95%; height: 180px;"></div>
+
+                      </div>
+</div>
+
+
+
+                  </div>
+                   
+                </div>
 
               </div>
               <div class="col-xl-3 col-lg-4">
                 <div class="box mb-15 ">
-                  <div class="box-body" style="height: 150px">
+                  <div class="box-body" style="height: 160px">
                     <div
                       class="d-flex align-items-center justify-content-between"
                     >
                       <h4 class="fw-500">Total referral Members</h4>
                     </div>
-                    <div class="row align-items-center mt-10">
-                      <div class="col-6">
-                        <h1 class="m-0 fw-600">0</h1>
+                    <div class="row align-items-center">
+                      <div class="col-6 mb-50">
+                         <h1 class="m-0 fw-600" style="font-size: 50px; color: #f89f1e;">5</h1>
                       </div>
                       <div class="col-6">
-                        <div style="height: 80px">
-                          <canvas
-                            id="rdevent"
-                            width="300"
-                            height="300"
-                          ></canvas>
-                        </div>
+                        <div id="donutChart"></div>
+
                       </div>
                     
                     </div>
@@ -190,37 +214,18 @@
                 </div>
                 <div
                   class="box "
-                  style="height: 271px; position: relative"
+                  style="height: 254px; position: relative"
                 >
-                  <div class="box-header with-border">
+                  <div class="box-header with-border text-center">
                     <h4 class="fw-500">Account Balance</h4>
                   </div>
                   <div class="box-body p-0">
                     <div class="text-center">
-                      <h1>
-                        <% let totalBalanceForWithdrawal = 0; %> <%
-                        portfolios.forEach(function(portfolio) { %> <%
-                        totalBalanceForWithdrawal += portfolio.balance %> <% });
-                        %> $<%= totalBalanceForWithdrawal.toLocaleString() %>
-                      </h1>
-                      <!-- Display the compBalance value with a unique identifier -->
-                      <hr style="margin: 2px 77px 3px 77px" />
-                      <div style="height: 80px; width: 80%; margin: auto">
-                        <canvas
-                          id="withdChart"
-                          width="400"
-                          height="200"
-                        ></canvas>
-                      </div>
+                      <div id="balanceChart" style="width: 250px;  margin: auto;"> </div>
+                      <h1 class="m-0 fw-600" style="font-size: 30px; color: #f89f1e;">$56.7</h1>
+                     
                       <div class="mt-10 mt-md-0">
-                        <button
-                          type="button"
-                          class="btn bg-gradient-info-dark w-100"
-                          data-bs-toggle="modal"
-                          data-bs-target="#standard-modal"
-                        >
-                          Withdraw
-                        </button>
+                      <button class="btn btn-outline-secondary bg-gradient-primary-dark mt-10" style="width: 80%;"> Make Withdrawal</button>
                       </div>
                     </div>
                   </div>
@@ -231,471 +236,160 @@
           
           </section>
      
-          <div
-            id="standard-modal"
-            class="modal fade"
-            tabindex="-1"
-            role="dialog"
-            aria-labelledby="standard-modalLabel"
-            aria-hidden="true"
-          >
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header bg-black">
-                  <h4 class="modal-title" id="standard-modalLabel">
-                    Withdrawal Request
-                  </h4>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                  ></button>
-                </div>
-                <div class="modal-body">
-                  <div class="row">
-                    <div class="col-6">
-                      <h5>Account Balance</h5>
-                      <h3>
-                        $<%= totalBalanceForWithdrawal.toLocaleString() %>
-                      </h3>
-                    </div>
-                  </div>
-                  <hr />
-                  <hr />
-                  <form
-                    class="rform__modified"
-                    action="/user/withdrawal"
-                    method="post"
-                    onsubmit="submitForm(event)"
-                  >
-                    <div class="form-group">
-                      <div
-                        class="d-md-flex justify-content-between align-items-center"
-                      >
-                        <div class="col-8">
-                          <input
-                            type="number"
-                            name="authCode"
-                            class="form-control ps-15 p-10"
-                            placeholder="Enter 2FA"
-                            id="authCode"
-                            required
-                          />
-
-                          <span
-                            id="authCodeError"
-                            style="color: red; display: none"
-                          ></span>
-                        </div>
-                        <div>
-                          <span
-                            class="btn bg-gradient-info-dark"
-                            id="generateCodeBtn"
-                            >Generate Code</span
-                          >
-                        </div>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <input
-                        type="number"
-                        name="amount"
-                        class="form-control ps-15 p-10"
-                        placeholder="Min is $10"
-                        id="amount"
-                        min="10"
-                        required
-                      />
-                      <span
-                        id="amountError"
-                        style="color: red; display: none"
-                      ></span>
-                    </div>
-                    <div class="input-group mb-20">
-                      <select
-                        class="form-control select2"
-                        style="width: 100%"
-                        tabindex="-1"
-                        aria-hidden="true"
-                        name="method"
-                        id="method"
-                        required
-                      >
-                        <option value="" selected disabled>
-                          Select Wallet Type
-                        </option>
-                        <option value="BTC" data-icon="BTC">Bitcoin</option>
-                        <option value="ETH" data-icon="ETH">Ethereum</option>
-                        <option value="USDT" data-icon="USDT">
-                          Tether USD TRC20
-                        </option>
-                      </select>
-                      <span
-                        id="methodError"
-                        style="color: red; display: none"
-                      ></span>
-                    </div>
-                    <div class="form-group">
-                      <input
-                        type="text"
-                        name="walletAddress"
-                        class="form-control ps-15 p-10"
-                        placeholder="Wallet Address"
-                        id="walletAddress"
-                        title="Please enter a valid wallet address"
-                        required
-                      />
-                      <span
-                        id="walletAddressError"
-                        style="color: red; display: none"
-                      ></span>
-                    </div>
-
-                    <hr />
-                    <div class="mt-10">
-                      <button
-                        type="button"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal"
-                      >
-                        Close
-                      </button>
-                      <button type="submit" class="btn bg-gradient-info-dark">
-                        Withdraw Now
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script>
-      // Event handler for the "Generate Code" button
-      document
-        .getElementById('generateCodeBtn')
-        .addEventListener('click', function () {
-          // Retrieve the value from the 2FA input field
-          var twoFactorValue = document.getElementById('authCode').value;
 
-          // Make a POST request to the "user/2factor" endpoint
-          axios
-            .post('/user/two-factor', { twoFactorValue })
-            .then(function (response) {
-              // Handle the response from the server
-              console.log(response.data);
-              // Perform any necessary actions based on the response
-            })
-            .catch(function (error) {
-              // Handle errors
-              console.error(error);
-            });
-        });
 
-      // Sample data for the three line charts
-      const activePort = {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        datasets: [
-          {
-            data: [10, 25, 15, 35, 20, 30],
-            borderColor: '#000080', // Success color is green (#28a745)
-            backgroundColor: 'rgba(40, 167, 69, 0.2)',
-            borderWidth: 1,
-          },
-        ],
-      };
+<script>
+  // Example data
+  var seriesData = [70, 30]; // Represents 70% and 30% of the total
 
-      // Draw the three line charts
-      const activePortx = document.getElementById('lineport').getContext('2d');
-      new Chart(activePortx, {
-        type: 'line',
-        data: activePort,
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: {
-              display: false, // Hide x-axis
+  var options = {
+    chart: {
+      type: 'donut',
+      width: '50%', // Adjust the width here
+    },
+    series: seriesData,
+    labels: [],
+    colors: ['#0202a5', '#c9c9c9'], // Blue for the outer line, grey for the inner line
+    legend: {
+      show: false, // Hides legend
+    },
+    dataLabels: {
+      enabled: false, // Hides data labels
+    },
+    plotOptions: {
+      pie: {
+        donut: {
+          size: '80%', // Adjust the size of the inner circle here
+          labels: {
+            show: true,
+            name: {
+              show: false,
             },
-            y: {
-              display: false, // Hide y-axis
+            value: {
+              show: true,
+              fontSize: '16px',
+              fontFamily: 'Helvetica, Arial, sans-serif',
+              color: '#0202a5',
+              offsetY: -10,
+              formatter: function (val, opts) {
+                return opts.globals.series[0] + '%'; // Display the percentage of the first series (Blue)
+              },
             },
-          },
-          plugins: {
-            legend: {
-              display: false,
+            total: {
+              show: false,
             },
           },
         },
-      });
+      },
+    },
+    stroke: {
+      width: 1, // Adjust the thickness of the line here
+    },
+  };
 
-      const withdrawalChart = {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        datasets: [
-          {
-            data: [50, 5, 15, 35, 20, 30],
-            borderColor: '#000080', // Success color is green (#28a745)
-            backgroundColor: 'rgba(40, 167, 69, 0.2)',
-            borderWidth: 1,
-          },
-        ],
-      };
+  var chart = new ApexCharts(document.querySelector('#balanceChart'), options);
+  chart.render();
+</script>
 
-      const wthChart = document.getElementById('withdChart').getContext('2d');
-      new Chart(wthChart, {
-        type: 'line',
-        data: withdrawalChart,
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: {
-              display: false, // Hide x-axis
-            },
-            y: {
-              display: false, // Hide y-axis
-            },
-          },
-          plugins: {
-            legend: {
-              display: false,
-            },
-          },
-        },
-      });
-      const referralChart = {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        datasets: [
-          {
-            data: [10, 25, 15, 35, 20, 30],
-            borderColor: '#000080',
-            backgroundColor: 'rgba(40, 167, 69, 0.2)',
-            borderWidth: 1,
-          },
-        ],
-      };
 
-      const refaralChartConfig = document
-        .getElementById('donutChart')
-        .getContext('2d');
-      new Chart(refaralChartConfig, {
-        type: 'line',
-        data: referralChart,
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: {
-              display: false, // Hide x-axis
-            },
-            y: {
-              display: false, // Hide y-axis
-            },
-          },
-          plugins: {
-            legend: {
-              display: false,
-            },
-          },
-        },
-      });
+<script>
+  // Example data for three months
+  var investedAmount = [1000, 1200, 900];
+  var referralBonus = [200, 150, 250];
+  var withdrawedAmount = [500, 300, 600];
+  var months = ['January', 'February', 'March'];
 
-      const rDevedent = {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        datasets: [
-          {
-            data: [10, 25, 15, 35, 20, 30],
-            borderColor: '#000080',
-            backgroundColor: 'rgba(40, 167, 69, 0.2)',
-            borderWidth: 1,
-          },
-        ],
-      };
-      const rDeventx = document.getElementById('rdevent').getContext('2d');
-      new Chart(rDeventx, {
-        type: 'line',
-        data: rDevedent,
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: {
-              display: false, // Hide x-axis
-            },
-            y: {
-              display: false, // Hide y-axis
-            },
-          },
-          plugins: {
-            legend: {
-              display: false,
-            },
-          },
-        },
-      });
+  var options = {
+    chart: {
+      type: 'bar',
+      stacked: false,
+       toolbar: {
+        show: false, // Hides the toolbar (open icon)
+      },
+    },
+    series: [
+      {
+        name: 'Invested Amount',
+        data: investedAmount,
+        color: '#2401b6',
+      },
+      {
+        name: 'Referral Bonus',
+        data: referralBonus,
+        color: '#f89f1e',
+      },
+      {
+        name: 'Withdrawed Amount',
+        data: withdrawedAmount,
+        color: '#00875a',
+      },
+    ],
+    xaxis: {
+      categories: months,
+    },
+    // yaxis: {
+    //   title: {
+    //     text: 'Amount ($)',
+    //   },
+    // },
+    yaxis: {
+      labels: {
+        show: false, // Hides y-axis labels (numbers on the left)
+      },
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        columnWidth: '50%',
+         barPadding: '10px',    // Controls the padding between bars in a group
+        barMargin: 50,  
+      },
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    legend: {
+      position: 'top',
+    },
+  };
 
-      const cDevent = {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        datasets: [
-          {
-            data: [10, 25, 15, 35, 20, 30],
-            borderColor: '#000080',
-            backgroundColor: 'rgba(40, 167, 69, 0.2)',
-            borderWidth: 1,
-          },
-        ],
-      };
+  var chart = new ApexCharts(document.querySelector('#walletOverview'), options);
+  chart.render();
+</script>
 
-      const cdDevent = document.getElementById('cdevent').getContext('2d');
-      new Chart(cdDevent, {
-        type: 'line',
-        data: cDevent,
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: {
-              display: false, // Hide x-axis
-            },
-            y: {
-              display: false, // Hide y-axis
-            },
-          },
-          plugins: {
-            legend: {
-              display: false,
-            },
-          },
-        },
-      });
 
-      const profitChat = {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        datasets: [
-          {
-            data: [0, 18, 25, 23, 29, 32, 34],
-            borderColor: '#28a745', // Yellow color (#ffc107)
-            backgroundColor: 'rgba(40, 167, 69, 0.2)',
-            fill: true,
-          },
-        ],
-      };
 
-      const optionpie = {
-        responsive: true,
-        maintainAspectRatio: false,
-      };
+<script>
+  // Example data
+  var accumulatedDividends = 5000;
+  var compoundingDividends = 3000;
+  var accountBalance = 2000;
 
-      const profitChartx = document
-        .getElementById('lineChart3')
-        .getContext('2d');
-      new Chart(profitChartx, {
-        type: 'line',
-        data: profitChat,
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false, // Hide the legend
-            },
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-            },
-          },
-        },
-      });
+  var options = {
+    chart: {
+      type: 'pie',
+    },
+    series: [accumulatedDividends, compoundingDividends, accountBalance],
+    labels: ['Accumulated Dividends', 'Compounding Dividends', 'Account Balance'],
+    colors: ['#00875a', '#f89f1e', '#2401b6'], // Colors for the segments
+    legend: {
+      position: 'right',
+    },
+    dataLabels: {
+      enabled: true,
+    },
+  };
 
-      async function submitForm(event) {
-        event.preventDefault();
+  var chart = new ApexCharts(document.querySelector('#financialOverview'), options);
+  chart.render();
+</script>
 
-        const authCodeField = document.getElementById('authCode');
-        const amountField = document.getElementById('amount');
-        const methodField = document.getElementById('method');
-        const walletAddressField = document.getElementById('walletAddress');
+     <script type="module" src="/js/lineChart.js"></script>
 
-        const authCodeError = document.getElementById('authCodeError');
-        const amountError = document.getElementById('amountError');
-        const methodError = document.getElementById('methodError');
-        const walletAddressError =
-          document.getElementById('walletAddressError');
-
-        // Clear any existing error messages
-        [authCodeError, amountError, methodError, walletAddressError].forEach(
-          errorElem => {
-            errorElem.innerText = '';
-            errorElem.style.display = 'none'; // Hide error messages by default
-          }
-        );
-
-        const authCode = authCodeField.value;
-        const amount = amountField.value;
-        const method = methodField.value;
-        const walletAddress = walletAddressField.value;
-
-        const data = { authCode, amount, method, walletAddress };
-
-        try {
-          const response = await fetch('/user/withdrawal', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-          });
-
-          if (!response.ok) {
-            const errorMessage = await response.text();
-            let errorElem = null;
-
-            switch (errorMessage) {
-              case 'Missing required information.':
-                [
-                  authCodeError,
-                  amountError,
-                  methodError,
-                  walletAddressError,
-                ].forEach(errorElem => {
-                  errorElem.innerText = errorMessage;
-                  errorElem.style.display = 'block'; // Show error message
-                });
-                break;
-              case 'Invalid user or authentication record.':
-              case 'Authentication code is empty.':
-              case 'Invalid authentication code.':
-                errorElem = authCodeError;
-                break;
-              case 'Insufficient balance.':
-                errorElem = amountError;
-                break;
-              default:
-                console.error('Unhandled error:', errorMessage);
-            }
-
-            if (errorElem) {
-              errorElem.innerText = errorMessage;
-              errorElem.style.display = 'block'; // Show error message
-            }
-          } else {
-            const responseData = await response.json();
-            window.location.href = responseData.redirectUrl;
-          }
-        } catch (error) {
-          console.error('Error:', error);
-        }
-      }
-    </script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/dashboard.js"></script>
-
-    <!-- Vendor JS -->
     <%- include('layouts/script') %>
   </body>
 </html>
