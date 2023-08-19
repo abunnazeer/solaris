@@ -183,6 +183,7 @@ const paymentComfirmation = catchAsync(async (req, res) => {
     if (!portfoliodetail) {
       return res.status(404).json({ message: 'Portfolio not found' });
     }
+
     const allReferral = await ReferralConfig.find();
     const userId = portfoliodetail.userId;
     const userDetail = await User.findOne({ _id: userId });
@@ -202,8 +203,9 @@ const paymentComfirmation = catchAsync(async (req, res) => {
     // If the user was referred by someone, create a Referralbonus
     if (userDetail.referredBy) {
       const referringUserId = userDetail.referredBy;
+
       const bonusAmount =
-        portfoliodetail.depositAmount * allReferral.firstLevel; // 10% of depositAmount
+        portfoliodetail.depositAmount * parseFloat(allReferral[0].firstLevel); // 10% of depositAmount
 
       const { _id } = await User.findOne({ _id: userId });
       const userProfile = await Profile.findOne({ _id: userId });
@@ -219,13 +221,21 @@ const paymentComfirmation = catchAsync(async (req, res) => {
       // Save it without validation
       await referralBonus.save({ validateBeforeSave: false });
 
+      //1. in check buyPortfolio.userId === referringUserId then add the bonusAmount to buyPortfolio.balance
+      // if (buyPortfolio.userId.toString() === referringUserId.toString()) {
+      //   buyPortfolio.balance += bonusAmount;
+      //   await buyPortfolio.save();
+      // }
+
       // Check if the referring user has a referrer (second-level referrer)
       const referringUser = await User.findOne({ _id: referringUserId });
 
       if (referringUser && referringUser.referredBy) {
         const secondLevelReferrerId = referringUser.referredBy;
+
         const secondLevelBonusAmount =
-          portfoliodetail.depositAmount * allReferral.secondLevel; // 5% of depositAmount
+          portfoliodetail.depositAmount *
+          parseFloat(allReferral[0].secondLevel); // 5% of depositAmount
 
         const { _id: secondLevelReferrerUserId } = await User.findOne({
           _id: referringUserId,
@@ -241,6 +251,11 @@ const paymentComfirmation = catchAsync(async (req, res) => {
 
         // Save it without validation
         await secondLevelReferralBonus.save({ validateBeforeSave: false });
+        // //1. in check buyPortfolio.userId === referringUserId then add the bonusAmount to buyPortfolio.balance
+        // if (buyPortfolio.userId.toString() === referringUserId.toString()) {
+        //   buyPortfolio.balance += bonusAmount;
+        //   await buyPortfolio.save();
+        // }
 
         // Check if the second-level referrer has a referrer (third-level referrer)
         const secondLevelReferrerUser = await User.findOne({
@@ -250,7 +265,8 @@ const paymentComfirmation = catchAsync(async (req, res) => {
         if (secondLevelReferrerUser && secondLevelReferrerUser.referredBy) {
           const thirdLevelReferrerId = secondLevelReferrerUser.referredBy;
           const thirdLevelBonusAmount =
-            portfoliodetail.depositAmount * allReferral.thirdLevel; // 2.5% of depositAmount
+            portfoliodetail.depositAmount *
+            parseFloat(allReferral[0].thirdLevel); // 2.5% of depositAmount
 
           const { _id: thirdLevelReferrerUserId } = await User.findOne({
             _id: secondLevelReferrerId,
@@ -266,6 +282,11 @@ const paymentComfirmation = catchAsync(async (req, res) => {
 
           // Save it without validation
           await thirdLevelReferralBonus.save({ validateBeforeSave: false });
+          //1. in check buyPortfolio.userId === referringUserId then add the bonusAmount to buyPortfolio.balance
+          // if (buyPortfolio.userId.toString() === referringUserId.toString()) {
+          //   buyPortfolio.balance += bonusAmount;
+          //   await buyPortfolio.save();
+          // }
         }
       }
     }

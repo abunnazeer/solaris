@@ -93,6 +93,10 @@ const buyPortfolioSchema = new mongoose.Schema({
     type: Number,
     default: 0.4,
   },
+  createdAt: {
+    type: Date,
+    default: Date.now, // Set the default value to the current date and time
+  },
 });
 
 const BuyPortfolio = mongoose.model('BuyPortfolio', buyPortfolioSchema);
