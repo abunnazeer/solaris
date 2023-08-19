@@ -1,158 +1,41 @@
 const buyPortfolio = require('../models/portfolio/buyportfolio.model');
-const { io } = require('../app');
-
-// Rest of the code...
-
-function sendBalanceUpdate(portfolioId, balance, compBalance) {
-  const message = JSON.stringify({ portfolioId, balance, compBalance });
-  io.emit('balanceUpdate', message);
-}
-const updatePortfolio = async (
-  portfolio,
-  dailyPercentage,
-  millisecondsInDay,
-  dailyInterval
-) => {
-  let balance;
-  let compBalance;
-  let currentTime = Date.parse(portfolio.dateOfPurchase);
-  const terminationTime = Date.parse(portfolio.dateOfExpiry);
-
-  if (portfolio.payout === 'compounding') {
-    compBalance = portfolio.compBalance;
-  } else {
-    balance = portfolio.balance;
-  }
-
-  const intervalId = setInterval(async () => {
-    if (portfolio.status === 'inactive') {
-      clearInterval(intervalId);
-      return;
-    }
-
-    if (currentTime >= terminationTime) {
-      clearInterval(intervalId);
-      await buyPortfolio.findByIdAndUpdate(portfolio._id, {
-        status: 'inactive',
-      });
-      return;
-    }
-
-    let newBalance;
-    if (portfolio.payout === 'compounding') {
-      newBalance = compBalance + portfolio.compPercentage * portfolio.amount;
-    } else {
-      newBalance = balance + dailyPercentage * portfolio.amount;
-    }
-
-    let updatedPortfolio;
-    if (portfolio.payout === 'compounding') {
-      updatedPortfolio = await buyPortfolio.findByIdAndUpdate(
-        portfolio._id,
-        {
-          compBalance: newBalance,
-          compAmount: newBalance + portfolio.amount,
-        },
-        { new: true }
-      );
-    } else {
-      updatedPortfolio = await buyPortfolio.findByIdAndUpdate(
-        portfolio._id,
-        { balance: newBalance },
-        { new: true }
-      );
-    }
-
-    sendBalanceUpdate(
-      updatedPortfolio._id,
-      updatedPortfolio.balance,
-      updatedPortfolio.compBalance
-    );
-
-    if (portfolio.payout === 'compounding') {
-      compBalance = newBalance;
-    } else {
-      balance = newBalance;
-    }
-
-    currentTime += millisecondsInDay;
-  }, dailyInterval);
-};
-
-let portfolios = [];
+const referralBonus = require('../models/user/referralBonus.model');
+const User = require('../models/user/user.model');
 
 const dashboard = async (req, res) => {
+  const { id } = req.user;
   try {
-    const user = req.user.id;
-    portfolios = await buyPortfolio.find({ userId: user });
+    // Assuming you have some logic to get the user's portfolios
+    const portfolios = await buyPortfolio.find({ userId: id });
 
-    for (const portfolio of portfolios) {
-      if (
-        portfolio.payout === portfolio.payoutName[portfolio.payout] &&
-        portfolio.payout !== 'compounding' &&
-        portfolio.status === 'active'
-      ) {
-        const dailyInterval = portfolio.portConfig[portfolio.payout];
-        if (dailyInterval > 0) {
-          updatePortfolio(
-            portfolio,
-            portfolio.dailyPercentage,
-            24 * 60 * 60 * 1000,
-            dailyInterval
-          );
-        }
+    const portfolioData = portfolios.map(portfolio => {
+      return {
+        status: portfolio.status,
+        balance: portfolio.balance,
+        compBalance: portfolio.compBalance,
+      };
+    });
+
+    // Get the total number of users that you have referred (count)
+    const referredUsersCount = await User.countDocuments({
+      referredBy: id,
+    });
+
+    const totalBonusDocs = await referralBonus.find({ referringUserId: id });
+
+    // Calculate the sum of bonusAmount values, ignoring documents without bonusAmount
+    const totalBonus = totalBonusDocs.reduce((sum, bonusDoc) => {
+      if (bonusDoc.bonusAmount) {
+        return sum + parseFloat(bonusDoc.bonusAmount);
       }
-
-      if (
-        portfolio.payout === portfolio.payoutName['compounding'] &&
-        portfolio.payout !== 'daily' &&
-        portfolio.status === 'active'
-      ) {
-        const dailyInterval = portfolio.portConfig[portfolio.payout];
-        if (dailyInterval > 0) {
-          let compBalance = portfolio.compBalance;
-          let currentTime = Date.parse(portfolio.dateOfPurchase);
-          const terminationTime = Date.parse(portfolio.dateOfExpiry);
-          const intervalId = setInterval(async () => {
-            if (portfolio.status === 'inactive') {
-              clearInterval(intervalId);
-              return;
-            }
-            if (currentTime >= terminationTime) {
-              clearInterval(intervalId);
-              await buyPortfolio.findByIdAndUpdate(portfolio._id, {
-                status: 'inactive',
-              });
-              return;
-            }
-            const newCompBalance =
-              compBalance + portfolio.compPercentage * portfolio.amount;
-
-            const updatedPortfolio = await buyPortfolio.findByIdAndUpdate(
-              portfolio._id,
-              {
-                compBalance: newCompBalance,
-                compAmount: newCompBalance + portfolio.amount,
-              },
-              { new: true }
-            );
-
-            sendBalanceUpdate(
-              updatedPortfolio._id,
-              updatedPortfolio.balance,
-              updatedPortfolio.compBalance
-            );
-
-            compBalance = newCompBalance;
-            currentTime += 24 * 60 * 60 * 1000;
-          }, dailyInterval);
-        }
-      }
-    }
+      return sum; // Skip documents without bonusAmount
+    }, 0);
 
     res.status(200).render('dashboard', {
       title: 'Dashboard',
-      portfolios,
+      portfolioData, // Pass the extracted data to the view
+      totalBonus, // Pass the calculated totalBonus to the view
+      referredUsersCount, // Pass the count of referred users to the view
     });
   } catch (err) {
     console.error(err);
@@ -160,4 +43,4 @@ const dashboard = async (req, res) => {
   }
 };
 
-module.exports = { dashboard };
+module.exports = dashboard;

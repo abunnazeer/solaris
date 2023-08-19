@@ -13,6 +13,7 @@
     <title><%=title%></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>;
 
 <style>
 .icon__custom{
@@ -58,6 +59,7 @@
   height: 150px; /* Change to a fixed height temporarily */
 }
 
+
 </style>
   </head>
 
@@ -93,7 +95,20 @@
                     </div>
                     <div class="row align-items-center mt-10">
                        <div class="col-8">
-                        <h1 class="m-0 fw-600 text-white" style="font-size: 50px;">0</h1>
+
+                         <% let activePortfoliosCount = 0; %>
+                          <!-- Initialize a variable to keep track of the count -->
+
+                          <% portfolioData.forEach(function(portfolio) { %> <% if
+                          (portfolio.status === 'active') { %> <%
+                          activePortfoliosCount++; %>
+                        
+                          <% } %> <% }) %>
+
+                          <h3 class="m-0 fw-600">
+                           
+                          </h3>
+                        <h1 class="m-0 fw-600 text-white" style="font-size: 3rem;"> <%= activePortfoliosCount %></h1>
                         
                       </div>
 
@@ -115,7 +130,12 @@
                     </div>
                     <div class="row align-items-center mt-10">
                       <div class="col-8">
-                         <h1 class="m-0 fw-600" style="font-size: 50px; color:  #f89f1e;">$2.98</h1>
+
+                           <% let totlaCompBalance = 0; %> <%
+                          portfolioData.forEach(function(portfolio) { %> <%
+                          totlaCompBalance += portfolio.compBalance %>
+                              <% }) %>
+                         <h1 class="m-0 fw-600" style="font-size: 3rem; color:  #f89f1e;"> $ <%= totlaCompBalance.toLocaleString()%></h1>
                       </div>
 
                       <div class="col-4">
@@ -136,7 +156,7 @@
                     </div>
                     <div class="row align-items-center mt-10">
                       <div class="col-8">
-                       <h1 class="m-0 fw-600 text-white" style="font-size: 50px;">$5.76</h1>
+                       <h1 class="m-0 fw-600 text-white" style="font-size: 50px;">$ <%= totalBonus %></h1>
                       </div>
                       <div class="col-4">
                         <img src="images/icons/transaction.png" class="icon__img_r" alt="commission" srcset="">
@@ -156,7 +176,14 @@
                     </div>
                     <div class="row align-items-center mt-10">
                       <div class="col-8">
-                        <h1 class="m-0 fw-600" style="font-size: 50px; color: #f89f1e;;">$5.76</h1>
+    <% let totalAmount = 0; %>
+<% portfolioData.forEach(function(portfolio) { %>
+  <% totalAmount += portfolio.compBalance + portfolio.balance %>
+<% }) %>
+<h1 class="m-0 fw-600" style="font-size: 3rem; color: #f89f1e;">
+  $<%= totalAmount.toLocaleString() %>
+</h1>
+
                       </div>
                       <div class="col-4">
                        
@@ -167,7 +194,7 @@
                   </div>
                 </div>
               </div>
-              </div> <!-- Missing closing div tag -->
+              </div> 
 
               <div class="col-xl-9 col-lg-10">
               
@@ -202,7 +229,7 @@
                     </div>
                     <div class="row align-items-center">
                       <div class="col-6 mb-50">
-                         <h1 class="m-0 fw-600" style="font-size: 50px; color: #f89f1e;">5</h1>
+                         <h1 class="m-0 fw-600" style="font-size: 50px; color: #f89f1e;"><%= referredUsersCount %></h1>
                       </div>
                       <div class="col-6">
                         <div id="donutChart"></div>
@@ -222,15 +249,22 @@
                   <div class="box-body p-0">
                     <div class="text-center">
                       <div id="balanceChart" style="width: 250px;  margin: auto;"> </div>
-                      <h1 class="m-0 fw-600" style="font-size: 30px; color: #f89f1e;">$56.7</h1>
+                         <% let totalBalance = 0; %>
+<% portfolioData.forEach(function(portfolio) { %>
+  <% totalBalance += portfolio.balance %>
+<% }) %>
+<h1 class="m-0 fw-600" style="font-size: 3rem; color: #f89f1e;">
+  $ <%= totalBalance.toLocaleString() %>
+</h1>
                      
                       <div class="mt-10 mt-md-0">
-                      <button class="btn btn-outline-secondary bg-gradient-primary-dark mt-10" style="width: 80%;"> Make Withdrawal</button>
+                   
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+            
             </div>
 
           
@@ -242,153 +276,12 @@
 
 
 
-<script>
-  // Example data
-  var seriesData = [70, 30]; // Represents 70% and 30% of the total
 
-  var options = {
-    chart: {
-      type: 'donut',
-      width: '50%', // Adjust the width here
-    },
-    series: seriesData,
-    labels: [],
-    colors: ['#0202a5', '#c9c9c9'], // Blue for the outer line, grey for the inner line
-    legend: {
-      show: false, // Hides legend
-    },
-    dataLabels: {
-      enabled: false, // Hides data labels
-    },
-    plotOptions: {
-      pie: {
-        donut: {
-          size: '80%', // Adjust the size of the inner circle here
-          labels: {
-            show: true,
-            name: {
-              show: false,
-            },
-            value: {
-              show: true,
-              fontSize: '16px',
-              fontFamily: 'Helvetica, Arial, sans-serif',
-              color: '#0202a5',
-              offsetY: -10,
-              formatter: function (val, opts) {
-                return opts.globals.series[0] + '%'; // Display the percentage of the first series (Blue)
-              },
-            },
-            total: {
-              show: false,
-            },
-          },
-        },
-      },
-    },
-    stroke: {
-      width: 1, // Adjust the thickness of the line here
-    },
-  };
-
-  var chart = new ApexCharts(document.querySelector('#balanceChart'), options);
-  chart.render();
-</script>
-
-
-<script>
-  // Example data for three months
-  var investedAmount = [1000, 1200, 900];
-  var referralBonus = [200, 150, 250];
-  var withdrawedAmount = [500, 300, 600];
-  var months = ['January', 'February', 'March'];
-
-  var options = {
-    chart: {
-      type: 'bar',
-      stacked: false,
-       toolbar: {
-        show: false, // Hides the toolbar (open icon)
-      },
-    },
-    series: [
-      {
-        name: 'Invested Amount',
-        data: investedAmount,
-        color: '#2401b6',
-      },
-      {
-        name: 'Referral Bonus',
-        data: referralBonus,
-        color: '#f89f1e',
-      },
-      {
-        name: 'Withdrawed Amount',
-        data: withdrawedAmount,
-        color: '#00875a',
-      },
-    ],
-    xaxis: {
-      categories: months,
-    },
-    // yaxis: {
-    //   title: {
-    //     text: 'Amount ($)',
-    //   },
-    // },
-    yaxis: {
-      labels: {
-        show: false, // Hides y-axis labels (numbers on the left)
-      },
-    },
-    plotOptions: {
-      bar: {
-        horizontal: false,
-        columnWidth: '50%',
-         barPadding: '10px',    // Controls the padding between bars in a group
-        barMargin: 50,  
-      },
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    legend: {
-      position: 'top',
-    },
-  };
-
-  var chart = new ApexCharts(document.querySelector('#walletOverview'), options);
-  chart.render();
-</script>
-
-
-
-<script>
-  // Example data
-  var accumulatedDividends = 5000;
-  var compoundingDividends = 3000;
-  var accountBalance = 2000;
-
-  var options = {
-    chart: {
-      type: 'pie',
-    },
-    series: [accumulatedDividends, compoundingDividends, accountBalance],
-    labels: ['Accumulated Dividends', 'Compounding Dividends', 'Account Balance'],
-    colors: ['#00875a', '#f89f1e', '#2401b6'], // Colors for the segments
-    legend: {
-      position: 'right',
-    },
-    dataLabels: {
-      enabled: true,
-    },
-  };
-
-  var chart = new ApexCharts(document.querySelector('#financialOverview'), options);
-  chart.render();
-</script>
 
      <script type="module" src="/js/lineChart.js"></script>
+     <script type="module" src="/js/barchart.js"></script>
+     <script type="module" src="/js/piechart.js"></script>
+     <script type="module" src="/js/donutchart.js"></script>
 
     <%- include('layouts/script') %>
   </body>
