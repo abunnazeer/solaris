@@ -94,14 +94,6 @@ const register = catchAsync(async (req, res, next) => {
     downlines: [], // Initialize the downlines array
   });
 
-  // // Create user profile while creating user
-  // const newProfile = await Profile.create({
-  //   // Assigning user id to profile id
-  //   _id: newUser._id,
-  //   fullName: req.body.fullName,
-  //   role: newUser.role,
-  // });
-
   // Add the new user as a downline to the referring user (if exists)
   if (referredByUser) {
     referredByUser.downlines.push({
@@ -132,13 +124,38 @@ const register = catchAsync(async (req, res, next) => {
   newUser.password = undefined;
 
   const user = newUser;
-  // const profile = newProfile;
   const statusCode = 201;
   const redirectUrl = '/user/success';
   createSendToken(user, statusCode, res, redirectUrl);
 });
 
 // Email verification endpoint
+// const verifyEmail = catchAsync(async (req, res, next) => {
+//   const response = 'Email verified. You can now log in.';
+
+//   const hashedToken = crypto
+//     .createHash('sha256')
+//     .update(req.params.token)
+//     .digest('hex');
+
+//   const user = await User.findOne({
+//     emailVerificationToken: hashedToken,
+//     emailVerificationExpires: { $gt: Date.now() },
+//   });
+
+//   if (!user) {
+//     return next(
+//       new AppError('Verification token is invalid or has expired.', 400)
+//     );
+//   }
+
+//   user.isActive = true; // Activate the user's account
+//   user.emailVerificationToken = undefined;
+//   user.emailVerificationExpires = undefined;
+//   await user.save({ validateBeforeSave: false });
+
+//   res.render('response', { response });
+// });
 const verifyEmail = catchAsync(async (req, res, next) => {
   const response = 'Email verified. You can now log in.';
 
@@ -146,25 +163,30 @@ const verifyEmail = catchAsync(async (req, res, next) => {
     .createHash('sha256')
     .update(req.params.token)
     .digest('hex');
-
   const user = await User.findOne({
     emailVerificationToken: hashedToken,
     emailVerificationExpires: { $gt: Date.now() },
   });
 
   if (!user) {
+    console.log('Token Verification Failed');
     return next(
       new AppError('Verification token is invalid or has expired.', 400)
     );
   }
+
+  console.log('User Verified:', user);
 
   user.isActive = true; // Activate the user's account
   user.emailVerificationToken = undefined;
   user.emailVerificationExpires = undefined;
   await user.save({ validateBeforeSave: false });
 
+  console.log('User Saved:', user);
+
   res.render('response', { response });
 });
+
 const login = catchAsync(async (req, res, next) => {
   const { email, password, twoFactorAuthCode } = req.body;
 
@@ -180,11 +202,26 @@ const login = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect email or password.', 401));
   }
 
-  // Check if the user's email is verified and the account is active
+  // If the user's account is not active, resend email verification
   if (!user.isActive) {
-    return res.redirect('/user/activation'); // Redirect the user to the activation page
-  }
+    const emailVerificationToken = user.generateEmailVerificationToken();
+    await user.save({ validateBeforeSave: false });
 
+    const emailVerificationURL = `${req.protocol}://${req.get(
+      'host'
+    )}/user/verify-email/${emailVerificationToken}`;
+
+    const message = `Please click on the following link to verify your email: ${emailVerificationURL}`;
+    await sendEmail({
+      email: user.email,
+      subject: 'Email Verification',
+      message,
+    });
+
+    await user.save({ validateBeforeSave: false });
+
+    return res.redirect('/user/activation'); // Redirect the user to a page informing about email verification
+  }
   // Check if the user has 2FA enabled and setup complete
   if (
     user.twoFactorSecret &&
@@ -700,38 +737,37 @@ const enable2FA = async (req, res, next) => {
   }
 };
 
-// Identity verification
-// const verificationMiddleWare = catchAsync(async (req, res, next) => {
-//   const userProfile = await Profile.findOne({ _id: req.user._id });
-//   //1. check if the userProfile has value in the following fields   userProfile._id,userProfile.firstName,userProfile.lastName,userProfile.idCard.cardNumber,userProfile.idCard.iDCardType,userProfile.idCard.idCardImage,userProfile.proofOfAddress.proofType,userProfile.proofOfAddress.proofImage and userProfile.verification === false
-//   //2. then redirect to /user/verification-status
-//   //3. if   //1. check if the userProfile has value in the following fields   userProfile._id,userProfile.firstName,userProfile.lastName,userProfile.idCard.cardNumber,userProfile.idCard.iDCardType,userProfile.idCard.idCardImage,userProfile.proofOfAddress.proofType,userProfile.proofOfAddress.proofImage and userProfile.verification === true then allow then to access all routes that means you disable the middleware from redirecting to this /user/profileVerification' or this /user/verification-status
-//   //4.  //1. check if the userProfile has value in the following fields   userProfile._id,userProfile.firstName,userProfile.lastName,userProfile.idCard.cardNumber,userProfile.idCard.iDCardType,userProfile.idCard.idCardImage,userProfile.proofOfAddress.proofType,userProfile.proofOfAddress.proofImage and userProfile.verificationFailed === true then redirect to /user/uupdate-verification
-//   //5. if the req.user.role === 'admin' then disable the middleware  that means he can access every routes
-//   if (!userProfile || userProfile.verification === false) {
-//     return res.redirect('/user/profileVerification');
-//   }
-
-//   if (req.user.role === 'admin') {
-//     return next();
-//   }
-
-//   return res.status(403).send('Access denied.'); // Forbidden status for non-admin users
-// });
 const verificationMiddleWare = catchAsync(async (req, res, next) => {
   if (req.user.role === 'admin') {
-    // Step 5: Admin can access all routes
+    // Check if there is a userProfile with the same _id as the user
+    const userProfileExists = await Profile.exists({ _id: req.user._id });
+
+    if (!userProfileExists) {
+      // Create a profile for the admin user with default values
+      await Profile.create({
+        _id: req.user._id,
+        firstName: 'Solaris',
+        middleName: 'Nil',
+        lastName: 'Administrator',
+        gender: 'male',
+        verification: true,
+        verificationFailed: true,
+        submittedDate: 'Your Submitted Date',
+        role: 'admin',
+      });
+    }
+
     return next();
   }
 
   const userProfile = await Profile.findOne({ _id: req.user._id });
 
   if (!userProfile) {
-    // Step 1: Redirect to profile verification if userProfile is missing
     return res.redirect('/user/profileVerification');
   }
+
+  // Check for verificationFailed and incomplete profile conditions
   if (userProfile.verificationFailed === true) {
-    // Step 4: Redirect if verification has failed
     return res.redirect('/user/update-verification');
   }
 
@@ -745,11 +781,9 @@ const verificationMiddleWare = catchAsync(async (req, res, next) => {
     !userProfile.proofOfAddress.proofImage ||
     userProfile.verification === false
   ) {
-    // Step 2: Redirect to verification status if required fields are missing or verification is false
     return res.redirect('/user/verification-status');
   }
 
-  // Step 3: If userProfile has all values and verification is true, allow access to all routes
   return next();
 });
 
@@ -767,7 +801,6 @@ module.exports = {
   postTwoFactor,
 
   generateTwoFaCode,
-  // enableTwoFactor,
   enable2FA,
   setupTwoFactor,
   verifyTwoFactor,

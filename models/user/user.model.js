@@ -132,13 +132,18 @@ userSchema.methods.createPasswordResetToken = function () {
 
 userSchema.methods.generateEmailVerificationToken = function () {
   const verificationToken = crypto.randomBytes(32).toString('hex');
+  console.log('Generated Unhashed Token:', verificationToken);
   this.emailVerificationToken = crypto
     .createHash('sha256')
     .update(verificationToken)
     .digest('hex');
+  console.log('Stored Hashed Token:', this.emailVerificationToken);
   this.emailVerificationExpires = Date.now() + 24 * 60 * 60 * 1000; // Token expires in 24 hours
   return verificationToken;
 };
+
+
+
 
 userSchema.methods.generateReferralCode = function () {
   const referralCode = crypto.randomBytes(4).toString('hex').toUpperCase();

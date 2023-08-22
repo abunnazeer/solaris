@@ -22,7 +22,10 @@ const userRouter = require('./routes/user.routers');
 const portfolioRouter = require('./routes/portfolio.routers');
 const activity = require('./routes/activity.routers');
 const referral = require('./routes/referral.routers');
-const dailyPayout = require('./controller/paying.controller');
+const {
+  dailyPayout,
+  compoundingPayout,
+} = require('./controller/paying.controller');
 const dashboard = require('./controller/dashboard.controller');
 const chartRouter = require('./routes/chart.router');
 
@@ -446,6 +449,7 @@ server.listen(PORT, () => {
 });
 // cron.schedule('0 0 * * *', dailyPayout);
 cron.schedule('* * * * *', dailyPayout);
+cron.schedule('* * * * *', compoundingPayout);
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', err => {

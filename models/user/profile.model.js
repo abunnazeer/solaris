@@ -8,7 +8,6 @@ const userProfileSchema = new mongoose.Schema({
   },
   middleName: {
     type: String,
-    required: [true, 'please provide your middle name'],
   },
   lastName: {
     type: String,
@@ -53,14 +52,16 @@ const userProfileSchema = new mongoose.Schema({
   proofOfAddress: {
     proofType: {
       type: String,
-      required: [true, 'please specify the type of proof'],
     },
     proofImage: {
       type: String,
-      required: [true, 'please upload an image of your proof of address'],
     },
   },
   verification: {
+    type: Boolean,
+    default: false,
+  },
+  verificationStatus: {
     type: Boolean,
     default: false,
   },
