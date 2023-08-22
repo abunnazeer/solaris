@@ -65,7 +65,10 @@ const {
   uploadPicture,
   getVerification,
 } = require('../controller/view.user');
-const dailyPayout = require('../controller/paying.controller');
+const {
+  dailyPayout,
+  compoundingPayout,
+} = require('../controller/paying.controller');
 
 // const uploadDocument = require('../middleware/uploadDocument');
 const router = express();
@@ -78,6 +81,7 @@ router.patch(
   updateProfile
 );
 router.get('/test-daily-payout', protect, dailyPayout);
+router.get('/test-comp-payout', protect, compoundingPayout);
 
 // router.post('/register', register);
 router.post('/register/:referredByCode?', register);

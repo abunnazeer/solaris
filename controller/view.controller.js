@@ -195,7 +195,7 @@ const upload = multer({
 });
 
 const uploadDocument = upload.fields([
-  { name: 'idCardImage', maxCount: 1 },
+  { name: 'idCardImage', maxCount: 1 }, // Renamed to match your request body
   { name: 'proofImage', maxCount: 1 },
 ]);
 
@@ -219,14 +219,20 @@ const postProfileVerification = catchAsync(async (req, res) => {
   const user = req.user;
 
   try {
-    // Check if files are uploaded and available in req.files
-    if (!req.files || !req.files['idCardImage'] || !req.files['proofImage']) {
-      throw new AppError('Please upload both idCardImage and proofImage', 400);
+    // Check if idCardImage file is uploaded and available in req.files
+    if (!req.files || !req.files['idCardImage']) {
+      throw new AppError('Please upload Identity Card', 400);
     }
 
-    // Get the filenames from req.files
+    // Get the filename from req.files
     const idCardImageFilename = req.files['idCardImage'][0].filename;
-    const proofImageFilename = req.files['proofImage'][0].filename;
+
+    let proofImageFilename; // Initialize the variable
+
+    // Check if proofImage file is uploaded and available in req.files
+    if (req.files && req.files['proofImage']) {
+      proofImageFilename = req.files['proofImage'][0].filename;
+    }
 
     const profile = await Profile.create({
       _id: user._id,
@@ -250,19 +256,19 @@ const postProfileVerification = catchAsync(async (req, res) => {
       },
       proofOfAddress: {
         proofType,
-        proofImage: proofImageFilename, // Use the filename obtained from req.files
+        proofImage: proofImageFilename,
       },
       submittedDate: formatDate(new Date()),
     });
 
     const message = `
-    <strong>Verification Sennt</strong>
-    <br> A user with following email ${user.email} have submitted an new verification
-   .
+    <strong>Verification Sent</strong>
+    <br> A user with the following email ${user.email} has submitted a new verification.
 `;
+
     await sendEmail({
       email: 'verify-me@solarisfinance.com',
-      subject: `[Solaris Finance] User has send a new  Verification - ${formatDate(
+      subject: `[Solaris Finance] User has sent a new Verification - ${formatDate(
         new Date()
       )}`,
       message,
@@ -271,9 +277,104 @@ const postProfileVerification = catchAsync(async (req, res) => {
     res.redirect('/user/user-verify-status');
   } catch (err) {
     console.error(err);
-    res.status(500).send('Internal Server Error');
+    //     res
+    //       .status(err.statusCode || 500)
+    //       .render('response/error', { message: err.message });
+    //     // res.status(err.statusCode || 500).json({ message: err.message });
+    //   }
+    // });
+    res.status(err.statusCode || 500).send(`
+      <script>
+        alert('${err.message.replace(
+          /'/g,
+          "\\'"
+        )}'); // Escape single quotes in the message
+        window.history.back(); // Go back to the previous page
+      </script>
+    `);
   }
 });
+// const postProfileVerification = catchAsync(async (req, res) => {
+//   const {
+//     firstName,
+//     middleName,
+//     lastName,
+//     phoneNumber,
+//     gender,
+//     addressStreet,
+//     addressCity,
+//     addressState,
+//     addressCountry,
+//     addressZipCode,
+//     idCardNumber,
+//     idCardType,
+//     proofType,
+//   } = req.body;
+
+//   const user = req.user;
+
+//   try {
+//     // Check if idCardImage file is uploaded and available in req.files
+//     if (!req.files || !req.files['idCardImage']) {
+//       throw new AppError('Please upload Identity Card', 400);
+//     }
+
+//     // Get the filename from req.files
+//     const idCardImageFilename = req.files['idCardImage'][0].filename;
+
+//     let proofImageFilename; // Initialize the variable
+
+//     // Check if proofImage file is uploaded and available in req.files
+//     if (req.files && req.files['proofImage']) {
+//       proofImageFilename = req.files['proofImage'][0].filename;
+//     }
+
+//     const profile = await Profile.create({
+//       _id: user._id,
+//       role: user.role,
+//       firstName,
+//       gender,
+//       middleName,
+//       lastName,
+//       phoneNumber,
+//       address: {
+//         street: addressStreet,
+//         city: addressCity,
+//         state: addressState,
+//         country: addressCountry,
+//         zipCode: addressZipCode,
+//       },
+//       idCard: {
+//         cardNumber: idCardNumber,
+//         iDCardType: idCardType,
+//         idCardImage: idCardImageFilename, // Use the filename obtained from req.files
+//       },
+//       proofOfAddress: {
+//         proofType,
+//         proofImage: proofImageFilename,
+//       },
+//       submittedDate: formatDate(new Date()),
+//     });
+
+//     const message = `
+//     <strong>Verification Sennt</strong>
+//     <br> A user with following email ${user.email} have submitted an new verification
+//    .
+// `;
+//     await sendEmail({
+//       email: 'verify-me@solarisfinance.com',
+//       subject: `[Solaris Finance] User has send a new  Verification - ${formatDate(
+//         new Date()
+//       )}`,
+//       message,
+//     });
+
+//     res.redirect('/user/user-verify-status');
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send('Internal Server Error');
+//   }
+// });
 
 const getVerificationStatus = (req, res) => {
   res.status(200).render('user/verification_status', {
@@ -312,8 +413,8 @@ const postUpdateVerification = async (req, res) => {
     }
 
     // 2. Check if both file uploads have files
-    if (!req.files || !req.files.proofImage || !req.files.idCardImage) {
-      return res.status(400).send('Both files are required');
+    if (!req.files || !req.files.proofImage) {
+      return res.status(400).send('Identity Card Upload is required');
     }
 
     // Get the filenames

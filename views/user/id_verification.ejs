@@ -34,7 +34,7 @@
             border-bottom: 2px solid #020080;
             /* background-color: #46bc5c; */
             display: block;
-            width: 30%;
+            width: 33%;
             color: #000000;
             top: 0px;
             padding: 15px 10px;
@@ -62,7 +62,7 @@
       >
         <div class="container mt-30">
           <img
-            src="/images/header/Withdrawal_history_Web.png"
+            src="/images/header/kyc_update_Web.png"
             alt="referral"
             srcset=""
           />
@@ -76,6 +76,7 @@
                     action="/user/profile-verification"
                     enctype="multipart/form-data"
                     method="POST"
+                     onsubmit="return validateStep(currentStep);"
                   >
                     <!-- Step 1: Personal Information -->
                     <div class="step active" id="step1">
@@ -104,7 +105,7 @@
       id="middleName"
       name="middleName"
       placeholder="Middle Name"
-      required
+      
     />
   </div>
 
@@ -125,7 +126,7 @@
 
       <select  class="form-control select2 select2-hidden-accessible" id="gender" name="gender" style="width: 100%;" tabindex="-1" aria-hidden="true">
     
-      <option value="" disabled selected>Select Gender</option>
+      <option value="" disabled selected >Select Gender</option>
       <option value="male">Male</option>
       <option value="female">Female</option>
       <option value="other">Other</option>
@@ -171,6 +172,7 @@
                             id="addressStreet"
                             name="addressStreet"
                             placeholder="Your Address"
+                            required
                           />
                         </div>
                         <div class="form-group">
@@ -190,6 +192,7 @@
                             id="addressState"
                             name="addressState"
                             placeholder="Your State"
+                            required
                           />
                         </div>
 
@@ -203,6 +206,7 @@
                             id="addressCity"
                             name="addressCity"
                             placeholder="Your City"
+                            required
                           />
                         </div>
 
@@ -216,6 +220,7 @@
                             id="addressZipCode"
                             name="addressZipCode"
                             placeholder="Zip code"
+                            required
                           />
                         </div>
                       </section>
@@ -267,6 +272,7 @@
                             id="idCardNumber"
                             name="idCardNumber"
                             placeholder="Identity Number"
+                            required
                           />
                         </div>
 
@@ -278,8 +284,10 @@
                             type="file"
                             class="form-control"
                             id="idCardImage"
+                            
                             name="idCardImage"
                             accept="image/*,.pdf"
+                         
                           />
                         </div>
                       </section>
@@ -302,7 +310,7 @@
                     <div class="step" id="step4">
                       <!-- Step 4: Proof of Address -->
                       <h3 class="header__top4">
-                        <span class="header__topspan">4</span> Proof of Address
+                        <span class="header__topspan">4</span> Proof of Address (Optional)
                       </h3>
                       <section>
                         <div class="form-group mt-60">
@@ -359,62 +367,96 @@
         </div>
       </div>
 
-      <script>
-        let currentStep = 1;
+     <!-- ... (previous code) -->
 
-        function showStep(stepNumber) {
-          const steps = document.getElementsByClassName('step');
-          for (let i = 0; i < steps.length; i++) {
-            if (i + 1 === stepNumber) {
-              steps[i].classList.add('active');
-            } else {
-              steps[i].classList.remove('active');
-            }
-          }
-        }
+<script>
+  let currentStep = 1;
 
-        function nextStep(stepNumber) {
-          if (stepNumber < 4) {
-            currentStep = stepNumber + 1;
-            showStep(currentStep);
-          }
-        }
-
-        function prevStep(stepNumber) {
-          if (stepNumber > 1) {
-            currentStep = stepNumber - 1;
-            showStep(currentStep);
-          }
-        }
-
-        // Show the first step initially
-        showStep(currentStep);
-          async function fetchAllCountries() {
-      try {
-        const response = await fetch('https://restcountries.com/v2/all');
-        const data = await response.json();
-        return data;
-      } catch (error) {
-        console.error('Error fetching countries:', error);
-        return [];
+  function showStep(stepNumber) {
+    const steps = document.getElementsByClassName('step');
+    for (let i = 0; i < steps.length; i++) {
+      if (i + 1 === stepNumber) {
+        steps[i].classList.add('active');
+      } else {
+        steps[i].classList.remove('active');
       }
     }
+  }
 
-    // Function to populate the country select options
-    async function populateCountrySelect() {
-      const countrySelect = document.getElementById('country');
-      const countries = await fetchAllCountries();
+  function validateStep(stepNumber) {
+    const step = document.querySelector(`#step${stepNumber}`);
+    const requiredInputs = step.querySelectorAll('[required]');
+    let isValid = true;
 
-      countries.forEach(country => {
-        const option = document.createElement('option');
-        option.textContent = country.name;
-        countrySelect.appendChild(option);
-      });
+    requiredInputs.forEach(input => {
+      const trimmedValue = input.value.trim();
+      if (trimmedValue === '') {
+        isValid = false;
+        input.classList.add('is-invalid');
+      } else {
+        input.value = trimmedValue.toUpperCase(); // Convert to uppercase
+        input.classList.remove('is-invalid');
+      }
+    });
+
+    return isValid;
+  }
+
+  function nextStep(stepNumber) {
+    if (validateStep(stepNumber)) {
+      if (stepNumber < 4) {
+        currentStep = stepNumber + 1;
+        showStep(currentStep);
+      }
     }
+  }
 
-    // Call the function to populate the country select on page load
-    window.addEventListener('load', populateCountrySelect);
-      </script>
+  function prevStep(stepNumber) {
+    if (stepNumber > 1) {
+      currentStep = stepNumber - 1;
+      showStep(currentStep);
+    }
+  }
+
+  // Show the first step initially
+  showStep(currentStep);
+
+  async function fetchAllCountries() {
+    try {
+      const response = await fetch('https://restcountries.com/v2/all');
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching countries:', error);
+      return [];
+    }
+  }
+
+  // Function to populate the country select options
+  async function populateCountrySelect() {
+    const countrySelect = document.getElementById('country');
+    const countries = await fetchAllCountries();
+
+    countries.forEach(country => {
+      const option = document.createElement('option');
+      option.textContent = country.name;
+      countrySelect.appendChild(option);
+    });
+  }
+
+  // Call the function to populate the country select on page load
+  window.addEventListener('load', populateCountrySelect);
+
+  function formatPhoneNumber(input) {
+    return input.replace(/\s/g, '');
+  }
+
+  // Event listener for the phone number input
+  document.getElementById('phoneNumber').addEventListener('input', function () {
+    this.value = formatPhoneNumber(this.value);
+  });
+</script>
+
     </div>
 
     <footer class="main-footer bg-white">

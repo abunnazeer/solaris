@@ -46,23 +46,26 @@
 				  </div>
 				 
 				</div>
-                       <div class="box b-groove p-10">
-				  <div class="box-header with-border">
-					<h2 class="box-title"><strong>PROOF OF ADDRESS</strong></h2>
-				  </div>
-				  <div class="box-body">
-                    
-                    <h3><strong>Proof of Address Type:</strong> <%= getDetail.proofOfAddress.proofType%></h3>
-			 <h3> <strong>Address:</strong> <%= getDetail.address.street%></h3>
-                                <% if(getDetail.proofOfAddress.proofImage.endsWith('.pdf')) { %>
-                                    <embed src="/profile/<%= getDetail.proofOfAddress.proofImage %>" type="application/pdf" width="100%" height="700%" style="height: 50vh;">></embed>
-                                <% } else { %>
-                                    <img src="/profile/<%= getDetail.proofOfAddress.proofImage %>" alt="" width="100%" height="700%" />
-                                <% } %>
-                            
-				  </div>
-				
-                          
+       <div class="box b-groove p-10">
+    <div class="box-header with-border">
+        <h2 class="box-title"><strong>PROOF OF ADDRESS</strong></h2>
+    </div>
+    <div class="box-body">
+        <% if (getDetail.proofOfAddress) { %>
+            <h3><strong>Proof of Address Type:</strong> <%= getDetail.proofOfAddress.proofType %></h3>
+            <h3><strong>Address:</strong> <%= getDetail.address.street %></h3>
+            <% if (getDetail.proofOfAddress.proofImage && getDetail.proofOfAddress.proofImage.endsWith('.pdf')) { %>
+                <embed src="/profile/<%= getDetail.proofOfAddress.proofImage %>" type="application/pdf" width="100%" height="700%" style="height: 50vh;"></embed>
+            <% } else if (getDetail.proofOfAddress.proofImage) { %>
+                <img src="/profile/<%= getDetail.proofOfAddress.proofImage %>" alt="" width="100%" height="700%" />
+            <% } else { %>
+                <p>No proof of address image available.</p>
+            <% } %>
+        <% } else { %>
+            <p>No proof of address details available.</p>
+        <% } %>
+    </div>
+</div>      
                            <div class="box-footer">
 
         <button type="submit" class="waves-effect waves-light btn btn-danger mb-5" data-bs-toggle="modal" data-bs-target="#signup-modal">Disapprove</button>
