@@ -108,7 +108,7 @@
                           <h3 class="m-0 fw-600">
                            
                           </h3>
-                        <h1 class="m-0 fw-600 text-white" style="font-size: 3rem;"> <%= activePortfoliosCount %></h1>
+                        <h1 class="m-0 fw-600 text-white" style="font-size: 2.5rem;"> <%= activePortfoliosCount %></h1>
                         
                       </div>
 
@@ -135,7 +135,7 @@
                           portfolioData.forEach(function(portfolio) { %> <%
                           totlaCompBalance += portfolio.compBalance %>
                               <% }) %>
-                         <h1 class="m-0 fw-600" style="font-size: 3rem; color:  #f89f1e;"> $ <%= totlaCompBalance.toLocaleString()%></h1>
+                         <h1 class="m-0 fw-600" style="font-size: 2.5rem; color:  #f89f1e;"> $ <%= totlaCompBalance.toLocaleString()%></h1>
                       </div>
 
                       <div class="col-4">
@@ -156,7 +156,7 @@
                     </div>
                     <div class="row align-items-center mt-10">
                       <div class="col-8">
-                       <h1 class="m-0 fw-600 text-white" style="font-size: 50px;">$ <%= totalBonus %></h1>
+                       <h1 class="m-0 fw-600 text-white" style="font-size: 2.5rem;">$ <%= totalBonus %></h1>
                       </div>
                       <div class="col-4">
                         <img src="images/icons/transaction.png" class="icon__img_r" alt="commission" srcset="">
@@ -180,7 +180,7 @@
 <% portfolioData.forEach(function(portfolio) { %>
   <% totalAmount += portfolio.compBalance + portfolio.balance %>
 <% }) %>
-<h1 class="m-0 fw-600" style="font-size: 3rem; color: #f89f1e;">
+<h1 class="m-0 fw-600" style="font-size: 2.5rem; color: #f89f1e;">
   $<%= totalAmount.toLocaleString() %>
 </h1>
 
@@ -229,7 +229,7 @@
                     </div>
                     <div class="row align-items-center">
                       <div class="col-6 mb-50">
-                         <h1 class="m-0 fw-600" style="font-size: 50px; color: #f89f1e;"><%= referredUsersCount %></h1>
+                         <h1 class="m-0 fw-600" style="font-size: 2.5rem; color: #f89f1e;"><%= referredUsersCount %></h1>
                       </div>
                       <div class="col-6">
                         <div id="donutChart"></div>
@@ -253,7 +253,7 @@
 <% portfolioData.forEach(function(portfolio) { %>
   <% totalBalance += portfolio.balance %>
 <% }) %>
-<h1 class="m-0 fw-600" style="font-size: 3rem; color: #f89f1e;">
+<h1 class="m-0 fw-600" style="font-size: 2.5rem; color: #f89f1e;">
   $ <%= totalBalance.toLocaleString() %>
 </h1>
                      

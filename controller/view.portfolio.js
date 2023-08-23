@@ -272,7 +272,7 @@ const paymentComfirmation = catchAsync(async (req, res) => {
             _id: secondLevelReferrerId,
           });
           const userProfile = await Profile.findOne({ _id: userId });
-          const description = `Credited 5% $${bonusAmount}, as a referral from ${userProfile.fullName} to your ${portfoliodetail.payout} Wallet `;
+          const description = `Credited 5% $${bonusAmount}, as a referral from ${userProfile.firstName} - ${userProfile.lastName} to your account balance `;
           const thirdLevelReferralBonus = new Referralbonus({
             referringUserId: thirdLevelReferrerId, // The user who referred the second-level referrer
             bonusAmount: thirdLevelBonusAmount,
@@ -412,21 +412,27 @@ const getStatusIndex = catchAsync(async (req, res) => {
   const userObjects = []; // Create an array to store the userObjects
 
   for (const user of userDetails) {
-    const userId = user.userId._id;
-    const userProfile = await Profile.findOne({ _id: userId });
+    // Check if user.userId exists before attempting to access its _id property
+    if (user.userId) {
+      const userId = user.userId._id;
+      const userProfile = await Profile.findOne({ _id: userId });
 
-    if (!userProfile) {
-      return res
-        .status(404)
-        .render('response/status', { message: 'User profile not found' });
+      if (!userProfile) {
+        return res
+          .status(404)
+          .render('response/status', { message: 'User profile not found' });
+      }
+
+      const userObject = {
+        userDetails: user,
+        userProfile: userProfile,
+      };
+
+      userObjects.push(userObject); // Push the userObject to the array
+    } else {
+      // Handle the case where user.userId is null (e.g., log an error or warning)
+      console.warn('userId is null for user:', user);
     }
-
-    const userObject = {
-      userDetails: user,
-      userProfile: userProfile,
-    };
-
-    userObjects.push(userObject); // Push the userObject to the array
   }
 
   // console.log(userObjects);
@@ -545,9 +551,17 @@ const updatePayment = catchAsync(async (req, res) => {
         .render('response/status', { message: 'User profile not found' });
     }
 
-    const { fullName } = userProfile;
+    const { firstName, lastName } = userProfile;
 
-    const adminMessage = `User with the following details has sent their payment.\n\nUser details:\nName: ${fullName}\nEmail: ${email}\n\nPayment details:\nAmount: ${portfolio.depositAmount}\nCurrency: ${portfolio.currency}\nCrypto Amount: ${portfolio.cryptoAmount}\nPortfolio Name: ${portfolio.portfolioName}\nWallet Address: ${portfolio.walletAddress}`;
+    const adminMessage = `User with the following details has sent their payment.\n\nUser details:\nName: ${
+      firstName + ' ' + lastName
+    }\nEmail: ${email}\n\nPayment details:\nAmount: ${
+      portfolio.depositAmount
+    }\nCurrency: ${portfolio.currency}\nCrypto Amount: ${
+      portfolio.cryptoAmount
+    }\nPortfolio Name: ${portfolio.portfolioName}\nWallet Address: ${
+      portfolio.walletAddress
+    }`;
     await sendEmail({
       email: 'admin@solarisfinance.com',
       subject: 'New Payment',
