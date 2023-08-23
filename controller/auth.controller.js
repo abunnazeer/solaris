@@ -777,8 +777,6 @@ const verificationMiddleWare = catchAsync(async (req, res, next) => {
     !userProfile.idCard.cardNumber ||
     !userProfile.idCard.iDCardType ||
     !userProfile.idCard.idCardImage ||
-    !userProfile.proofOfAddress.proofType ||
-    !userProfile.proofOfAddress.proofImage ||
     userProfile.verification === false
   ) {
     return res.redirect('/user/verification-status');
