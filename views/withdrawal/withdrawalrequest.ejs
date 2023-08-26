@@ -9,7 +9,27 @@
       <header class="main-header">
         <!-- header-->
         <%- include('../layouts/header') %>
-        <style></style>
+       <!-- Add this to your HTML head or a separate CSS file -->
+<style>
+  .withdrawal-button {
+    border-radius: 5px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    line-height: inherit;
+    padding: 8px 16px;
+    font-size: 1.1rem;
+    transition: all 0.5s ease-in-out;
+    background-color: #24095d;
+    color: #fff;
+  }
+
+  .withdrawal-button:hover {
+    background-color: #5622c5 !important;
+    color: #fff !important;
+    cursor: pointer;
+  }
+</style>
+
 
       </header>
 
@@ -62,7 +82,7 @@
                             </div>
                             <div>
                               <span
-                                class="btn bg-gradient-info-dark"
+                                class="withdrawal-button"
                                 id="generateCodeBtn"
                                 >Generate Code</span
                               >
@@ -130,12 +150,18 @@
                         </div>
 
                         <div class="mt-10">
-                          <button
+                          <!-- <button
                             type="submit"
                             class="btn btn bg-gradient-info-dark"
                           >
                             Make Withdrawal
-                          </button>
+                          </button> -->
+                         <!-- Updated HTML for the button -->
+<button type="submit" class="withdrawal-button">
+  <span id="spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+  Make Withdrawal
+</button>
+
                         </div>
                       </form>
                     </div>
@@ -185,20 +211,42 @@
                 });
             });
 
-          $('form').on('submit', function (event) {
-            event.preventDefault();
+          // $('form').on('submit', function (event) {
+          //   event.preventDefault();
 
-            var formData = $(this).serialize();
+          //   var formData = $(this).serialize();
 
-            $.ajax({
-              type: 'POST',
-              url: '/user/withdrawal',
-              data: formData,
-              success: function (response) {
-                // Handle successful response
-                window.location.href = response.redirectUrl;
-              },
-              error: function (xhr, status, error) {
+          //   $.ajax({
+          //     type: 'POST',
+          //     url: '/user/withdrawal',
+          //     data: formData,
+          //     success: function (response) {
+          //       // Handle successful response
+          //       window.location.href = response.redirectUrl;
+          //     },
+          //     error: function (xhr, status, error) {
+            $('form').on('submit', function (event) {
+  event.preventDefault();
+
+  // Show the spinner
+  $('#spinner').show();
+
+  var formData = $(this).serialize();
+
+  $.ajax({
+    type: 'POST',
+    url: '/user/withdrawal',
+    data: formData,
+    success: function (response) {
+      // Hide the spinner
+      $('#spinner').hide();
+
+      // Handle successful response
+      window.location.href = response.redirectUrl;
+    },
+    error: function (xhr, status, error) {
+      // Hide the spinner
+      $('#spinner').hide();
                 // Handle error response
                 var errorMessage = xhr.responseText;
 
