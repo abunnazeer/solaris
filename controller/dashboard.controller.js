@@ -1,14 +1,20 @@
 const buyPortfolio = require('../models/portfolio/buyportfolio.model');
 const referralBonus = require('../models/user/referralBonus.model');
 const User = require('../models/user/user.model');
+const Account = require('../models/user/account.model'); // Assuming you have an Account model
 
 const dashboard = async (req, res) => {
   const { id } = req.user;
   try {
-    // Assuming you have some logic to get the user's portfolios
     const portfolios = await buyPortfolio.find({ userId: id });
 
+    let totalBalance = 0;
+    let totalCompBalance = 0;
+
     const portfolioData = portfolios.map(portfolio => {
+      totalBalance += portfolio.balance;
+      totalCompBalance += portfolio.compBalance; // Summing up all compBalance
+
       return {
         status: portfolio.status,
         balance: portfolio.balance,
@@ -16,26 +22,65 @@ const dashboard = async (req, res) => {
       };
     });
 
-    // Get the total number of users that you have referred (count)
     const referredUsersCount = await User.countDocuments({
       referredBy: id,
     });
 
     const totalBonusDocs = await referralBonus.find({ referringUserId: id });
 
-    // Calculate the sum of bonusAmount values, ignoring documents without bonusAmount
-    const totalBonus = totalBonusDocs.reduce((sum, bonusDoc) => {
+    let totalBonus = 0;
+    totalBonusDocs.forEach(bonusDoc => {
       if (bonusDoc.bonusAmount) {
-        return sum + parseFloat(bonusDoc.bonusAmount);
+        totalBonus += parseFloat(bonusDoc.bonusAmount);
       }
-      return sum; // Skip documents without bonusAmount
-    }, 0);
+    });
+    // const accumulatedDividends = totalBalance + totalCompBalance + totalBonus;
+    // const totalAccountBalance = totalBalance + totalBonus;
+    // const compoundBalance = totalCompBalance; // Making it the total of all compBalance
 
+    // const updatedAccount = await Account.findOneAndUpdate(
+    //   { userId: id },
+    //   {
+    //     accumulatedDividends,
+    //     totalAccountBalance,
+    //     compoundingBalance: compoundBalance,
+    //   },
+    //   { upsert: true, new: true } // This will insert a new document if one doesn't already exist, and return the new document
+    // );
+
+    // Calculate new accumulatedDividends
+    const newAccumulatedDividends =
+      totalBalance + totalCompBalance + totalBonus;
+    const totalAccountBalance = totalBalance + totalBonus;
+    const compoundBalance = totalCompBalance; // Making it the total of all compBalance
+
+    // Fetch the current value from the Account model
+    const currentAccount = await Account.findOne({ userId: id });
+
+    // Only update if the new value is greater than the current value
+    const updatedAccumulatedDividends = currentAccount
+      ? Math.max(currentAccount.accumulatedDividends, newAccumulatedDividends)
+      : newAccumulatedDividends;
+
+    // Update the Account model
+    const updatedAccount = await Account.findOneAndUpdate(
+      { userId: id },
+      {
+        accumulatedDividends: updatedAccumulatedDividends,
+        totalAccountBalance,
+        compoundingBalance: compoundBalance,
+      },
+      { upsert: true, new: true }
+    );
+    console.log(updatedAccount.accumulatedDividends);
     res.status(200).render('dashboard', {
       title: 'Dashboard',
-      portfolioData, // Pass the extracted data to the view
-      totalBonus, // Pass the calculated totalBonus to the view
-      referredUsersCount, // Pass the count of referred users to the view
+      portfolioData,
+      totalBonus,
+      referredUsersCount,
+      accumulatedDividends: updatedAccount.accumulatedDividends, // Fetch updated value from Account model
+      totalAccountBalance: updatedAccount.totalAccountBalance, // Fetch updated value from Account model
+      compoundBalance: updatedAccount.compoundingBalance, // Fetch updated value from Account model
     });
   } catch (err) {
     console.error(err);

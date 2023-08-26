@@ -131,11 +131,8 @@
                     <div class="row align-items-center mt-10">
                       <div class="col-8">
 
-                           <% let totlaCompBalance = 0; %> <%
-                          portfolioData.forEach(function(portfolio) { %> <%
-                          totlaCompBalance += portfolio.compBalance %>
-                              <% }) %>
-                         <h1 class="m-0 fw-600" style="font-size: 2rem; color:  #f89f1e;"> $ <%= totlaCompBalance.toLocaleString()%></h1>
+                        
+                         <h1 class="m-0 fw-600" style="font-size: 2rem; color:  #f89f1e;"> $ <%= compoundBalance.toLocaleString()%></h1>
                       </div>
 
                       <div class="col-4">
@@ -156,7 +153,7 @@
                     </div>
                     <div class="row align-items-center mt-10">
                       <div class="col-8">
-                       <h1 class="m-0 fw-600 text-white" style="font-size: 2rem;">$ <%= totalBonus %></h1>
+                       <h1 class="m-0 fw-600 text-white" style="font-size: 2rem;">$ <%= totalBonus.toLocaleString() %></h1>
                       </div>
                       <div class="col-4">
                         <img src="images/icons/transaction.png" class="icon__img_r" alt="commission" srcset="">
@@ -176,12 +173,9 @@
                     </div>
                     <div class="row align-items-center mt-10">
                       <div class="col-8">
-    <% let totalAmount = 0; %>
-<% portfolioData.forEach(function(portfolio) { %>
-  <% totalAmount += portfolio.compBalance + portfolio.balance %>
-<% }) %>
+
 <h1 class="m-0 fw-600" style="font-size: 2rem; color: #f89f1e;">
-  $<%= totalAmount.toLocaleString() %>
+  $<%= accumulatedDividends.toLocaleString() %>
 </h1>
 
                       </div>
@@ -250,11 +244,9 @@
                     <div class="text-center">
                       <div id="balanceChart" style="width: 250px;  margin: auto;"> </div>
                          <% let totalBalance = 0; %>
-<% portfolioData.forEach(function(portfolio) { %>
-  <% totalBalance += portfolio.balance %>
-<% }) %>
+
 <h1 class="m-0 fw-600" style="font-size: 2rem; color: #f89f1e;">
-  $ <%= totalBalance.toLocaleString() %>
+  $ <%= totalAccountBalance.toLocaleString() %>
 </h1>
                      
                       <div class="mt-10 mt-md-0">

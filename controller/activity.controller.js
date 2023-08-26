@@ -8,6 +8,7 @@ const sendEmail = require('../utils/email');
 const buyPortfolio = require('../models/portfolio/buyportfolio.model');
 const Transactions = require('../models/portfolio/transaction.model');
 const TwoFactor = require('../models/user/twoFactor.model');
+const ReferralBonus = require('../models/user/referralBonus.model');
 
 const getActivity = async (req, res, next) => {
   const { id, role } = req.user;
@@ -117,20 +118,73 @@ const postWithdrawal = async (req, res) => {
       userId: id,
     });
 
-    // Check for sufficient balance
-    if (portfolioBuy && portfolioBuy.balance < amount) {
-      return res.status(400).send('Insufficient balance.');
+    // // Check for sufficient balance
+    // if (portfolioBuy && portfolioBuy.balance < amount) {
+    //   return res.status(400).send('Insufficient balance.');
+    // }
+
+    // let buyPortfolioId = portfolioBuy ? portfolioBuy._id : null;
+
+    // // Subtract `amount` from `buyPortfolio.balance`
+    // if (buyPortfolioId) {
+    //   await buyPortfolio.updateOne(
+    //     { _id: buyPortfolioId },
+    //     { $inc: { balance: -amount } }
+    //   );
+    // }
+
+    // Fetch portfolios for the user
+    const portfolios = await buyPortfolio.find({
+      userId: id,
+      balance: { $ne: 0 },
+    });
+
+    // Calculate totalBonus
+    let totalBonus = 0;
+    const totalBonusDocs = await ReferralBonus.find({ referringUserId: id });
+    totalBonusDocs.forEach(bonusDoc => {
+      if (bonusDoc.bonusAmount) {
+        totalBonus += parseFloat(bonusDoc.bonusAmount);
+      }
+    });
+
+    // Calculate totalAccountBalance
+    let totalBalance = 0;
+    portfolios.forEach(portfolio => {
+      totalBalance += portfolio.balance;
+    });
+    const totalAccountBalance = totalBalance + totalBonus;
+
+    // Check for sufficient totalAccountBalance
+    if (totalAccountBalance < amount) {
+      return res.status(400).send('Insufficient total account balance.');
+    }
+    let buyPortfolioId = null;
+    let status = 'Approved';
+    if (totalBalance >= amount) {
+      // Deduct from portfolio.balance
+      buyPortfolioId = portfolios[0]._id; // Assuming you want to associate with the first portfolio
+      status = 'Pending Approval';
+      for (const portfolio of portfolios) {
+        const deduction = (portfolio.balance / totalBalance) * amount;
+        await buyPortfolio.updateOne(
+          { _id: portfolio._id },
+          { $inc: { balance: -deduction } }
+        );
+      }
+    } else if (totalBonus >= amount) {
+      // Deduct from bonusDoc.bonusAmount
+      buyPortfolioId = null; // No portfolio involved
+      status = 'Approved';
+      for (const bonusDoc of totalBonusDocs) {
+        const deduction = (bonusDoc.bonusAmount / totalBonus) * amount;
+        await ReferralBonus.updateOne(
+          { _id: bonusDoc._id },
+          { $inc: { bonusAmount: -deduction } }
+        );
+      }
     }
 
-    let buyPortfolioId = portfolioBuy ? portfolioBuy._id : null;
-
-    // Subtract `amount` from `buyPortfolio.balance`
-    if (buyPortfolioId) {
-      await buyPortfolio.updateOne(
-        { _id: buyPortfolioId },
-        { $inc: { balance: -amount } }
-      );
-    }
     // Fetch the current conversion rate from CoinMarketCap
     const response = await axios.get(
       `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest`,
@@ -155,8 +209,10 @@ const postWithdrawal = async (req, res) => {
       sn: generateRandomNumber(),
       date: date,
       description: 'Withdrawal',
+      // buyPortfolioId: buyPortfolioId,
+      // status: buyPortfolioId ? 'Pending Approval' : 'Approved',
       buyPortfolioId: buyPortfolioId,
-      status: buyPortfolioId ? 'Pending Approval' : 'Approved',
+      status: status,
       amount: amount,
       cryptoAmount: cryptoAmount,
       authCode: authCode,
@@ -201,58 +257,56 @@ const getwithdrawalStatus = (req, res) => {
   });
 };
 
+// const getWithdrawalRequest = async (req, res, next) => {
+//   const { id, role } = req.user; // Get the user ID and role from req.user
+
+//   try {
+//     const portfolioBuy = await buyPortfolio.findOne({
+//       userId: id,
+//     });
+
+//     res.status(200).render('withdrawal/withdrawalrequest', {
+//       title: 'Withdrawal Request',
+
+//       portfolioBuy,
+//     });
+//   } catch (err) {
+//     console.log(err);
+//     const error = new AppError('An error occurred', 500);
+//     next(error);
+//   }
+// };
+
 const getWithdrawalRequest = async (req, res, next) => {
   const { id, role } = req.user; // Get the user ID and role from req.user
 
   try {
-    // const page = parseInt(req.query.page) || 1; // Current page number
-    // const limit = parseInt(req.query.limit) || 10; // Number of activities per page
+    // Fetch all portfolios for this user
+    const portfolios = await buyPortfolio.find({ userId: id });
 
-    // let conditions = {}; // Initialize an empty object for the query conditions
-
-    // // Check if the user role is 'admin'
-    // if (role === 'admin') {
-    //   // No specific conditions needed for admin, so leave conditions object empty
-    // } else if (role === 'personal') {
-    //   // Set the condition to match the user ID for 'personal' role
-    //   conditions = { userId: id };
-    // }
-    const portfolioBuy = await buyPortfolio.findOne({
-      userId: id,
+    // Calculate totalBalance across all portfolios
+    let totalBalance = 0;
+    portfolios.forEach(portfolio => {
+      totalBalance += portfolio.balance;
     });
-    // // console.log(conditions);
-    // const count = await Transactions.countDocuments(conditions); // Total count of activities based on conditions
-    // const totalPages = Math.ceil(count / limit); // Calculate total number of pages
 
-    // // console.log(count);
-    // const skip = (page - 1) * limit; // Calculate number of activities to skip
+    // Fetch all referral bonuses for this user
+    const totalBonusDocs = await ReferralBonus.find({ referringUserId: id });
 
-    // const activities = await Transactions.find(conditions)
-    //   .populate({
-    //     path: 'userId',
-    //     model: 'User',
-    //     select: 'name email', // Specify the fields you want to retrieve from the User model
-    //   })
-    //   .populate('buyPortfolioId')
-    //   .skip(skip)
-    //   .limit(limit);
+    // Calculate totalBonus
+    let totalBonus = 0;
+    totalBonusDocs.forEach(bonusDoc => {
+      if (bonusDoc.bonusAmount) {
+        totalBonus += parseFloat(bonusDoc.bonusAmount);
+      }
+    });
 
-    // let twoFactorCode = null;
-    // if (id) {
-    //   twoFactorCode = await TwoFactor.findOne({ user: id });
-    // }
-
-    // if (twoFactorCode) {
-    //   // console.log(twoFactorCode.userId);
-    // }
+    // Calculate the combined total for withdrawals
+    const totalForWithdrawals = totalBalance + totalBonus;
 
     res.status(200).render('withdrawal/withdrawalrequest', {
       title: 'Withdrawal Request',
-      // activities: activities,
-      // totalPages: totalPages,
-      portfolioBuy,
-      // currentPage: page,
-      // limit: limit, // Pass the 'limit' value to the template
+      totalForWithdrawals, // Pass the combined total to the view
     });
   } catch (err) {
     console.log(err);

@@ -3,12 +3,14 @@
   <head>
     <title><%= title %></title>
   </head>
+
   <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
     <div class="wrapper">
       <header class="main-header">
         <!-- header-->
         <%- include('../layouts/header') %>
         <style></style>
+
       </header>
 
       <aside class="main-sidebar" style="border-right: 1px solid #cbcbcb">
@@ -142,8 +144,8 @@
                         <div>
                           <h4>Account Balance:</h4>
                           <h1>
-                            $<%= portfolioBuy && portfolioBuy.balance ?
-                            portfolioBuy.balance.toLocaleString() : '0' %>
+                            $<%= totalForWithdrawals ?
+                            totalForWithdrawals.toLocaleString() : '0' %>
                           </h1>
                         </div>
                       </div>
