@@ -13,75 +13,96 @@ const today = new Date();
 const dayName = daysOfWeek[today.getDay()];
 
 const dailyPayout = async (req, res) => {
-  const portfolio = await buyPortfolio.findOne({ userId: req.user._id });
-  console.log(portfolio);
-  console.log(`Today is ${dayName}`);
+  const portfolios = await buyPortfolio.find({ userId: req.user._id });
 
-  if (portfolio.status !== 'active') {
-    console.log('Portfolio is not active');
-    return res.status(400).send('Portfolio is not active');
-  }
-  // Check if the day is included in the daysOfWeek array
-  if (!daysOfWeek.includes(dayName)) {
-    return res.status(200).send('No payout today');
+  if (portfolios.length === 0) {
+    return res.status(400).send('No portfolios found');
   }
 
-  // Check if the portfolio has expired
-  const startDate = new Date(portfolio.startDate);
-  const expirationDate = new Date(startDate);
-  expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+  let messages = [];
 
-  if (today > expirationDate) {
-    console.log('Portfolio has expired');
-    portfolio.status = 'expired';
+  for (const portfolio of portfolios) {
+    console.log(`Processing portfolio ${portfolio._id}`);
+    if (portfolio.status !== 'active') {
+      messages.push(`Portfolio ${portfolio._id} is not active`);
+      continue;
+    }
+
+    if (!daysOfWeek.includes(dayName)) {
+      messages.push(`No payout today for portfolio ${portfolio._id}`);
+      continue;
+    }
+
+    const startDate = new Date(portfolio.startDate);
+    const expirationDate = new Date(startDate);
+    expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+
+    if (today > expirationDate) {
+      portfolio.status = 'expired';
+      await portfolio.save();
+      messages.push(`Portfolio ${portfolio._id} has expired`);
+      continue;
+    }
+
+    const payout = (portfolio.dailyPercentage / 100) * portfolio.amount;
+    portfolio.balance += payout;
     await portfolio.save();
-    return res.status(400).send('Portfolio has expired');
+
+    messages.push(
+      `Payout of ${payout} added to balance for portfolio ${portfolio._id}`
+    );
   }
 
-  const payout = (portfolio.dailyPercentage / 100) * portfolio.amount; // Assuming dailyPercentage is 4
-  console.log(`Calculated payout: ${payout}`); // Should log "Calculated payout: 40"
-  portfolio.balance += payout;
-
-  // Don't forget to save the updated portfolio
-  await portfolio.save();
-
-  res.status(200).send(`Payout of ${payout} added to balance`);
+  res.status(200).send(messages.join('\n'));
 };
 
 const compoundingPayout = async (req, res) => {
-  const portfolio = await buyPortfolio.findOne({ userId: req.user._id });
-  console.log(portfolio);
-  console.log(`Today is ${dayName}`);
+  const portfolios = await buyPortfolio.find({ userId: req.user._id });
 
-  if (portfolio.status !== 'active') {
-    console.log('Portfolio is not active');
-    return res.status(400).send('Portfolio is not active');
-  }
-  // Check if the day is included in the daysOfWeek array
-  if (!daysOfWeek.includes(dayName)) {
-    return res.status(200).send('No payout today');
+  if (portfolios.length === 0) {
+    return res.status(400).send('No portfolios found');
   }
 
-  // Check if the portfolio has expired
-  const startDate = new Date(portfolio.startDate);
-  const expirationDate = new Date(startDate);
-  expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+  let messages = [];
 
-  if (today > expirationDate) {
-    console.log('Portfolio has expired');
-    portfolio.status = 'expired';
+  for (const portfolio of portfolios) {
+    console.log(`Processing portfolio ${portfolio._id}`);
+    if (portfolio.status !== 'active') {
+      messages.push(`Portfolio ${portfolio._id} is not active`);
+      continue;
+    }
+
+    if (!daysOfWeek.includes(dayName)) {
+      messages.push(
+        `No compounding payout today for portfolio ${portfolio._id}`
+      );
+      continue;
+    }
+
+    const startDate = new Date(portfolio.startDate);
+    const expirationDate = new Date(startDate);
+    expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+
+    if (today > expirationDate) {
+      portfolio.status = 'expired';
+      await portfolio.save();
+      messages.push(`Portfolio ${portfolio._id} has expired`);
+      continue;
+    }
+
+    const payout = (portfolio.compPercentage / 100) * portfolio.amount;
+    portfolio.compBalance += payout;
     await portfolio.save();
-    return res.status(400).send('Portfolio has expired');
+
+    messages.push(
+      `Compounding payout of ${payout} added to compBalance for portfolio ${portfolio._id}`
+    );
   }
 
-  const payout = (portfolio.compPercentage / 100) * portfolio.amount; // Assuming dailyPercentage is 4
-  console.log(`Calculated payout: ${payout}`); // Should log "Calculated payout: 40"
-  portfolio.compBalance += payout;
-
-  // Don't forget to save the updated portfolio
-  await portfolio.save();
-
-  res.status(200).send(`Payout of ${payout} added to compounding balance`);
+  res.status(200).send(messages.join('\n'));
 };
+
+
+
 
 module.exports = { dailyPayout, compoundingPayout };
