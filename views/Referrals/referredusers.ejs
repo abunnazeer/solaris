@@ -114,7 +114,10 @@
                           <span class="badge bg-light">N/A</span>
                           <% } %>
                         </td>
-                        <td><!-- Display the status --></td>
+                        <td>  <%= new
+                          Date(user.buyPortfolio.createdAt).toLocaleDateString('en-US',
+                          { month: 'short', day: 'numeric', year: 'numeric', })
+                          %> </td>
                       </tr>
                       <% }) %> <% } else { %>
                       <tr>

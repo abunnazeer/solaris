@@ -5,7 +5,7 @@ const sendEmail = require('../utils/email');
 
 // ACTIVITIES VIEW CONTROLLER
 
-const buyPortfolio = require('../models/portfolio/buyportfolio.model');
+const BuyPortfolio = require('../models/portfolio/buyportfolio.model');
 const Transactions = require('../models/portfolio/transaction.model');
 const TwoFactor = require('../models/user/twoFactor.model');
 const ReferralBonus = require('../models/user/referralBonus.model');
@@ -13,30 +13,24 @@ const ReferralBonus = require('../models/user/referralBonus.model');
 const getActivity = async (req, res, next) => {
   const { id, role } = req.user;
   try {
-    const page = parseInt(req.query.page) || 1; // Current page number
-    const limit = parseInt(req.query.limit) || 10; // Number of activities per page
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
 
-    let count, activities;
-
-    if (role === 'admin') {
-      count = await Transactions.countDocuments(); // Total count of all activities
-      activities = await Transactions.find({})
+    const filterCriteria = role === 'admin' ? {} : { userId: id };
+    // Fetch the total count and activities in parallel
+    const [count, activities] = await Promise.all([
+      Transactions.countDocuments(filterCriteria),
+      Transactions.find(filterCriteria)
         .populate('buyPortfolioId')
         .skip((page - 1) * limit)
-        .limit(limit);
-    } else {
-      count = await Transactions.countDocuments({ userId: id }); // Total count of activities for the logged-in user
-      activities = await Transactions.find({ userId: id })
-        .populate('buyPortfolioId')
-        .skip((page - 1) * limit)
-        .limit(limit);
-    }
+        .limit(limit),
+    ]);
 
-    const buyPortfolioId = activities.buyPortfolioId;
     let payout = 'No value';
+    const buyPortfolioId = activities.buyPortfolioId;
 
     if (buyPortfolioId) {
-      const buyPortfolio = await buyPortfolio.findOne({
+      const buyPortfolio = await BuyPortfolio.findOne({
         _id: buyPortfolioId,
         userId: id,
       });
@@ -56,11 +50,11 @@ const getActivity = async (req, res, next) => {
 
     res.status(200).render('activities/activity', {
       title: 'Transaction History',
-      payout: payout,
-      activities: activities,
+      payout,
+      activities,
       totalPages: Math.ceil(count / limit),
       currentPage: page,
-      limit: limit,
+      limit,
     });
   } catch (err) {
     console.log(err);
@@ -68,6 +62,7 @@ const getActivity = async (req, res, next) => {
     next(error);
   }
 };
+
 const postWithdrawal = async (req, res) => {
   console.log('Processing withdrawal request for user:', req.user.id); // Log the start of the process
 
@@ -257,25 +252,7 @@ const getwithdrawalStatus = (req, res) => {
   });
 };
 
-// const getWithdrawalRequest = async (req, res, next) => {
-//   const { id, role } = req.user; // Get the user ID and role from req.user
 
-//   try {
-//     const portfolioBuy = await buyPortfolio.findOne({
-//       userId: id,
-//     });
-
-//     res.status(200).render('withdrawal/withdrawalrequest', {
-//       title: 'Withdrawal Request',
-
-//       portfolioBuy,
-//     });
-//   } catch (err) {
-//     console.log(err);
-//     const error = new AppError('An error occurred', 500);
-//     next(error);
-//   }
-// };
 
 const getWithdrawalRequest = async (req, res, next) => {
   const { id, role } = req.user; // Get the user ID and role from req.user

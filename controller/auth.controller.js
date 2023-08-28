@@ -754,6 +754,11 @@ const verificationMiddleWare = catchAsync(async (req, res, next) => {
         verificationFailed: true,
         submittedDate: 'Your Submitted Date',
         role: 'admin',
+        idCard: {
+          iDCardType: 'Adminstrator',
+          idCardImage: 'imagepath',
+          cardNumber: 232323,
+        },
       });
     }
 
