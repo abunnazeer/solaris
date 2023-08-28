@@ -20,7 +20,7 @@ const getReferral = async (req, res, next) => {
       downline => downline.user
     );
     const referredUsers = await User.find({ _id: { $in: referredUserIds } });
-    console.log(referringUser.referralCode);
+
     // Get the profiles for the referred users
     const profilePromises = referredUsers.map(user =>
       Profile.findOne({ _id: user._id })
@@ -39,7 +39,7 @@ const getReferral = async (req, res, next) => {
       profile: profiles[index],
       buyPortfolio: buyPortfolios[index],
     }));
-    console.log(referredUsersData);
+
     // Perform pagination calculations
     const currentPage = req.query.page ? parseInt(req.query.page, 10) : 1;
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10;

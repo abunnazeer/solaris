@@ -4,7 +4,25 @@
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
  
+<style>
+  .withdrawal-button {
+    border-radius: 5px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    line-height: inherit;
+    padding: 8px 16px;
+    font-size: 1.1rem;
+    transition: all 0.5s ease-in-out;
+    background-color: #24095d;
+    color: #fff;
+  }
 
+  .withdrawal-button:hover {
+    background-color: #5622c5 !important;
+    color: #fff !important;
+    cursor: pointer;
+  }
+</style>
 </head>
 
 <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
@@ -75,7 +93,7 @@
                     <br>
                <p class="text-muted fs-14"></p>
 
-               <button type="button" class="btn bg-gradient-info-dark btn mb-2" onclick="document.getElementById('profilePicture').click()">Upload Photo</button>
+               <button type="button" class="withdrawal-button mb-2" onclick="document.getElementById('profilePicture').click()">Upload Photo</button>
 <br>
              
              </div>
@@ -190,7 +208,7 @@
                     <!-- end row -->
 
                     <div class="text-start">
-                      <button type="submit" class="btn btn-primary mt-2 bg-gradient-info-dark">
+                      <button type="submit" class="withdrawal-button">
                         <i class="mdi mdi-content-save"></i> Update Profile
                       </button>
                     </div>
