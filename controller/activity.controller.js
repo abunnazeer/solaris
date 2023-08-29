@@ -107,7 +107,7 @@ const postWithdrawal = async (req, res) => {
     const date = new Date();
 
     // Find the buy portfolio
-    const portfolioBuy = await buyPortfolio.findOne({
+    const portfolioBuy = await BuyPortfolio.findOne({
       payout: 'Daily Payout',
       balance: { $ne: 0 },
       userId: id,
@@ -129,7 +129,7 @@ const postWithdrawal = async (req, res) => {
     // }
 
     // Fetch portfolios for the user
-    const portfolios = await buyPortfolio.find({
+    const portfolios = await BuyPortfolio.find({
       userId: id,
       balance: { $ne: 0 },
     });
@@ -162,7 +162,7 @@ const postWithdrawal = async (req, res) => {
       status = 'Pending Approval';
       for (const portfolio of portfolios) {
         const deduction = (portfolio.balance / totalBalance) * amount;
-        await buyPortfolio.updateOne(
+        await BuyPortfolio.updateOne(
           { _id: portfolio._id },
           { $inc: { balance: -deduction } }
         );
@@ -252,14 +252,12 @@ const getwithdrawalStatus = (req, res) => {
   });
 };
 
-
-
 const getWithdrawalRequest = async (req, res, next) => {
   const { id, role } = req.user; // Get the user ID and role from req.user
 
   try {
     // Fetch all portfolios for this user
-    const portfolios = await buyPortfolio.find({ userId: id });
+    const portfolios = await BuyPortfolio.find({ userId: id });
 
     // Calculate totalBalance across all portfolios
     let totalBalance = 0;
