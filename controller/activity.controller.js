@@ -113,21 +113,6 @@ const postWithdrawal = async (req, res) => {
       userId: id,
     });
 
-    // // Check for sufficient balance
-    // if (portfolioBuy && portfolioBuy.balance < amount) {
-    //   return res.status(400).send('Insufficient balance.');
-    // }
-
-    // let buyPortfolioId = portfolioBuy ? portfolioBuy._id : null;
-
-    // // Subtract `amount` from `buyPortfolio.balance`
-    // if (buyPortfolioId) {
-    //   await buyPortfolio.updateOne(
-    //     { _id: buyPortfolioId },
-    //     { $inc: { balance: -amount } }
-    //   );
-    // }
-
     // Fetch portfolios for the user
     const portfolios = await BuyPortfolio.find({
       userId: id,
@@ -200,13 +185,29 @@ const postWithdrawal = async (req, res) => {
     // Convert activities.amount to its crypto value
     const cryptoAmount = amount / conversionRate;
     // Create a new TransactionsActivity document
-    const transActivity = new Transactions({
+    // const transActivity = new Transactions({
+    //   sn: generateRandomNumber(),
+    //   date: date,
+    //   description: 'Withdrawal',
+    //   // buyPortfolioId: buyPortfolioId,
+    //   // status: buyPortfolioId ? 'Pending Approval' : 'Approved',
+    //   buyPortfolioId: buyPortfolioId,
+    //   status: status,
+    //   amount: amount,
+    //   cryptoAmount: cryptoAmount,
+    //   authCode: authCode,
+    //   walletAddress: walletAddress,
+    //   method: method,
+    //   userId: id,
+    // });
+
+    // // Save the TransactionsActivity document
+    // await transActivity.save();
+    // // Delete the TwoFactor authentication record
+    const transActivityData = {
       sn: generateRandomNumber(),
       date: date,
       description: 'Withdrawal',
-      // buyPortfolioId: buyPortfolioId,
-      // status: buyPortfolioId ? 'Pending Approval' : 'Approved',
-      buyPortfolioId: buyPortfolioId,
       status: status,
       amount: amount,
       cryptoAmount: cryptoAmount,
@@ -214,11 +215,13 @@ const postWithdrawal = async (req, res) => {
       walletAddress: walletAddress,
       method: method,
       userId: id,
-    });
+    };
 
-    // Save the TransactionsActivity document
-    await transActivity.save();
-    // Delete the TwoFactor authentication record
+    if (buyPortfolioId !== null) {
+      transActivityData.buyPortfolioId = buyPortfolioId;
+    }
+
+    const transActivity = new Transactions(transActivityData);
 
     await TwoFactor.deleteOne({ userId: id });
     const emailContent = `A user with the following ${req.user.email} has send a withdrawal request of $${transActivity.amount}.`;

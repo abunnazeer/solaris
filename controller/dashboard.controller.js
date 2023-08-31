@@ -34,19 +34,6 @@ const dashboard = async (req, res) => {
         totalBonus += parseFloat(bonusDoc.bonusAmount);
       }
     });
-    // const accumulatedDividends = totalBalance + totalCompBalance + totalBonus;
-    // const totalAccountBalance = totalBalance + totalBonus;
-    // const compoundBalance = totalCompBalance; // Making it the total of all compBalance
-
-    // const updatedAccount = await Account.findOneAndUpdate(
-    //   { userId: id },
-    //   {
-    //     accumulatedDividends,
-    //     totalAccountBalance,
-    //     compoundingBalance: compoundBalance,
-    //   },
-    //   { upsert: true, new: true } // This will insert a new document if one doesn't already exist, and return the new document
-    // );
 
     // Calculate new accumulatedDividends
     const newAccumulatedDividends =
@@ -62,13 +49,23 @@ const dashboard = async (req, res) => {
       ? Math.max(currentAccount.accumulatedDividends, newAccumulatedDividends)
       : newAccumulatedDividends;
 
-    // Update the Account model
+    // // Update the Account model
+    // const updatedAccount = await Account.findOneAndUpdate(
+    //   { userId: id },
+    //   {
+    //     accumulatedDividends: updatedAccumulatedDividends,
+    //     totalAccountBalance,
+    //     compoundingBalance: compoundBalance,
+    //   },
+    //   { upsert: true, new: true }
+    // );
     const updatedAccount = await Account.findOneAndUpdate(
       { userId: id },
       {
         accumulatedDividends: updatedAccumulatedDividends,
         totalAccountBalance,
         compoundingBalance: compoundBalance,
+        $max: { totalReferralBonus: totalBonus }, // Update only if the new totalBonus is greater
       },
       { upsert: true, new: true }
     );
@@ -76,7 +73,7 @@ const dashboard = async (req, res) => {
     res.status(200).render('dashboard', {
       title: 'Dashboard',
       portfolioData,
-      totalBonus,
+      totalBonus: updatedAccount.totalReferralBonus,
       referredUsersCount,
       accumulatedDividends: updatedAccount.accumulatedDividends, // Fetch updated value from Account model
       totalAccountBalance: updatedAccount.totalAccountBalance, // Fetch updated value from Account model
