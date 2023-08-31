@@ -22,6 +22,12 @@ const accountSchema = new Schema({
     required: true,
     default: 0.0,
   },
+
+  totalReferralBonus: {
+    type: Number,
+    required: true,
+    default: 0.0,
+  },
 });
 
 const Account = mongoose.model('Account', accountSchema);
