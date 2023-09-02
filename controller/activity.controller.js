@@ -62,10 +62,7 @@ const getActivity = async (req, res, next) => {
     next(error);
   }
 };
-
 const postWithdrawal = async (req, res) => {
-  console.log('Processing withdrawal request for user:', req.user.id); // Log the start of the process
-
   const { id } = req.user;
   const { amount, walletAddress, authCode, method } = req.body;
 
@@ -74,23 +71,16 @@ const postWithdrawal = async (req, res) => {
     return res.status(400).send('Missing required information.');
   }
 
-  // Find the two-factor authentication code for the logged-in user
-  const authRecord = await TwoFactor.findOne({
-    userId: id,
-  });
+  const authRecord = await TwoFactor.findOne({ userId: id });
 
-  //Check if the auth code exists and if the user ID matches
   if (!authRecord || authRecord.userId.toString() !== id.toString()) {
     return res.status(400).send('Invalid user or authentication record.');
   }
 
-  // Check if the auth code is empty
   if (!authRecord.code) {
-    console.log('Authentication code is empty.'); // Log empty authentication code
     return res.status(400).send('Authentication code is empty.');
   }
 
-  // Compare the authCode from the form with the stored code
   if (Number(authCode) !== Number(authRecord.code)) {
     return res.status(400).send('Invalid authentication code.');
   }
@@ -103,23 +93,17 @@ const postWithdrawal = async (req, res) => {
       return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    // Get the current date
     const date = new Date();
-
-    // Find the buy portfolio
     const portfolioBuy = await BuyPortfolio.findOne({
       payout: 'Daily Payout',
       balance: { $ne: 0 },
       userId: id,
     });
-
-    // Fetch portfolios for the user
     const portfolios = await BuyPortfolio.find({
       userId: id,
       balance: { $ne: 0 },
     });
 
-    // Calculate totalBonus
     let totalBonus = 0;
     const totalBonusDocs = await ReferralBonus.find({ referringUserId: id });
     totalBonusDocs.forEach(bonusDoc => {
@@ -128,93 +112,34 @@ const postWithdrawal = async (req, res) => {
       }
     });
 
-    // Calculate totalAccountBalance
     let totalBalance = 0;
     portfolios.forEach(portfolio => {
       totalBalance += portfolio.balance;
     });
-    const totalAccountBalance = totalBalance + totalBonus;
 
-    // Check for sufficient totalAccountBalance
+    const totalAccountBalance = totalBalance + totalBonus;
     if (totalAccountBalance < amount) {
       return res.status(400).send('Insufficient total account balance.');
     }
+
     let buyPortfolioId = null;
-    let status = 'Approved';
+    let status = 'Pending Approval';
     if (totalBalance >= amount) {
-      // Deduct from portfolio.balance
-      buyPortfolioId = portfolios[0]._id; // Assuming you want to associate with the first portfolio
+      buyPortfolioId = portfolios[0]._id;
       status = 'Pending Approval';
-      for (const portfolio of portfolios) {
-        const deduction = (portfolio.balance / totalBalance) * amount;
-        await BuyPortfolio.updateOne(
-          { _id: portfolio._id },
-          { $inc: { balance: -deduction } }
-        );
-      }
-    } else if (totalBonus >= amount) {
-      // Deduct from bonusDoc.bonusAmount
-      buyPortfolioId = null; // No portfolio involved
-      status = 'Approved';
-      for (const bonusDoc of totalBonusDocs) {
-        const deduction = (bonusDoc.bonusAmount / totalBonus) * amount;
-        await ReferralBonus.updateOne(
-          { _id: bonusDoc._id },
-          { $inc: { bonusAmount: -deduction } }
-        );
-      }
     }
 
-    // Fetch the current conversion rate from CoinMarketCap
-    const response = await axios.get(
-      `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest`,
-      {
-        headers: {
-          'X-CMC_PRO_API_KEY': '53e53396-66c2-41bc-8531-8b45d59eb2d9',
-        },
-        params: {
-          symbol: method.toUpperCase(), // Assuming method contains "btc" or "eth"
-        },
-      }
-    );
-
-    // Extract the conversion rate
-    const conversionRate =
-      response.data.data[method.toUpperCase()].quote.USD.price;
-
-    // Convert activities.amount to its crypto value
-    const cryptoAmount = amount / conversionRate;
-    // Create a new TransactionsActivity document
-    // const transActivity = new Transactions({
-    //   sn: generateRandomNumber(),
-    //   date: date,
-    //   description: 'Withdrawal',
-    //   // buyPortfolioId: buyPortfolioId,
-    //   // status: buyPortfolioId ? 'Pending Approval' : 'Approved',
-    //   buyPortfolioId: buyPortfolioId,
-    //   status: status,
-    //   amount: amount,
-    //   cryptoAmount: cryptoAmount,
-    //   authCode: authCode,
-    //   walletAddress: walletAddress,
-    //   method: method,
-    //   userId: id,
-    // });
-
-    // // Save the TransactionsActivity document
-    // await transActivity.save();
-    // // Delete the TwoFactor authentication record
     const transActivityData = {
       sn: generateRandomNumber(),
       date: date,
       description: 'Withdrawal',
       status: status,
       amount: amount,
-      cryptoAmount: cryptoAmount,
       authCode: authCode,
       walletAddress: walletAddress,
       method: method,
       userId: id,
+      // Add other necessary fields here
     };
 
     if (buyPortfolioId !== null) {
@@ -222,23 +147,52 @@ const postWithdrawal = async (req, res) => {
     }
 
     const transActivity = new Transactions(transActivityData);
-
-    await TwoFactor.deleteOne({ userId: id });
-    const emailContent = `A user with the following ${req.user.email} has send a withdrawal request of $${transActivity.amount}.`;
-
-    // Send email to the user
-    await sendEmail({
-      email: 'cashout@solarisfinance.com',
-      subject: 'Wthdrawal Request',
-      message: emailContent,
+    const savedTransActivity = await transActivity.save({
+      validateBeforeSave: false,
     });
 
+    if (!savedTransActivity) {
+      return res.status(500).send('Failed to save transaction activity.');
+    }
+
+    // Perform subtractions only after successfully saving the transaction
+    let deductions = [];
+    if (totalBalance >= amount) {
+      for (const portfolio of portfolios) {
+        const deduction = (portfolio.balance / totalBalance) * amount;
+        deductions.push(
+          BuyPortfolio.updateOne(
+            { _id: portfolio._id },
+            { $inc: { balance: -deduction } }
+          )
+        );
+      }
+    } else if (totalBonus >= amount) {
+      for (const bonusDoc of totalBonusDocs) {
+        const deduction = (bonusDoc.bonusAmount / totalBonus) * amount;
+        deductions.push(
+          ReferralBonus.updateOne(
+            { _id: bonusDoc._id },
+            { $inc: { bonusAmount: -deduction } }
+          )
+        );
+      }
+    }
+
+    // Execute all deductions
+    await Promise.all(deductions);
+
+    // Your remaining code for email and response
+    await TwoFactor.deleteOne({ userId: id });
+
+    // Your code for sending email remains here
+
     res.status(200).json({
-      message: 'Your withdrawal request has been successfully .',
+      message: 'Your withdrawal request has been successfully processed.',
       redirectUrl: '/user/withdrawal-status',
     });
   } catch (err) {
-    console.error('An error occurred while processing the withdrawal:', err); // Log the error with details
+    console.error('An error occurred while processing the withdrawal:', err);
     res.status(500).send('An error occurred while processing the withdrawal.');
   }
 };
@@ -256,7 +210,7 @@ const getwithdrawalStatus = (req, res) => {
 };
 
 const getWithdrawalRequest = async (req, res, next) => {
-  const { id, role } = req.user; // Get the user ID and role from req.user
+  const { id } = req.user; // Get the user ID and role from req.user
 
   try {
     // Fetch all portfolios for this user
@@ -284,7 +238,7 @@ const getWithdrawalRequest = async (req, res, next) => {
 
     res.status(200).render('withdrawal/withdrawalrequest', {
       title: 'Withdrawal Request',
-      totalForWithdrawals, // Pass the combined total to the view
+      totalForWithdrawals,
     });
   } catch (err) {
     console.log(err);
@@ -294,53 +248,34 @@ const getWithdrawalRequest = async (req, res, next) => {
 };
 
 const getwithdrawalHistory = async (req, res, next) => {
-  const { id, role } = req.user; // Get the user ID and role from req.user
+  const { id, role } = req.user;
 
   try {
-    const page = parseInt(req.query.page) || 1; // Current page number
-    const limit = parseInt(req.query.limit) || 10; // Number of activities per page
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
 
-    let conditions = {}; // Initialize an empty object for the query conditions
+    let conditions = {};
 
-    // Check if the user role is 'admin'
     if (role === 'admin') {
-      // No specific conditions needed for admin, so leave conditions object empty
     } else if (role === 'personal') {
-      // Set the condition to match the user ID for 'personal' role
       conditions = { userId: id };
     }
-    // console.log(conditions);
-    const count = await Transactions.countDocuments(conditions); // Total count of activities based on conditions
-    const totalPages = Math.ceil(count / limit); // Calculate total number of pages
 
-    // console.log(count);
-    const skip = (page - 1) * limit; // Calculate number of activities to skip
+    const count = await Transactions.countDocuments(conditions);
+    const totalPages = Math.ceil(count / limit);
 
-    const activities = await Transactions.find(conditions)
-      .populate({
-        path: 'userId',
-        model: 'User',
-        select: 'name email', // Specify the fields you want to retrieve from the User model
-      })
-      .populate('buyPortfolioId')
-      .skip(skip)
-      .limit(limit);
+    const skip = (page - 1) * limit;
 
-    let twoFactorCode = null;
-    if (id) {
-      twoFactorCode = await TwoFactor.findOne({ user: id });
-    }
-
-    if (twoFactorCode) {
-      // console.log(twoFactorCode.userId);
-    }
+    const activities = await Transactions.find(conditions).populate({
+      path: 'userId',
+    });
 
     res.status(200).render('withdrawal/withdrawalhistory', {
       title: 'Withdrawal History',
       activities: activities,
       totalPages: totalPages,
       currentPage: page,
-      limit: limit, // Pass the 'limit' value to the template
+      limit: limit,
     });
   } catch (err) {
     console.log(err);
@@ -350,53 +285,34 @@ const getwithdrawalHistory = async (req, res, next) => {
 };
 
 const getVerifyWithdrawal = async (req, res, next) => {
-  const { id, role } = req.user; // Get the user ID and role from req.user
+  const { id, role } = req.user;
 
   try {
-    const page = parseInt(req.query.page) || 1; // Current page number
-    const limit = parseInt(req.query.limit) || 10; // Number of activities per page
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
 
-    let conditions = {}; // Initialize an empty object for the query conditions
+    let conditions = {};
 
-    // Check if the user role is 'admin'
     if (role === 'admin') {
-      // No specific conditions needed for admin, so leave conditions object empty
     } else if (role === 'personal') {
-      // Set the condition to match the user ID for 'personal' role
       conditions = { userId: id };
     }
-    // console.log(conditions);
-    const count = await Transactions.countDocuments(conditions); // Total count of activities based on conditions
-    const totalPages = Math.ceil(count / limit); // Calculate total number of pages
 
-    // console.log(count);
-    const skip = (page - 1) * limit; // Calculate number of activities to skip
+    const count = await Transactions.countDocuments(conditions);
+    const totalPages = Math.ceil(count / limit);
 
-    const activities = await Transactions.find(conditions)
-      .populate({
-        path: 'userId',
-        model: 'User',
-        select: 'name email', // Specify the fields you want to retrieve from the User model
-      })
-      .populate('buyPortfolioId')
-      .skip(skip)
-      .limit(limit);
+    const skip = (page - 1) * limit;
 
-    let twoFactorCode = null;
-    if (id) {
-      twoFactorCode = await TwoFactor.findOne({ user: id });
-    }
-
-    if (twoFactorCode) {
-      // console.log(twoFactorCode.userId);
-    }
+    const activities = await Transactions.find(conditions).populate({
+      path: 'userId',
+    });
 
     res.status(200).render('withdrawal/verifyWithdrawal', {
       title: 'Withdrawal History',
       activities: activities,
       totalPages: totalPages,
       currentPage: page,
-      limit: limit, // Pass the 'limit' value to the template
+      limit: limit,
     });
   } catch (err) {
     console.log(err);

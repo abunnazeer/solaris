@@ -115,20 +115,23 @@
                               class="qr__image"
                             />
                           </div>
-                          <div class="mt-10">
-                            <form
-                              action="/user/approve-payment/<%= activities._id %>"
-                              method="post"
-                              style="display: inline"
-                            >
-                              <button
-                                type="submit"
-                                class="btn btn bg-gradient-info-dark"
-                              >
-                                Approve Payment
-                              </button>
-                            </form>
-                          </div>
+                         <div class="mt-10">
+  <form
+    id="approvePaymentForm"
+    action="/user/approve-payment/<%= activities._id %>"
+    method="post"
+    style="display: inline"
+  >
+    <button
+      id="approvePaymentBtn"
+      type="submit"
+      class="btn btn bg-gradient-info-dark"
+    >
+      <span id="spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+      Approve Payment
+    </button>
+  </form>
+</div>
                         </div>
                         <% } %>
                       </div>
@@ -145,14 +148,27 @@
       <footer class="main-footer bg-white">
         <!-- footer-->
         <%- include('../layouts/footer') %>
-        <script>
-          function copyToClipboard() {
-            var walletAddressInput =
-              document.getElementById('walletAddressInput');
-            walletAddressInput.select();
-            document.execCommand('copy');
-          }
-        </script>
+       <script>
+  // Existing copyToClipboard function
+  function copyToClipboard() {
+    var walletAddressInput = document.getElementById('walletAddressInput');
+    walletAddressInput.select();
+    document.execCommand('copy');
+  }
+
+  // New code for showing spinner
+  document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('approvePaymentForm');
+    var spinner = document.getElementById('spinner');
+    var approvePaymentBtn = document.getElementById('approvePaymentBtn');
+
+    form.addEventListener('submit', function() {
+      spinner.style.display = 'inline-block';
+      approvePaymentBtn.disabled = true;
+    });
+  });
+</script>
+
       </footer>
     </div>
   </body>

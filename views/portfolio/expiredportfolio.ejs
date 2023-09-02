@@ -2,31 +2,7 @@
 <html lang="en">
   <head>
     <title><%= title %></title>
-       <style>
-          .select2-dropdown--below {
-            z-index: 999999 !important;
-            
-          }
-           .withdrawal-button {
-    border-radius: 5px;
-    border: 1px solid transparent;
-    cursor: pointer;
-    line-height: inherit;
-    padding: 8px 16px;
-    font-size: 1.1rem;
-    transition: all 0.5s ease-in-out;
-    background-color: #24095d;
-    color: #fff;
-    display: inline-block;
-    font-size: 1rem;
-  }
-
-  .withdrawal-button:hover {
-    background-color: #5622c5 !important;
-    color: #fff !important;
-    cursor: pointer;
-  }
-        </style>
+       
   </head>
   <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
     <div class="wrapper">
@@ -45,14 +21,14 @@
       >
         <div class="container mt-30">
           <img
-            src="/images/header/active_Investment Portfolio_Web.png"
+            src="/images/header/"
             alt="refaral"
             srcset=""
           />
           <section class="content">
             <% let activePortfolioFound = false; %> <%
             buyPortfolios.forEach(function(buyPortfolio) { %> <% if
-            (buyPortfolio.status === 'active') { %> <% activePortfolioFound =
+            (buyPortfolio.status === 'expired') { %> <% activePortfolioFound =
             true; %>
             <div class="active__portfolio">
               <div class="row">
@@ -106,27 +82,10 @@
                             </div>
                           </div>
                         </div>
-                        <div class="mt-30">
+                        <div class="mt-80">
                           <div class="row show-grid mb-5">
                             <div class="col-md-4"></div>
-                            <div class="col-md-8">
-                              <button
-                                type="submit"
-                                class="waves-effect waves-light btn btn-success mb-5" data-bs-toggle="modal" data-bs-target="#signup-modal"
-                                style="margin-right: 30px"
-                              >
-                                Re-Invest
-                              </button>
-
-                              <button
-                                type="button"
-                                class="withdrawal-button"
-                                  data-bs-toggle="modal"
-                          data-bs-target="#standard-modal"
-                              >
-                                Make Withdrawal
-                              </button>
-                            </div>
+                          
                           </div>
                         </div>
                       </div>
@@ -182,16 +141,19 @@
                 </div>
               </div>
             </div>
-  <div id="signup-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="reInvestModalLabel" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
+            <% } %> <% }); %> <% if (!activePortfolioFound) { %>
+            
+            <h3>No Expired portfolio yet</h3>
+            <% } %>
+          </section>
+                       
+<div id="signup-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
       <div class="modal-header bg-black">
                   <h4 class="modal-title" id="standard-modalLabel">
-                   Account Balance:  $<%= totalForWithdrawals ?
-                            totalForWithdrawals.toLocaleString() : '0' %></h4>
-                    
-                           
-         
+                   Re-Investment
+                  </h4>
                   <button
                     type="button"
                     class="btn-close"
@@ -201,33 +163,53 @@
                 </div>
       <div class="modal-body">
         
-        <form class="ps-3 pe-3" action="/portfolio/re-invest/<%= buyPortfolio._id %>" method="post">
+        <form class="ps-3 pe-3" action="/user/disapprove/5" method="post">
           <div class="mt-20-3">
             <label for="portfolio">Investment Portfolio</label>
             <div class="input-group mb-20">
-              <input type="text" name="invested-portfolio-name" id="portfolio" class="form-control" value="<%= buyPortfolio.portfolioName %>" disabled>
+              <input type="text" name="invested-portfolio-name" id="portfolio" class="form-control" value="Invested portfolio name">
             </div>
           </div>
           <div class="mb-3">
             <label for="portfolio-type">Investment Category</label>
             <div class="input-group mb-20">
-              <input type="text" name="invested-portfolio-name" id="portfolio-type" class="form-control" value="<%= buyPortfolio.payout %>" disabled>
+              <input type="text" name="invested-portfolio-name" id="portfolio-type" class="form-control" value="Invested portfolio Category">
             </div>
           </div>
           <div class="mb-3">
             <label for="invested-amount">Invested Amount</label>
             <div class="input-group mb-20">
-              <input type="text" name="invested-amount" id="invested-amount" class="form-control" value="$<%= buyPortfolio.amount %>" disabled>
+              <input type="text" name="invested-amount" id="invested-amount" class="form-control" value="Invested Amount">
             </div>
           </div>
           <div class="mb-3">
             <label for="add-amount">Add Amount</label>
             <div class="input-group mb-20">
-              <input type="text" name="amount" id="add-amount" class="form-control">
+              <input type="text" name="amount" id="add-amount" class="form-control" value="Add Amount">
             </div>
           </div>
-         
-          
+          <div class="mb-3">
+            <div class="input-group mb-20">
+              <select class="form-control select2 select2-hidden-accessible" style="width: 100%" tabindex="-1" aria-hidden="true" name="payment-option" id="method" required>
+                <option value="" selected>
+                  Select a payment Option
+                </option>
+                <option value="From my Balance" data-icon="id">Balance</option>
+                <option value="Add New" data-icon="proof">Add new</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="input-group mb-20">
+              <select class="form-control select2 select2-hidden-accessible" style="width: 100%" tabindex="-1" aria-hidden="true" name="corrency" id="method" required>
+                <option value="" selected>
+                  Select Currency
+                </option>
+                <option value="BTC" data-icon="id">BTC</option>
+                <option value="Ether" data-icon="proof">ETH</option>
+              </select>
+            </div>
+          </div>
 
            <div class="mt-10">
                       <button
@@ -247,16 +229,21 @@
   </div>
 </div>
 
-   <div id="standard-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="withdrawModalLabel" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
+
+ <div
+            id="standard-modal"
+            class="modal fade"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="standard-modalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog">
+              <div class="modal-content">
                 <div class="modal-header bg-black">
                   <h4 class="modal-title" id="standard-modalLabel">
-                     Account Balance: 
-                      $<%= totalForWithdrawals ?
-                            totalForWithdrawals.toLocaleString() : '0' %>
-                 </h4>
-                 
+                    Withdrawal Request
+                  </h4>
                   <button
                     type="button"
                     class="btn-close"
@@ -381,13 +368,6 @@
           </div>
 
 
-            <% } %> <% }); %> <% if (!activePortfolioFound) { %>
-            
-            <h3>No Active portfolio found</h3>
-            <% } %>
-          </section>
-                       
-
 
   </div>
 </div>
@@ -426,31 +406,26 @@
           document.getElementById('authCodeSpinner').style.display = 'none';
         });
     });
-  
+        
+            $('form').on('submit', function (event) {
+  event.preventDefault();
 
+  // Show the spinner
+  $('#spinner').show();
 
-     $('form').on('submit', function (event) {
-    var action = $(this).attr('action');
-    
-    // Only run AJAX for the withdrawal form
-    if (action === '/user/withdrawal') {
-      event.preventDefault();
+  var formData = $(this).serialize();
 
-      // Show the spinner
-      $('#spinner').show();
+  $.ajax({
+    type: 'POST',
+    url: '/user/withdrawal',
+    data: formData,
+    success: function (response) {
+      // Hide the spinner
+      $('#spinner').hide();
 
-      var formData = $(this).serialize();
-
-      $.ajax({
-        type: 'POST',
-        url: action,
-        data: formData,
-        success: function (response) {
-          // Hide the spinner
-          $('#spinner').hide();
-          // Handle successful response
-          window.location.href = response.redirectUrl;
-        },
+      // Handle successful response
+      window.location.href = response.redirectUrl;
+    },
     error: function (xhr, status, error) {
       // Hide the spinner
       $('#spinner').hide();
@@ -500,7 +475,6 @@
                 }
               },
             });
-          }
           });
         </script>
       </footer>

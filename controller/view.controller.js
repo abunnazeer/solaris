@@ -6,6 +6,8 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const Portfolio = require('../models/portfolio/portfolio.model');
 const buyPortfolio = require('../models/portfolio/buyportfolio.model');
+const ReferralBonus = require('../models/user/referralBonus.model');
+const ReferralConfig = require('../models/user/referralConfig.model');
 const multer = require('multer');
 
 const sendEmail = require('../utils/email');
@@ -612,14 +614,126 @@ const getInvestPortfolio = catchAsync(async (req, res) => {
 //////////////////////////////////////
 //////////////
 const getActivePortfolio = catchAsync(async (req, res) => {
-  const userId = req.user.id; // Assuming the user ID is stored in req.user.id
-  const buyPortfolios = await buyPortfolio.find({ userId: userId });
+  const { id } = req.user; // Assuming the user ID is stored in req.user.id
+  const buyPortfolios = await buyPortfolio.find({ userId: id });
+
+  // Calculate totalBalance across all portfolios
+  let totalBalance = 0;
+  buyPortfolios.forEach(portfolio => {
+    totalBalance += portfolio.balance;
+  });
+
+  // Fetch all referral bonuses for this user
+  const totalBonusDocs = await ReferralBonus.find({ referringUserId: id });
+
+  // Calculate totalBonus
+  let totalBonus = 0;
+  totalBonusDocs.forEach(bonusDoc => {
+    if (bonusDoc.bonusAmount) {
+      totalBonus += parseFloat(bonusDoc.bonusAmount);
+    }
+  });
+  // Calculate the combined total for withdrawals
+  const totalForWithdrawals = totalBalance + totalBonus;
 
   res.status(200).render('portfolio/activeportfolio', {
     title: 'Active Portfolio',
+    totalForWithdrawals,
     buyPortfolios,
   });
 });
+
+const postReInvestPortfolio = catchAsync(async (req, res) => {
+  const { portfolioId } = req.params;
+
+  const { amount } = req.body;
+  const { id } = req.user;
+  const reInvestPortfolios = await buyPortfolio.find({ userId: id });
+
+  const userDetail = await User.findOne({ _id: id });
+
+  let totalBalance = 0;
+  reInvestPortfolios.forEach(portfolio => {
+    totalBalance += portfolio.balance;
+  });
+
+  const totalBonusDocs = await ReferralBonus.find({ referringUserId: id });
+  let totalBonus = 0;
+  totalBonusDocs.forEach(bonusDoc => {
+    if (bonusDoc.bonusAmount) {
+      totalBonus += parseFloat(bonusDoc.bonusAmount);
+    }
+  });
+
+  await buyPortfolio.updateOne(
+    { _id: portfolioId },
+    { $inc: { amount: parseFloat(amount) } }
+  );
+
+  const updatedPortfolio = await buyPortfolio.findOneAndUpdate(
+    { _id: portfolioId },
+    { $inc: { balance: -amount } },
+    { new: true }
+  );
+
+  // Check if the updated balance is zero
+  if (updatedPortfolio.balance === 0) {
+    // Find all referral bonuses associated with the user
+    const referralBonuses = await ReferralBonus.find({ referringUserId: id });
+
+    if (referralBonuses.length > 0) {
+      let allBonusesZero = true;
+
+      // Loop through each referralBonus document and update it
+      for (const referralBonus of referralBonuses) {
+        console.log(
+          `Current bonus amount before update: ${referralBonus.bonusAmount}`
+        );
+
+        // If bonusAmount is greater than zero, set allBonusesZero to false
+        if (referralBonus.bonusAmount > 0) {
+          allBonusesZero = false;
+
+          // Subtract the amount from each bonusAmount
+          const updatedReferralBonus = await ReferralBonus.findOneAndUpdate(
+            { _id: referralBonus._id },
+            { $inc: { bonusAmount: -parseFloat(amount) } },
+            { new: true }
+          );
+
+          console.log(
+            `Updated bonus amount: ${updatedReferralBonus.bonusAmount}`
+          );
+        }
+      }
+
+      if (allBonusesZero) {
+        console.log('All bonuses are zero.');
+      }
+    } else {
+      console.log('No referral bonuses found for this user.');
+    }
+  }
+
+  // 3. Send an email to admin
+  const emailContent = `A user with the following email ${userDetail.email} has re-invested on ${reInvestPortfolios[0].portfolioName}.`;
+  await sendEmail({
+    email: 'admin@solarisfinance.com',
+    subject: 'Re-Investment Alert',
+    message: emailContent,
+  });
+
+  // 4. Update buyPortfolio.dateOfExpiry to be one year from the current date for the portfolio being reinvested
+  const oneYearFromNow = new Date();
+  oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+  await buyPortfolio.updateOne(
+    { _id: portfolioId },
+    { $set: { dateOfExpiry: oneYearFromNow } }
+  );
+
+  res.redirect('/dashboard');
+});
+
 const getInvestHistory = catchAsync(async (req, res) => {
   const userId = req.user.id; // Assuming the user ID is stored in req.user.id
   const buyPortfolios = await buyPortfolio.find({ userId: userId });
@@ -668,6 +782,7 @@ module.exports = {
   getProfileVerification,
   getVerificationStatus,
   getUpdateVerification,
+  postReInvestPortfolio,
 
   postUpdateVerification,
   postProfileVerification,

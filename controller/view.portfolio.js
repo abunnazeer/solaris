@@ -9,7 +9,7 @@ const Profile = require('../models/user/profile.model');
 const catchAsync = require('../utils/catchAsync');
 const sendEmail = require('../utils/email');
 const axios = require('axios');
-const { Plisio } = require('@plisio/api-client');
+// const { Plisio } = require('@plisio/api-client');
 const ReferralConfig = require('../models/user/referralConfig.model');
 
 // const AppError = require('../utils/appError');
@@ -221,12 +221,6 @@ const paymentComfirmation = catchAsync(async (req, res) => {
       // Save it without validation
       await referralBonus.save({ validateBeforeSave: false });
 
-      //1. in check buyPortfolio.userId === referringUserId then add the bonusAmount to buyPortfolio.balance
-      // if (buyPortfolio.userId.toString() === referringUserId.toString()) {
-      //   buyPortfolio.balance += bonusAmount;
-      //   await buyPortfolio.save();
-      // }
-
       // Check if the referring user has a referrer (second-level referrer)
       const referringUser = await User.findOne({ _id: referringUserId });
 
@@ -251,11 +245,6 @@ const paymentComfirmation = catchAsync(async (req, res) => {
 
         // Save it without validation
         await secondLevelReferralBonus.save({ validateBeforeSave: false });
-        // //1. in check buyPortfolio.userId === referringUserId then add the bonusAmount to buyPortfolio.balance
-        // if (buyPortfolio.userId.toString() === referringUserId.toString()) {
-        //   buyPortfolio.balance += bonusAmount;
-        //   await buyPortfolio.save();
-        // }
 
         // Check if the second-level referrer has a referrer (third-level referrer)
         const secondLevelReferrerUser = await User.findOne({
@@ -282,11 +271,6 @@ const paymentComfirmation = catchAsync(async (req, res) => {
 
           // Save it without validation
           await thirdLevelReferralBonus.save({ validateBeforeSave: false });
-          //1. in check buyPortfolio.userId === referringUserId then add the bonusAmount to buyPortfolio.balance
-          // if (buyPortfolio.userId.toString() === referringUserId.toString()) {
-          //   buyPortfolio.balance += bonusAmount;
-          //   await buyPortfolio.save();
-          // }
         }
       }
     }

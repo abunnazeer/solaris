@@ -84,9 +84,11 @@
                             </div>
                             <div>
                               <span
-                                class="withdrawal-button"
+                                class="btn btn bg-gradient-info-dark"
                                 id="generateCodeBtn"
-                                >Generate Code</span
+                                >
+                                <span id="authCodeSpinner" class="spinner-border spinner-border-sm" style="display: none;"></span>
+                                Generate Code</span
                               >
                             </div>
                           </div>
@@ -152,14 +154,8 @@
                         </div>
 
                         <div class="mt-10">
-                          <!-- <button
-                            type="submit"
-                            class="btn btn bg-gradient-info-dark"
-                          >
-                            Make Withdrawal
-                          </button> -->
-                         <!-- Updated HTML for the button -->
-<button type="submit" class="withdrawal-button">
+                          
+<button type="submit" class="btn btn bg-gradient-info-dark">
   <span id="spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
   Make Withdrawal
 </button>
@@ -193,40 +189,34 @@
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <script>
           // Event handler for the "Generate Code" button
-          document
-            .getElementById('generateCodeBtn')
-            .addEventListener('click', function () {
-              // Retrieve the value from the 2FA input field
-              var twoFactorValue = document.getElementById('authCode').value;
+         
+  document
+    .getElementById('generateCodeBtn')
+    .addEventListener('click', function () {
+      // Show the spinner for auth code
+      document.getElementById('authCodeSpinner').style.display = 'inline-block';
 
-              // Make a POST request to the "user/2factor" endpoint
-              axios
-                .post('/user/two-factor', { twoFactorValue })
-                .then(function (response) {
-                  // Handle the response from the server
-                  console.log(response.data);
-                  // Perform any necessary actions based on the response
-                })
-                .catch(function (error) {
-                  // Handle errors
-                  console.error(error);
-                });
-            });
+      // Retrieve the value from the 2FA input field
+      var twoFactorValue = document.getElementById('authCode').value;
 
-          // $('form').on('submit', function (event) {
-          //   event.preventDefault();
-
-          //   var formData = $(this).serialize();
-
-          //   $.ajax({
-          //     type: 'POST',
-          //     url: '/user/withdrawal',
-          //     data: formData,
-          //     success: function (response) {
-          //       // Handle successful response
-          //       window.location.href = response.redirectUrl;
-          //     },
-          //     error: function (xhr, status, error) {
+      // Make a POST request to the "user/2factor" endpoint
+      axios
+        .post('/user/two-factor', { twoFactorValue })
+        .then(function (response) {
+          // Handle the response from the server
+          console.log(response.data);
+          // Hide the spinner for auth code
+          document.getElementById('authCodeSpinner').style.display = 'none';
+          // Perform any necessary actions based on the response
+        })
+        .catch(function (error) {
+          // Handle errors
+          console.error(error);
+          // Hide the spinner for auth code
+          document.getElementById('authCodeSpinner').style.display = 'none';
+        });
+    });
+        
             $('form').on('submit', function (event) {
   event.preventDefault();
 
