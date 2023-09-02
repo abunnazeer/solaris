@@ -27,6 +27,7 @@ const {
   isLoggedIn,
   protect,
 } = require('../controller/auth.controller');
+const { postReInvestPortfolio } = require('../controller/view.controller');
 const router = express.Router();
 router.use(isLoggedIn);
 router.get(
@@ -41,6 +42,7 @@ router.post('/payment/:id', protect, updatePayment);
 router.get('/payment/:id', protect, getPayment);
 //////////////////user routes ////////////
 router.post('/buy-portfolio/:id', protect, postBuyPortfolio);
+router.post('/re-invest/:portfolioId', protect, postReInvestPortfolio);
 router.get('/buy-portfolio/:id', protect, getBuyPortfolioForm);
 // router.get('/buy-portfolio', buyPortfolioForm);
 

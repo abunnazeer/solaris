@@ -448,8 +448,11 @@ server.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
 });
 // cron.schedule('0 0 * * *', dailyPayout);
-cron.schedule('* * * * *', dailyPayout);
-cron.schedule('* * * * *', compoundingPayout);
+// cron.schedule('* * * * *', dailyPayout);
+// cron.schedule('* * * * *', compoundingPayout);
+cron.schedule('0 3 * * 1-5', dailyPayout);
+cron.schedule('0 3 * * 1-5', compoundingPayout);
+
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', err => {
