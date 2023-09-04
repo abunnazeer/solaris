@@ -77,6 +77,7 @@
                     enctype="multipart/form-data"
                     method="POST"
                      onsubmit="return validateStep(currentStep);"
+                     
                   >
                     <!-- Step 1: Personal Information -->
                     <div class="step active" id="step1">
@@ -355,9 +356,11 @@
                       >
                         Previous
                       </button>
-                      <button type="submit" class="btn bg-gradient-info-dark">
-                        Submit
-                      </button>
+                     <button type="submit" class="btn bg-gradient-info-dark" id="submit-button">
+
+  Submit
+</button>
+
                     </div>
                   </form>
                 </div>
@@ -455,6 +458,17 @@
   document.getElementById('phoneNumber').addEventListener('input', function () {
     this.value = formatPhoneNumber(this.value);
   });
+  document.addEventListener("DOMContentLoaded", function() {
+  const submitButton = document.getElementById("submit-button");
+  const spinner = document.getElementById("spinner");
+
+  submitButton.addEventListener("click", function() {
+    spinner.style.display = "inline-block";
+    // You can also disable the button to prevent further clicks
+    submitButton.disabled = true;
+  });
+});
+
 </script>
 
     </div>

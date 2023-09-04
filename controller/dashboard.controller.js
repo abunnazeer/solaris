@@ -2,25 +2,31 @@ const buyPortfolio = require('../models/portfolio/buyportfolio.model');
 const referralBonus = require('../models/user/referralBonus.model');
 const User = require('../models/user/user.model');
 const Account = require('../models/user/account.model'); // Assuming you have an Account model
+const AccountDetail = require('../models/user/accountDetails.model'); // Assuming you have an Account model
 
 const dashboard = async (req, res) => {
   const { id } = req.user;
   try {
     const portfolios = await buyPortfolio.find({ userId: id });
-
-    let totalBalance = 0;
-    let totalCompBalance = 0;
+    const portfoliosBalance = await AccountDetail.findOne({ userId: id });
 
     const portfolioData = portfolios.map(portfolio => {
-      totalBalance += portfolio.balance;
-      totalCompBalance += portfolio.compBalance; // Summing up all compBalance
-
       return {
         status: portfolio.status,
-        balance: portfolio.balance,
-        compBalance: portfolio.compBalance,
       };
     });
+
+    let accumulatedDividends = 0;
+    let totalAccountBalance = 0;
+    let compoundBalance = 0;
+    let totalReferralBalance = 0;
+
+    if (portfoliosBalance) {
+      accumulatedDividends = portfoliosBalance.accumulatedDividends;
+      totalAccountBalance = portfoliosBalance.totalAccountBalance;
+      compoundBalance = portfoliosBalance.TotalCompoundingBalance;
+      totalReferralBalance = portfoliosBalance.totalReferralBonus;
+    }
 
     const referredUsersCount = await User.countDocuments({
       referredBy: id,
@@ -35,49 +41,17 @@ const dashboard = async (req, res) => {
       }
     });
 
-    // Calculate new accumulatedDividends
-    const newAccumulatedDividends =
-      totalBalance + totalCompBalance + totalBonus;
-    const totalAccountBalance = totalBalance + totalBonus;
-    const compoundBalance = totalCompBalance; // Making it the total of all compBalance
+    
+    const grandTotal = totalAccountBalance + totalReferralBalance;
 
-    // Fetch the current value from the Account model
-    const currentAccount = await Account.findOne({ userId: id });
-
-    // Only update if the new value is greater than the current value
-    const updatedAccumulatedDividends = currentAccount
-      ? Math.max(currentAccount.accumulatedDividends, newAccumulatedDividends)
-      : newAccumulatedDividends;
-
-    // // Update the Account model
-    // const updatedAccount = await Account.findOneAndUpdate(
-    //   { userId: id },
-    //   {
-    //     accumulatedDividends: updatedAccumulatedDividends,
-    //     totalAccountBalance,
-    //     compoundingBalance: compoundBalance,
-    //   },
-    //   { upsert: true, new: true }
-    // );
-    const updatedAccount = await Account.findOneAndUpdate(
-      { userId: id },
-      {
-        accumulatedDividends: updatedAccumulatedDividends,
-        totalAccountBalance,
-        compoundingBalance: compoundBalance,
-        $max: { totalReferralBonus: totalBonus }, // Update only if the new totalBonus is greater
-      },
-      { upsert: true, new: true }
-    );
-    console.log(updatedAccount.accumulatedDividends);
     res.status(200).render('dashboard', {
       title: 'Dashboard',
       portfolioData,
-      totalBonus: updatedAccount.totalReferralBonus,
+      totalBonus,
       referredUsersCount,
-      accumulatedDividends: updatedAccount.accumulatedDividends, // Fetch updated value from Account model
-      totalAccountBalance: updatedAccount.totalAccountBalance, // Fetch updated value from Account model
-      compoundBalance: updatedAccount.compoundingBalance, // Fetch updated value from Account model
+      accumulatedDividends, // use the local variable here
+      totalAccountBalance: grandTotal, // use the local variable here
+      compoundBalance, // use the local variable here
     });
   } catch (err) {
     console.error(err);

@@ -9,6 +9,46 @@
       <header class="main-header">
         <!-- header-->
         <%- include('../layouts/header') %>
+        <style>
+  /* Spinner styles */
+  .overlay {
+    position: fixed;
+    display: none;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 999;
+    cursor: pointer;
+  }
+
+  .spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    border: 4px solid transparent;
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+  }
+
+  @keyframes spin {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+</style>
+
+<div id="overlay" class="overlay">
+  <div class="spinner"></div>
+</div>
+
       </header>
 
       <aside class="main-sidebar" style="border-right: 1px solid #cbcbcb">
@@ -143,62 +183,63 @@
     </div>
 
     <script>
-      const buttons = document.querySelectorAll('.btn-toggle');
-      buttons.forEach(button => {
-        button.addEventListener('click', () => {
-          const userId = button.id;
-          const currentStatus =
-            button.getAttribute('aria-pressed') === 'true'
-              ? 'inactive'
-              : 'active';
-          toggleStatus(userId, currentStatus, button);
-        });
-      });
+const buttons = document.querySelectorAll('.btn-toggle');
+const overlay = document.getElementById('overlay');
 
-      function toggleStatus(userId, currentStatus, button) {
-        const newStatus = currentStatus === 'inactive' ? 'active' : 'active';
-        const currentDate = new Date();
-        const dateOfExpiry = new Date(currentDate);
-        dateOfExpiry.setMonth(dateOfExpiry.getMonth() + 12);
+buttons.forEach(button => {
+  button.addEventListener('click', () => {
+    const userId = button.id;
+    const currentStatus = button.getAttribute('aria-pressed') === 'true' ? 'inactive' : 'active';
+    toggleStatus(userId, currentStatus, button);
+  });
+});
 
-        const updatedData = {
-          status: newStatus,
-          dateOfPurchase: currentDate,
-          dateOfExpiry: dateOfExpiry,
-        };
+function showSpinner() {
+  overlay.style.display = 'block';
+}
 
-        fetch(`/portfolio/buyportfolio/${userId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(updatedData),
-        })
-          .then(response => response.json())
-          .then(data => {
-            // Handle the response or perform any necessary actions
-            console.log(data);
-            console.log(`Status before update: ${currentStatus}`);
-            console.log(`Status after update: ${data.portfolio.status}`);
-            // Check if the status was changed successfully
-            if (data.message === 'Status updated successfully') {
-              // Update the button state to reflect the new status
-              location.reload();
-              button.setAttribute(
-                'aria-pressed',
-                newStatus === 'active' ? 'true' : 'false'
-              );
-              button.classList.toggle('active', newStatus === 'active');
-            } else {
-              // Handle the error or display an error message
-              console.error('Failed to update status');
-            }
-          })
-          .catch(error => {
-            // Handle the error or display an error message
-            console.error(error);
-          });
-      }
+function hideSpinner() {
+  overlay.style.display = 'none';
+}
+
+async function toggleStatus(userId, currentStatus, button) {
+  showSpinner();
+  const newStatus = currentStatus === 'inactive' ? 'active' : 'active';
+  const currentDate = new Date();
+  const dateOfExpiry = new Date(currentDate);
+  dateOfExpiry.setMonth(dateOfExpiry.getMonth() + 12);
+
+  const updatedData = {
+    status: newStatus,
+    dateOfPurchase: currentDate,
+    dateOfExpiry: dateOfExpiry,
+  };
+
+  try {
+    const response = await fetch(`/portfolio/buyportfolio/${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedData),
+    });
+
+    const data = await response.json();
+
+    if (data.message === 'Status updated successfully') {
+      location.reload();
+      button.setAttribute('aria-pressed', newStatus === 'active' ? 'true' : 'false');
+      button.classList.toggle('active', newStatus === 'active');
+    } else {
+      console.error('Failed to update status');
+    }
+  } catch (error) {
+    console.error(error);
+  } finally {
+    hideSpinner();
+  }
+}
+
     </script>
 
     <footer class="main-footer bg-white">

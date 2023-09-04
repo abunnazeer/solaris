@@ -522,14 +522,14 @@ const postTwoFactor = catchAsync(async (req, res) => {
   await sendEmail({
     email: email,
     subject: 'Two-Factor Authentication Code',
-    message: `Hi there, use this code to complete your transaction. It will expire after 5 seconds: ${code}`,
+    message: `Hi there, use this code to complete your transaction. It will expire after 2 minutes: ${code}`,
   });
 
   // Check if 1 minute has passed and delete the document from the TwoFactor collection
   setTimeout(async () => {
     await TwoFactor.findOneAndDelete({ _id: twoFactorCode._id });
     console.log('TwoFactor document deleted:', twoFactorCode._id);
-  }, 60000);
+  }, 120000);
 
   // Additional response or further processing if needed
   res

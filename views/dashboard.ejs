@@ -132,7 +132,7 @@
                       <div class="col-8">
 
                         
-                         <h1 class="m-0 fw-600" style="font-size: 2rem; color:  #f89f1e;"> $ <%= compoundBalance.toLocaleString()%></h1>
+                         <h1 class="m-0 fw-600" style="font-size: 2rem; color:  #f89f1e;"> $ <%= compoundBalance || 0%></h1>
                       </div>
 
                       <div class="col-4">
@@ -175,7 +175,7 @@
                       <div class="col-8">
 
 <h1 class="m-0 fw-600" style="font-size: 2rem; color: #f89f1e;">
-  $<%= accumulatedDividends.toLocaleString() %>
+  $<%= accumulatedDividends || 0 %>
 </h1>
 
                       </div>
@@ -246,7 +246,7 @@
                          <% let totalBalance = 0; %>
 
 <h1 class="m-0 fw-600" style="font-size: 2rem; color: #f89f1e;">
-  $ <%= totalAccountBalance.toLocaleString() %>
+ $ <%= totalAccountBalance || 0 %>
 </h1>
                      
                       <div class="mt-10 mt-md-0">

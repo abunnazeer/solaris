@@ -4,7 +4,7 @@ const User = require('../models/user/user.model');
 const Transactions = require('../models/portfolio/transaction.model');
 const Referralbonus = require('../models/user/referralBonus.model');
 const PayoutConfig = require('../models/portfolio/payoutConfig.model');
-
+const Accounts = require('../models/user/accountDetails.model')
 const Profile = require('../models/user/profile.model');
 const catchAsync = require('../utils/catchAsync');
 const sendEmail = require('../utils/email');
@@ -160,6 +160,8 @@ const postBuyPortfolio = catchAsync(async (req, res) => {
     portfolioName: portfolio.portfolioTitle,
     payout,
     currency,
+    dailyPercentage: portfolio.returnOnInvestment.rioPercentage,
+    compPercentage: portfolio.compounding.cPercentage,
   });
 
   try {
@@ -175,10 +177,12 @@ const postBuyPortfolio = catchAsync(async (req, res) => {
 
 const paymentComfirmation = catchAsync(async (req, res) => {
   const { id } = req.params;
+ 
   const { status, dateOfPurchase, dateOfExpiry } = req.body;
 
   try {
     const portfoliodetail = await BuyPortfolio.findById(id);
+    
 
     if (!portfoliodetail) {
       return res.status(404).json({ message: 'Portfolio not found' });
@@ -218,8 +222,33 @@ const paymentComfirmation = catchAsync(async (req, res) => {
         description: description,
       });
 
-      // Save it without validation
       await referralBonus.save({ validateBeforeSave: false });
+  // Find AccountDetail where userId matches referringUserId
+  let accountDetail = await Accounts.findOne({ userId: referringUserId });
+
+  if (!accountDetail) {
+    // Initialize a new AccountDetail with default values
+    accountDetail = new Accounts({
+      userId: referringUserId,
+      TotalCompoundingBalance: 0.0,
+      accumulatedDividends: 0.0,
+      totalAccountBalance: 0.0,
+      totalReferralBonus: 0.0
+    });
+    await accountDetail.save();
+  }
+
+  // Update totalReferralBonus and accumulatedDividends in AccountDetail
+  await Accounts.findByIdAndUpdate(
+    accountDetail._id,
+    { 
+      $inc: { 
+        totalReferralBonus: bonusAmount,
+        accumulatedDividends: bonusAmount // Assuming you also want to increment this by the same amount
+      }
+    },
+    { new: true }
+  );
 
       // Check if the referring user has a referrer (second-level referrer)
       const referringUser = await User.findOne({ _id: referringUserId });
@@ -235,7 +264,7 @@ const paymentComfirmation = catchAsync(async (req, res) => {
           _id: referringUserId,
         });
         const userProfile = await Profile.findOne({ _id: userId });
-        const description = `Credited 5% $${bonusAmount}, as a referral from ${userProfile.firstName} - ${userProfile.lastName} to your account balance  `;
+        const description = `Credited 5% $${secondLevelBonusAmount}, as a referral from ${userProfile.firstName} - ${userProfile.lastName} to your account balance  `;
         const secondLevelReferralBonus = new Referralbonus({
           referringUserId: secondLevelReferrerId, // The user who referred the referring user
           bonusAmount: secondLevelBonusAmount,
@@ -246,13 +275,48 @@ const paymentComfirmation = catchAsync(async (req, res) => {
         // Save it without validation
         await secondLevelReferralBonus.save({ validateBeforeSave: false });
 
+        // Find AccountDetail where userId matches referringUserId
+         let accountDetail = await Accounts.findOne({
+           userId: secondLevelReferrerId,
+         });
+
+         if (!accountDetail) {
+           // If not found, initialize a new AccountDetail with default values
+           accountDetail = new Accounts({
+             userId: secondLevelReferrerId,
+             TotalCompoundingBalance: 0.0,
+             accumulatedDividends: 0.0,
+             totalAccountBalance: 0.0,
+             totalReferralBonus: 0.0,
+           });
+           await accountDetail.save();
+         }
+
+         console.log('Referring User ID', secondLevelReferrerId);
+
+        
+           await Accounts.findByIdAndUpdate(
+             accountDetail._id,
+             {
+               $inc: {
+                 totalReferralBonus: secondLevelBonusAmount,
+                 accumulatedDividends: secondLevelBonusAmount, // Assuming you also want to increment this by the same amount
+               },
+             },
+             { new: true }
+           );
+      }
+
+
         // Check if the second-level referrer has a referrer (third-level referrer)
+      const secondLevelReferrerId = referringUser.referredBy;
         const secondLevelReferrerUser = await User.findOne({
           _id: secondLevelReferrerId,
         });
 
         if (secondLevelReferrerUser && secondLevelReferrerUser.referredBy) {
           const thirdLevelReferrerId = secondLevelReferrerUser.referredBy;
+
           const thirdLevelBonusAmount =
             portfoliodetail.depositAmount *
             parseFloat(allReferral[0].thirdLevel); // 2.5% of depositAmount
@@ -261,7 +325,7 @@ const paymentComfirmation = catchAsync(async (req, res) => {
             _id: secondLevelReferrerId,
           });
           const userProfile = await Profile.findOne({ _id: userId });
-          const description = `Credited 2.5% $${bonusAmount}, as a referral from ${userProfile.firstName} - ${userProfile.lastName} to your account balance `;
+          const description = `Credited 2.5% $${thirdLevelBonusAmount}, as a referral from ${userProfile.firstName} - ${userProfile.lastName} to your account balance `;
           const thirdLevelReferralBonus = new Referralbonus({
             referringUserId: thirdLevelReferrerId, // The user who referred the second-level referrer
             bonusAmount: thirdLevelBonusAmount,
@@ -271,8 +335,37 @@ const paymentComfirmation = catchAsync(async (req, res) => {
 
           // Save it without validation
           await thirdLevelReferralBonus.save({ validateBeforeSave: false });
+          // Find AccountDetail where userId matches referringUserId
+          let accountDetail = await Accounts.findOne({
+            userId: thirdLevelReferrerId,
+          });
+
+          if (!accountDetail) {
+            // If not found, initialize a new AccountDetail with default values
+            accountDetail = new Accounts({
+              userId: thirdLevelReferrerId,
+              TotalCompoundingBalance: 0.0,
+              accumulatedDividends: 0.0,
+              totalAccountBalance: 0.0,
+              totalReferralBonus: 0.0,
+            });
+            await accountDetail.save();
+          }
+
+          console.log('Referring User ID', thirdLevelBonusAmount);
+
+          await Accounts.findByIdAndUpdate(
+            accountDetail._id,
+            {
+              $inc: {
+                totalReferralBonus: thirdLevelBonusAmount,
+                accumulatedDividends: thirdLevelBonusAmount, // Assuming you also want to increment this by the same amount
+              },
+            },
+            { new: true }
+          );
         }
-      }
+      
     }
 
     if (!buyPortfolio) {
@@ -298,34 +391,6 @@ const paymentComfirmation = catchAsync(async (req, res) => {
   }
 });
 
-// const getBuyPortfolioForm = catchAsync(async (req, res) => {
-//   const { id } = req.params;
-
-//   try {
-//     const portfolio = await Portfolio.findById(id);
-
-//     if (!portfolio) {
-//       return res
-//         .status(404)
-//         .render('response/status', { message: 'Portfolio not found' });
-//     }
-//     const allPayouts = await PayoutConfig.find();
-//     const minimumCapital = Number(
-//       portfolio.minimumCapital.replace(/[\$,]/g, '').trim()
-//     );
-
-//     res.render('portfolio/user/buyportfolio', {
-//       title: 'Buy Portfolio',
-//       portfolio,
-//       minimumCapital: minimumCapital,
-//       payouts: allPayouts,
-//     });
-//   } catch (error) {
-//     res
-//       .status(500)
-//       .render('response/status', { message: 'Failed to fetch portfolio' });
-//   }
-// });
 
 const getBuyPortfolioForm = catchAsync(async (req, res) => {
   const { id } = req.params;
@@ -414,7 +479,7 @@ const getStatusIndex = catchAsync(async (req, res) => {
 
       userObjects.push(userObject); // Push the userObject to the array
     } else {
-      // Handle the case where user.userId is null (e.g., log an error or warning)
+     
       console.warn('userId is null for user:', user);
     }
   }
