@@ -96,6 +96,7 @@ const getReferralBonus = async (req, res, next) => {
       currentPage,
       url,
       referringUser: req.user,
+      limit,
     });
   } catch (err) {
     next(err);
@@ -116,48 +117,7 @@ const getAllReferral = catchAsync(async (req, res) => {
   }
 });
 
-// const createReferralPercent = catchAsync(async (req, res) => {
-//   try {
-//     // Validate input data
 
-//     const { firstLevel, secondLevel, thirdLevel } = req.body;
-
-//     if (!label) {
-//       return res.status(500).render('response/status', {
-//         message: 'Invalid Refferal Percentage data',
-//       });
-//     }
-
-//     // Get the maximum existing sn from the database
-//     const maxSnReferal = await ReferralCofing.findOne()
-//       .sort({ sn: -1 })
-//       .limit(1);
-
-//     // Calculate the next serial number (sn)
-//     const nextSn = maxSnReferal ? maxSnPayout.maxSnReferal.sn + 1 : 0;
-
-//     // Create a new payout using the PayoutConfig model and provide the calculated sn
-//     const newReferralPercentage = await ReferralCofing.create({
-//       payout: [
-//         {
-//           sn: nextSn, // Set the serial number (sn)
-//           firstLabel: 0.1,
-//           secondLevel: 0.05,
-//           thirdLevel: 0.025,
-//         },
-//       ],
-//     });
-
-//     // Redirect to the payout settings route upon successful creation
-//     return res.redirect('/user/payout-settings');
-//   } catch (err) {
-//     console.error(err); // Log the error for debugging purposes
-
-//     return res
-//       .status(500)
-//       .render('response/status', { message: 'Error creating payout' });
-//   }
-// });
 
 // Function to initialize the referral configuration if it doesn't exist in the database
 const initializeReferralConfig = async () => {

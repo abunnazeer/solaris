@@ -9,6 +9,7 @@ const BuyPortfolio = require('../models/portfolio/buyportfolio.model');
 const Transactions = require('../models/portfolio/transaction.model');
 const TwoFactor = require('../models/user/twoFactor.model');
 const ReferralBonus = require('../models/user/referralBonus.model');
+const Accounts = require('../models/user/accountDetails.model');
 
 const getActivity = async (req, res, next) => {
   const { id, role } = req.user;
@@ -62,6 +63,7 @@ const getActivity = async (req, res, next) => {
     next(error);
   }
 };
+
 const postWithdrawal = async (req, res) => {
   const { id } = req.user;
   const { amount, walletAddress, authCode, method } = req.body;
@@ -86,6 +88,32 @@ const postWithdrawal = async (req, res) => {
   }
 
   try {
+    // Fetch user's AccountDetail
+    const userAccountDetail = await Accounts.findOne({ userId: id });
+
+    if (!userAccountDetail) {
+      return res.status(400).send('No account details found.');
+    }
+
+    if (
+      userAccountDetail.totalAccountBalance < amount &&
+      userAccountDetail.totalReferralBonus < amount
+    ) {
+      return res.status(400).send('Insufficient balance.');
+    }
+
+    let updateField =
+      userAccountDetail.totalAccountBalance >= amount
+        ? 'totalAccountBalance'
+        : 'totalReferralBonus';
+
+    // Update AccountDetail
+    await Accounts.findOneAndUpdate(
+      { userId: id },
+      { $inc: { [updateField]: -amount } },
+      { new: true }
+    );
+
     // Generate a serial number
     function generateRandomNumber() {
       const min = 10000;
@@ -94,57 +122,18 @@ const postWithdrawal = async (req, res) => {
     }
 
     const date = new Date();
-    const portfolioBuy = await BuyPortfolio.findOne({
-      payout: 'Daily Payout',
-      balance: { $ne: 0 },
-      userId: id,
-    });
-    const portfolios = await BuyPortfolio.find({
-      userId: id,
-      balance: { $ne: 0 },
-    });
-
-    let totalBonus = 0;
-    const totalBonusDocs = await ReferralBonus.find({ referringUserId: id });
-    totalBonusDocs.forEach(bonusDoc => {
-      if (bonusDoc.bonusAmount) {
-        totalBonus += parseFloat(bonusDoc.bonusAmount);
-      }
-    });
-
-    let totalBalance = 0;
-    portfolios.forEach(portfolio => {
-      totalBalance += portfolio.balance;
-    });
-
-    const totalAccountBalance = totalBalance + totalBonus;
-    if (totalAccountBalance < amount) {
-      return res.status(400).send('Insufficient total account balance.');
-    }
-
-    let buyPortfolioId = null;
-    let status = 'Pending Approval';
-    if (totalBalance >= amount) {
-      buyPortfolioId = portfolios[0]._id;
-      status = 'Pending Approval';
-    }
 
     const transActivityData = {
       sn: generateRandomNumber(),
       date: date,
       description: 'Withdrawal',
-      status: status,
+      status: 'Pending Approval',
       amount: amount,
       authCode: authCode,
       walletAddress: walletAddress,
       method: method,
       userId: id,
-      // Add other necessary fields here
     };
-
-    if (buyPortfolioId !== null) {
-      transActivityData.buyPortfolioId = buyPortfolioId;
-    }
 
     const transActivity = new Transactions(transActivityData);
     const savedTransActivity = await transActivity.save({
@@ -155,37 +144,7 @@ const postWithdrawal = async (req, res) => {
       return res.status(500).send('Failed to save transaction activity.');
     }
 
-    // Perform subtractions only after successfully saving the transaction
-    let deductions = [];
-    if (totalBalance >= amount) {
-      for (const portfolio of portfolios) {
-        const deduction = (portfolio.balance / totalBalance) * amount;
-        deductions.push(
-          BuyPortfolio.updateOne(
-            { _id: portfolio._id },
-            { $inc: { balance: -deduction } }
-          )
-        );
-      }
-    } else if (totalBonus >= amount) {
-      for (const bonusDoc of totalBonusDocs) {
-        const deduction = (bonusDoc.bonusAmount / totalBonus) * amount;
-        deductions.push(
-          ReferralBonus.updateOne(
-            { _id: bonusDoc._id },
-            { $inc: { bonusAmount: -deduction } }
-          )
-        );
-      }
-    }
-
-    // Execute all deductions
-    await Promise.all(deductions);
-
-    // Your remaining code for email and response
     await TwoFactor.deleteOne({ userId: id });
-
-    // Your code for sending email remains here
 
     res.status(200).json({
       message: 'Your withdrawal request has been successfully processed.',
@@ -196,6 +155,141 @@ const postWithdrawal = async (req, res) => {
     res.status(500).send('An error occurred while processing the withdrawal.');
   }
 };
+
+// const postWithdrawal = async (req, res) => {
+//   const { id } = req.user;
+//   const { amount, walletAddress, authCode, method } = req.body;
+
+//   // Validate input data
+//   if (!amount || !walletAddress || !authCode || !method) {
+//     return res.status(400).send('Missing required information.');
+//   }
+
+//   const authRecord = await TwoFactor.findOne({ userId: id });
+
+//   if (!authRecord || authRecord.userId.toString() !== id.toString()) {
+//     return res.status(400).send('Invalid user or authentication record.');
+//   }
+
+//   if (!authRecord.code) {
+//     return res.status(400).send('Authentication code is empty.');
+//   }
+
+//   if (Number(authCode) !== Number(authRecord.code)) {
+//     return res.status(400).send('Invalid authentication code.');
+//   }
+
+//   try {
+//     // Generate a serial number
+//     function generateRandomNumber() {
+//       const min = 10000;
+//       const max = 99999;
+//       return Math.floor(Math.random() * (max - min + 1)) + min;
+//     }
+
+//     const date = new Date();
+//     const portfolioBuy = await BuyPortfolio.findOne({
+//       payout: 'Daily Payout',
+//       balance: { $ne: 0 },
+//       userId: id,
+//     });
+//     const portfolios = await BuyPortfolio.find({
+//       userId: id,
+//       balance: { $ne: 0 },
+//     });
+
+//     let totalBonus = 0;
+//     const totalBonusDocs = await ReferralBonus.find({ referringUserId: id });
+//     totalBonusDocs.forEach(bonusDoc => {
+//       if (bonusDoc.bonusAmount) {
+//         totalBonus += parseFloat(bonusDoc.bonusAmount);
+//       }
+//     });
+
+//     let totalBalance = 0;
+//     portfolios.forEach(portfolio => {
+//       totalBalance += portfolio.balance;
+//     });
+
+//     const totalAccountBalance = totalBalance + totalBonus;
+//     if (totalAccountBalance < amount) {
+//       return res.status(400).send('Insufficient total account balance.');
+//     }
+
+//     let buyPortfolioId = null;
+//     let status = 'Pending Approval';
+//     if (totalBalance >= amount) {
+//       buyPortfolioId = portfolios[0]._id;
+//       status = 'Pending Approval';
+//     }
+
+//     const transActivityData = {
+//       sn: generateRandomNumber(),
+//       date: date,
+//       description: 'Withdrawal',
+//       status: status,
+//       amount: amount,
+//       authCode: authCode,
+//       walletAddress: walletAddress,
+//       method: method,
+//       userId: id,
+     
+//     };
+
+//     if (buyPortfolioId !== null) {
+//       transActivityData.buyPortfolioId = buyPortfolioId;
+//     }
+
+//     const transActivity = new Transactions(transActivityData);
+//     const savedTransActivity = await transActivity.save({
+//       validateBeforeSave: false,
+//     });
+
+//     if (!savedTransActivity) {
+//       return res.status(500).send('Failed to save transaction activity.');
+//     }
+
+//     // Perform subtractions only after successfully saving the transaction
+//     let deductions = [];
+//     if (totalBalance >= amount) {
+//       for (const portfolio of portfolios) {
+//         const deduction = (portfolio.balance / totalBalance) * amount;
+//         deductions.push(
+//           BuyPortfolio.updateOne(
+//             { _id: portfolio._id },
+//             { $inc: { balance: -deduction } }
+//           )
+//         );
+//       }
+//     } else if (totalBonus >= amount) {
+//       for (const bonusDoc of totalBonusDocs) {
+//         const deduction = (bonusDoc.bonusAmount / totalBonus) * amount;
+//         deductions.push(
+//           ReferralBonus.updateOne(
+//             { _id: bonusDoc._id },
+//             { $inc: { bonusAmount: -deduction } }
+//           )
+//         );
+//       }
+//     }
+
+//     // Execute all deductions
+//     await Promise.all(deductions);
+
+//     // Your remaining code for email and response
+//     await TwoFactor.deleteOne({ userId: id });
+
+//     // Your code for sending email remains here
+
+//     res.status(200).json({
+//       message: 'Your withdrawal request has been successfully processed.',
+//       redirectUrl: '/user/withdrawal-status',
+//     });
+//   } catch (err) {
+//     console.error('An error occurred while processing the withdrawal:', err);
+//     res.status(500).send('An error occurred while processing the withdrawal.');
+//   }
+// };
 
 const getTransfer = (req, res) => {
   res.status(200).render('activities/transfer', {
@@ -210,28 +304,18 @@ const getwithdrawalStatus = (req, res) => {
 };
 
 const getWithdrawalRequest = async (req, res, next) => {
-  const { id } = req.user; // Get the user ID and role from req.user
+  const { id } = req.user; // Get the user ID from req.user
 
   try {
-    // Fetch all portfolios for this user
-    const portfolios = await BuyPortfolio.find({ userId: id });
+    // Fetch user's AccountDetail to get totalBalance
+    const userAccountDetail = await Accounts.findOne({ userId: id });
+    const totalBalance = userAccountDetail
+      ? userAccountDetail.totalAccountBalance
+      : 0;
 
-    // Calculate totalBalance across all portfolios
-    let totalBalance = 0;
-    portfolios.forEach(portfolio => {
-      totalBalance += portfolio.balance;
-    });
-
-    // Fetch all referral bonuses for this user
-    const totalBonusDocs = await ReferralBonus.find({ referringUserId: id });
-
-    // Calculate totalBonus
-    let totalBonus = 0;
-    totalBonusDocs.forEach(bonusDoc => {
-      if (bonusDoc.bonusAmount) {
-        totalBonus += parseFloat(bonusDoc.bonusAmount);
-      }
-    });
+        const totalBonus = userAccountDetail
+          ? userAccountDetail.totalReferralBonus
+          : 0;
 
     // Calculate the combined total for withdrawals
     const totalForWithdrawals = totalBalance + totalBonus;
@@ -246,6 +330,7 @@ const getWithdrawalRequest = async (req, res, next) => {
     next(error);
   }
 };
+
 
 const getwithdrawalHistory = async (req, res, next) => {
   const { id, role } = req.user;
