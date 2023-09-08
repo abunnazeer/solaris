@@ -108,13 +108,14 @@ app.use(
   session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     store: new MongoStore({
       mongoUrl: DB,
       ttl: 7 * 24 * 60 * 60,
     }),
   })
 );
+
 // app.use(updateCSP);
 // Import and use routers
 
@@ -143,297 +144,14 @@ io.on('connection', socket => {
   });
 
   socket.on('balanceUpdate', message => {
-    // console.log('Balance Update:', message);
     // Parse the message and update the dashboard accordingly
     const { portfolioId, balance, compBalance } = JSON.parse(message);
-    // Update the dashboard with the new balance values
   });
 
   socket.on('disconnect', () => {
     console.log('A user disconnected');
   });
 });
-
-// function sendBalanceUpdate(portfolioId, balance, compBalance) {
-//   const message = JSON.stringify({ portfolioId, balance, compBalance });
-//   io.emit('balanceUpdate', message);
-// }
-
-// const updatePortfolio = async (
-//   portfolio,
-//   dailyPercentage,
-//   millisecondsInDay,
-//   dailyInterval
-// ) => {
-//   let balance;
-//   let compBalance;
-//   let currentTime = Date.parse(portfolio.dateOfPurchase);
-//   const terminationTime = Date.parse(portfolio.dateOfExpiry);
-
-//   if (portfolio.payout === 'compounding') {
-//     compBalance = portfolio.compBalance;
-//   } else {
-//     balance = portfolio.balance;
-//   }
-
-//   const intervalId = setInterval(async () => {
-//     if (portfolio.status === 'inactive') {
-//       clearInterval(intervalId);
-//       return;
-//     }
-
-//     if (currentTime >= terminationTime) {
-//       clearInterval(intervalId);
-//       await buyPortfolio.findByIdAndUpdate(portfolio._id, {
-//         status: 'inactive',
-//       });
-//       return;
-//     }
-
-//     let newBalance;
-//     let incrementValue;
-//     if (portfolio.payout === 'compounding') {
-//       incrementValue = dailyPercentage * portfolio.amount;
-//       newBalance = compBalance + incrementValue;
-//     } else {
-//       incrementValue = dailyPercentage * portfolio.amount;
-//       newBalance = balance + incrementValue;
-//     }
-
-//     let updatedPortfolio;
-
-//     if (portfolio.payout === 'compounding') {
-//       updatedPortfolio = await buyPortfolio.findByIdAndUpdate(
-//         portfolio._id,
-//         {
-//           compBalance: newBalance,
-//           compAmount: newBalance + portfolio.amount,
-//         },
-//         { new: true }
-//       );
-//     } else {
-//       updatedPortfolio = await buyPortfolio.findByIdAndUpdate(
-//         portfolio._id,
-//         { balance: newBalance },
-//         { new: true }
-//       );
-//     }
-
-//     // Generate a serial number
-//     const sn = generateRandomNumber();
-
-//     // Get the current date
-//     const date = new Date();
-
-//     const transActivity = new Transactions({
-//       sn: sn,
-//       date: date,
-//       title: portfolio.payout,
-//       description: `Credit of $${incrementValue} made for ${portfolio.portfolioName}`,
-//       buyPortfolioId: portfolio.userId,
-//       status: portfolio.userId ? 'Credited' : 'Approved',
-//       amount: incrementValue,
-//       userId: portfolio.userId,
-//       method: portfolio.currency,
-//       authCode: 0,
-//     });
-
-//     try {
-//       // Save the transactions activity document without validation
-//       await transActivity.save({ validateBeforeSave: false });
-//     } catch (error) {
-//       console.error('Failed to save the document:', error);
-//       return res.status(500).render('response/status', {
-//         message: 'Failed to save the document',
-//       });
-//     }
-
-//     sendBalanceUpdate(
-//       updatedPortfolio._id,
-//       updatedPortfolio.balance,
-//       updatedPortfolio.compBalance
-//     );
-
-//     // console.log('Updated Portfolio:', updatedPortfolio);
-
-//     if (portfolio.payout === 'compounding') {
-//       compBalance = newBalance;
-//     } else {
-//       balance = newBalance;
-//     }
-
-//     currentTime += millisecondsInDay;
-//   }, dailyInterval);
-// };
-
-// // Function to generate a random number between 10000 and 99999
-// function generateRandomNumber() {
-//   const min = 10000;
-//   const max = 99999;
-//   return Math.floor(Math.random() * (max - min + 1)) + min;
-// }
-
-// // // Dashboard route
-// // app.get('/dashboard', protect, async (req, res) => {
-// //   try {
-// //     const user = req.user.id;
-// //     const portfolios = await buyPortfolio.find({ userId: user });
-
-// //     for (const portfolio of portfolios) {
-// //       if (
-// //         portfolio.payout === portfolio.payoutName[portfolio.payout] &&
-// //         portfolio.payout !== 'compounding' &&
-// //         portfolio.status === 'active'
-// //       ) {
-// //         const dailyInterval = portfolio.portConfig[portfolio.payout];
-// //         if (dailyInterval > 0) {
-// //           updatePortfolio(
-// //             portfolio,
-// //             portfolio.dailyPercentage,
-// //             24 * 60 * 60 * 1000,
-// //             dailyInterval
-// //           );
-// //         }
-// //       }
-
-// //       if (
-// //         portfolio.payout === portfolio.payoutName['compounding'] &&
-// //         portfolio.payout !== 'daily' &&
-// //         portfolio.status === 'active'
-// //       ) {
-// //         const dailyInterval = portfolio.portConfig[portfolio.payout];
-// //         if (dailyInterval > 0) {
-// //           let compBalance = portfolio.compBalance;
-// //           let currentTime = Date.parse(portfolio.dateOfPurchase);
-// //           const terminationTime = Date.parse(portfolio.dateOfExpiry);
-// //           const intervalId = setInterval(async () => {
-// //             if (portfolio.status === 'inactive') {
-// //               clearInterval(intervalId);
-// //               return;
-// //             }
-// //             if (currentTime >= terminationTime) {
-// //               clearInterval(intervalId);
-// //               await buyPortfolio.findByIdAndUpdate(portfolio._id, {
-// //                 status: 'inactive',
-// //               });
-// //               return;
-// //             }
-// //             const newCompBalance =
-// //               compBalance + portfolio.compPercentage * portfolio.amount;
-
-// //             const updatedPortfolio = await buyPortfolio.findByIdAndUpdate(
-// //               portfolio._id,
-// //               {
-// //                 compBalance: newCompBalance,
-// //                 compAmount: newCompBalance + portfolio.amount,
-// //               },
-// //               { new: true }
-// //             );
-
-// //             sendBalanceUpdate(
-// //               updatedPortfolio._id,
-// //               updatedPortfolio.balance,
-// //               updatedPortfolio.compBalance
-// //             );
-
-// //             console.log('Updated Portfolio:', updatedPortfolio);
-
-// //             compBalance = newCompBalance;
-// //             currentTime += 24 * 60 * 60 * 1000;
-// //           }, dailyInterval);
-// //         }
-// //       }
-// //     }
-
-// //     res.status(200).render('dashboard', {
-// //       title: 'Dashboard',
-// //       portfolios,
-// //     });
-// //   } catch (err) {
-// //     console.error(err);
-// //     res.status(500).send('An error occurred while fetching the portfolios.');
-// //   }
-// // });
-
-// // Dashboard route
-// // Dashboard route
-// // Dashboard route
-// app.get('/dashboard', protect, async (req, res) => {
-//   try {
-//     const user = req.user.id;
-//     const portfolios = await buyPortfolio.find({ userId: user });
-
-//     for (const portfolio of portfolios) {
-//       if (
-//         portfolio.payout === portfolio.payoutName[portfolio.payout] &&
-//         portfolio.payout !== 'compounding' &&
-//         portfolio.status === 'active'
-//       ) {
-//         const dailyInterval = 60 * 1000; // 1 minute interval
-//         updatePortfolio(
-//           portfolio,
-//           portfolio.dailyPercentage,
-//           24 * 60 * 60 * 1000,
-//           dailyInterval
-//         );
-//       }
-
-//       if (
-//         portfolio.payout === portfolio.payoutName['compounding'] &&
-//         portfolio.payout !== 'daily' &&
-//         portfolio.status === 'active'
-//       ) {
-//         const dailyInterval = 60 * 1000; // 1 minute interval
-//         let compBalance = portfolio.compBalance;
-//         let currentTime = Date.parse(portfolio.dateOfPurchase);
-//         const terminationTime = Date.parse(portfolio.dateOfExpiry);
-//         const intervalId = setInterval(async () => {
-//           if (portfolio.status === 'inactive') {
-//             clearInterval(intervalId);
-//             return;
-//           }
-//           if (currentTime >= terminationTime) {
-//             clearInterval(intervalId);
-//             await buyPortfolio.findByIdAndUpdate(portfolio._id, {
-//               status: 'inactive',
-//             });
-//             return;
-//           }
-//           const newCompBalance =
-//             compBalance + Portfolio.cPercentage * portfolio.amount;
-
-//           const updatedPortfolio = await buyPortfolio.findByIdAndUpdate(
-//             portfolio._id,
-//             {
-//               compBalance: newCompBalance,
-//               compAmount: newCompBalance + portfolio.amount,
-//             },
-//             { new: true }
-//           );
-
-//           sendBalanceUpdate(
-//             updatedPortfolio._id,
-//             updatedPortfolio.balance,
-//             updatedPortfolio.compBalance
-//           );
-
-//           // console.log('Updated Portfolio:', updatedPortfolio);
-
-//           compBalance = newCompBalance;
-//           currentTime += 60 * 1000; // Increment currentTime by 1 minute
-//         }, dailyInterval);
-//       }
-//     }
-
-//     res.status(200).render('dashboard', {
-//       title: 'Dashboard',
-//       portfolios,
-//     });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).send('An error occurred while fetching the portfolios.');
-//   }
-// });
 
 // Handle all other routes
 app.all('*', (req, res, next) => {
@@ -447,9 +165,7 @@ const PORT = process.env.PORT || 9000;
 server.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
 });
-// cron.schedule('0 0 * * *', dailyPayout);
-// cron.schedule('* * * * *', dailyPayout);
-// cron.schedule('* * * * *', compoundingPayout);
+
 cron.schedule('0 3 * * 1-5', dailyPayout);
 cron.schedule('0 3 * * 1-5', compoundingPayout);
 
