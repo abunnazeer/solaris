@@ -11,48 +11,92 @@ const TwoFactor = require('../models/user/twoFactor.model');
 const ReferralBonus = require('../models/user/referralBonus.model');
 const Accounts = require('../models/user/accountDetails.model');
 
+// const getActivity = async (req, res, next) => {
+//   const { id, role } = req.user;  // Extracting id and role from the request object
+//   try {
+//     // Pagination setup
+//     const page = parseInt(req.query.page) || 1;
+//     const limit = parseInt(req.query.limit) || 10;
+
+//     const getAllReferralBonus =  await ReferralBonus.find({ referringUserId : id});
+//     // Determine filter criteria based on the user role
+//     console.log(getAllReferralBonus)
+//     const filterCriteria = role === 'admin' ? {} : { userId: id };
+
+//     // Fetch the total count and activities in parallel
+//     const [count, activities] = await Promise.all([
+//       Transactions.countDocuments(filterCriteria),
+//       Transactions.find(filterCriteria)
+//         .populate('userId')  // Populate related fields
+//         .skip((page - 1) * limit)  // Skip for pagination
+//         .limit(limit),  // Limit records for pagination
+//     ]);
+
+//     // Send the response
+//     res.status(200).render('activities/activity', {
+//       title: 'Transaction History',
+//       activities,
+//       totalPages: Math.ceil(count / limit),
+//       currentPage: page,
+//       limit,
+//     });
+//   } catch (err) {
+//     console.log(err);
+//     const error = new AppError('An error occurred', 500);
+//     next(error);  // Move to the next middleware with the error
+//   }
+// };
+
+
 const getActivity = async (req, res, next) => {
   const { id, role } = req.user;
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
 
+    const getAllReferralBonus = await ReferralBonus.find({
+      referringUserId: id,
+    });
+
     const filterCriteria = role === 'admin' ? {} : { userId: id };
-    // Fetch the total count and activities in parallel
+
     const [count, activities] = await Promise.all([
       Transactions.countDocuments(filterCriteria),
       Transactions.find(filterCriteria)
-        .populate('buyPortfolioId')
+        .populate('userId')
         .skip((page - 1) * limit)
         .limit(limit),
     ]);
 
-    let payout = 'No value';
-    const buyPortfolioId = activities.buyPortfolioId;
+    // Normalize activities and referral bonuses into a single array
+    const normalizedActivities = activities.map(activity => ({
+     title: activity.title,
+      amount: activity.amount,
+      date: activity.date,
+      description: activity.description,
+     
+      status: activity.status,
+     
+    }));
 
-    if (buyPortfolioId) {
-      const buyPortfolio = await BuyPortfolio.findOne({
-        _id: buyPortfolioId,
-        userId: id,
-      });
-      if (buyPortfolio) {
-        payout = buyPortfolio.payout;
-      }
-    }
+    const normalizedReferralBonuses = getAllReferralBonus.map(bonus => ({
+     
+      title: 'Referral Bonus',
+      amount: bonus.bonusAmount,
+      date: bonus.createdAt,
+      description: bonus.description,
+      status: 'Credited',
+     
+    }));
 
-    let twoFactorCode = null;
-    if (id) {
-      twoFactorCode = await TwoFactor.findOne({ user: id });
-    }
-
-    if (twoFactorCode) {
-      console.log(twoFactorCode.userId);
-    }
+    const combinedData = [
+      ...normalizedActivities,
+      ...normalizedReferralBonuses,
+    ];
 
     res.status(200).render('activities/activity', {
       title: 'Transaction History',
-      payout,
-      activities,
+      combinedData,
       totalPages: Math.ceil(count / limit),
       currentPage: page,
       limit,
@@ -63,6 +107,10 @@ const getActivity = async (req, res, next) => {
     next(error);
   }
 };
+
+
+
+
 
 const postWithdrawal = async (req, res) => {
   const { id } = req.user;

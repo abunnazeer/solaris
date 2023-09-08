@@ -6,6 +6,7 @@ const AccountDetail = require('../models/user/accountDetails.model'); // Assumin
 
 const dashboard = async (req, res) => {
   const { id } = req.user;
+
   try {
     const portfolios = await buyPortfolio.find({ userId: id });
     const portfoliosBalance = await AccountDetail.findOne({ userId: id });
@@ -41,7 +42,6 @@ const dashboard = async (req, res) => {
       }
     });
 
-    
     const grandTotal = totalAccountBalance + totalReferralBalance;
 
     res.status(200).render('dashboard', {

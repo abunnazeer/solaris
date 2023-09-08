@@ -20,7 +20,13 @@
     display: inline-block;
     font-size: 1rem;
   }
-
+.btn-close{
+  color: white!important;
+  background-color: #fff !important;
+}
+.form-control:read-only {
+  background-color: #e9ecef !important;
+}
   .withdrawal-button:hover {
     background-color: #5622c5 !important;
     color: #fff !important;
@@ -185,46 +191,103 @@
   <div id="signup-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="reInvestModalLabel" aria-hidden="true">
           <div class="modal-dialog">
             <div class="modal-content">
-      <div class="modal-header bg-black">
-                  <h4 class="modal-title" id="standard-modalLabel">
-                   Account Balance:  $<%= totalForWithdrawals ?
-                            totalForWithdrawals.toLocaleString() : '0' %></h4>
-                    
-                           
-         
+      <div class="modal-header bg-black" style="background-color: #24095d; color: #fff;">
                   <button
+                
                     type="button"
                     class="btn-close"
                     data-bs-dismiss="modal"
                     aria-label="Close"
                   ></button>
                 </div>
+
       <div class="modal-body">
-        
-        <form class="ps-3 pe-3" action="/portfolio/re-invest/<%= buyPortfolio._id %>" method="post">
+          <div
+                  class="d-md-flex justify-content-between align-items-center mb-5"
+                >
+                
+                    
+          <div  class="col-md-6" style="border: 1px solid #cacaca;
+    padding: 5px 10px 5px 10px;"> <h5>Account Balance</h5>  <h2>$<%= totalAccount ?
+                              totalAccount.toLocaleString() : '0' %></h2></div>
+             
+                
+                          
+          <div  style="border: 1px solid #cacaca;
+    padding: 5px 10px 5px 10px; display: none;"> <h5> Compounding Balance</h5> <h2> $<%= TotalCompoundingBalance ?
+                              TotalCompoundingBalance.toLocaleString() : '0' %></h2></div>
+                
+                </div>
+    
+        <form class="" action="/portfolio/re-invest/<%= buyPortfolio._id %>" method="post">
           <div class="mt-20-3">
+            <div class="mb-3">
+              <label for="portfolio-type">Category</label>
+              <div class="input-group mb-10">
+                <input type="text" name="invested-portfolio-name" id="portfolio-type" class="form-control" value="<%= buyPortfolio.payout %>" disabled>
+              </div>
+            </div>
             <label for="portfolio">Investment Portfolio</label>
-            <div class="input-group mb-20">
+            <div class="input-group mb-10">
               <input type="text" name="invested-portfolio-name" id="portfolio" class="form-control" value="<%= buyPortfolio.portfolioName %>" disabled>
             </div>
           </div>
           <div class="mb-3">
-            <label for="portfolio-type">Investment Category</label>
-            <div class="input-group mb-20">
-              <input type="text" name="invested-portfolio-name" id="portfolio-type" class="form-control" value="<%= buyPortfolio.payout %>" disabled>
-            </div>
-          </div>
-          <div class="mb-3">
-            <label for="invested-amount">Invested Amount</label>
-            <div class="input-group mb-20">
+            <label for="invested-amount">Amount Invested</label>
+            <div class="input-group mb-10">
               <input type="text" name="invested-amount" id="invested-amount" class="form-control" value="$<%= buyPortfolio.amount %>" disabled>
             </div>
           </div>
           <div class="mb-3">
-            <label for="add-amount">Add Amount</label>
-            <div class="input-group mb-20">
-              <input type="text" name="amount" id="add-amount" class="form-control">
+            <label for="add-availableAmount">Add Amount</label>
+            <div class="input-group mb-10">
+              
+              <input type="text" name="availableAmount" id="amount" class="form-control">
+              
+              
+              </div>
+              <span id="amount-error" style="color:red; display:none;"></span>
+              
+          </div>
+          <div class="mb-3">
+            <label for="add-newAmount">Select payment platform</label>
+            <select
+                            class="form-control"
+                            style="width: 100%"
+                            tabindex="-1"
+                            aria-hidden="true"
+                            name="method"
+                            id="method"
+                          
+                          >
+                            <option value="" selected disabled>
+                             Select Payment Platform
+                            </option>
+                            <option value="Available-Balance">Available Balance</option>
+                            <option value="add-newamount">
+                             Add new Amount
+                            </option>
+                            
+                          </select>
             </div>
+            <div id="payment-option" style="border: 1px solid #cacaca; padding: 5px;">
+
+  <div class="mb-3">
+            <label for="add-newAmount">Currency</label>
+         <select class="form-control" id="currency-select">
+  <option value="" selected disabled>Select Currency</option>
+  <option value="BTC">Bitcoin</option>
+  <option value="ETH">Ethereum</option>
+  <option value="USDT">Tether USD TRC20</option>
+</select>
+
+
+
+             <div id="wallet-detail"></div>
+
+
+              </div>
+            
           </div>
          
           
@@ -237,9 +300,11 @@
                       >
                         Close
                       </button>
-                      <button type="submit" class="withdrawal-button">
-                       Purchase
-                      </button>
+                     <button type="submit" class="withdrawal-button" onclick="toggleSpinner('purchaseSpinner')">
+  <span id="purchaseSpinner" class="spinner-border spinner-border-sm" style="display:none;"></span>
+  Purchase
+</button>
+
                     </div>
         </form>
       </div>
@@ -253,8 +318,8 @@
                 <div class="modal-header bg-black">
                   <h4 class="modal-title" id="standard-modalLabel">
                      Account Balance: 
-                      $<%= totalForWithdrawals ?
-                            totalForWithdrawals.toLocaleString() : '0' %>
+                      $<%= totalAccount ?
+                            totalAccount.toLocaleString() : '0' %>
                  </h4>
                  
                   <button
@@ -397,9 +462,11 @@
   
         <%- include('../layouts/footer') %>
          <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+         
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <script>
-  
+
+
   document
     .getElementById('generateCodeBtn')
     .addEventListener('click', function () {
@@ -502,6 +569,134 @@
             });
           }
           });
+
+        $(document).ready(function(){
+  // Initially hide the payment-option div
+  $('#payment-option').hide();
+
+  // Show or hide 'payment-option' div based on selected payment method
+  $('#method').change(function() {
+    if ($(this).val() === 'add-newamount') {
+      $('#payment-option').show();
+      // Change the name attribute of the amount input to "new-amount"
+      $('#amount').attr('name', 'newAmount');
+    } else {
+      $('#payment-option').hide();
+      $('#wallet-detail').hide(); // Hide the wallet detail if payment option changes
+      // Change the name attribute of the new-amount input back to "amount"
+      $('#amount').attr('name', 'availableAmount');
+    }
+  });
+});
+
+
+
+
+  // Function to make the AJAX request
+function makeAjaxRequest(selectedCurrency, amount) {
+  $('#wallet-detail').html('<div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>');
+
+  $.ajax({
+    type: 'POST',
+    url: '/user/get-wallet-details',
+    data: {
+      amount: amount
+    },
+  })
+  .then(function(response) {
+    const data = response.walletDetails;
+console.log(response)
+    // Clear previous wallet details
+    $('#wallet-detail').empty();
+
+    // Loop through each wallet detail to find a match
+    data.forEach((detail) => {
+      if (detail.name === selectedCurrency) {
+        // Create a new div for this set of details
+        const walletDiv = $('<div class="wallet-detail" style="text-align:center"></div>');
+
+        // Add the QR code image
+        const qrImg = $('<img width="120">').attr('src', detail.qrCode);
+        walletDiv.append(qrImg);
+
+        // Add the name of the cryptocurrency
+        const cryptoName = $('<p style="text-align:center">').text(`Currency ${detail.name} Amount In crypto: ${detail.cryptoAmount}`);
+  walletDiv.append(cryptoName);
+        // Add the wallet address
+      // Create a wrapper div with flexbox styling
+const wrapperDiv = $('<div class="d-flex align-items-center">');
+
+// Create the input field
+const walletInput = $('<input class="form-control">').attr('type', 'text').val(detail.address);
+
+// Create the copy button
+const copyButton = $('<button class="btn btn-primary ml-2">').text('Copy');
+
+// When the copy button is clicked, copy the input's value to the clipboard
+copyButton.on('click', function(event) {
+  // Prevent the form from being submitted
+  event.preventDefault();
+  
+  // Copy the input's value to the clipboard
+  walletInput.select();
+  document.execCommand('copy');
+});
+
+// Append both the input and the button to the wrapper div
+wrapperDiv.append(walletInput, copyButton);
+
+// Append the wrapper div to the main walletDiv
+walletDiv.append(wrapperDiv);
+
+        // Append this div to the container
+        $('#wallet-detail').append(walletDiv);
+      }
+    });
+  });
+}
+
+// Listen for changes on the currency dropdown
+$('#currency-select').on('change', function() {
+  const selectedCurrency = $(this).val();
+  const amount = $('#amount').val();
+
+  if (!amount) {
+    $('#amount').css('border', '1px solid red');
+    $('#amount-error').text('Please enter amount first').show();
+    return;
+  } else {
+    $('#amount').css('border', '1px solid green');
+    $('#amount-error').hide();
+    makeAjaxRequest(selectedCurrency, amount);
+  }
+});
+
+// Listen for changes on the amount input field
+$('#amount').on('input', function() {
+  const selectedCurrency = $('#currency-select').val();
+  const amount = $(this).val();
+
+  if (amount) {
+    $('#amount').css('border', '1px solid green');
+    $('#amount-error').hide();
+    makeAjaxRequest(selectedCurrency, amount);
+  } else {
+    $('#amount').css('border', '1px solid red');
+    $('#amount-error').text('Please enter amount first').show();
+  }
+});
+
+function toggleSpinner(id) {
+  var spinner = document.getElementById(id);
+  if (spinner.style.display === "none" || spinner.style.display === "") {
+    spinner.style.display = "inline-block";
+  } else {
+    spinner.style.display = "none";
+  }
+}
+
+
+
         </script>
       </footer>
 

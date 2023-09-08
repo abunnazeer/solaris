@@ -28,6 +28,7 @@ const {
   getVerifyDetail,
   postApproval,
   postDisApproval,
+  getWalletDetail,
 } = require('../controller/view.controller');
 
 const {
@@ -171,6 +172,7 @@ router.get(
 // PORTFOLIO
 router.get('/view-investments-portfolio', protect, getInvestPortfolio);
 router.get('/user-investments', protect, getActivePortfolio);
+router.post('/get-wallet-details', protect, getWalletDetail);
 router.get('/investment-history', protect, getInvestHistory);
 router.get('/short-term-funds', protect, getShortTermForm);
 router.get('/portfolio-details', protect, getDetailsPage);

@@ -7,7 +7,11 @@ const catchAsync = require('../utils/catchAsync');
 const Portfolio = require('../models/portfolio/portfolio.model');
 const buyPortfolio = require('../models/portfolio/buyportfolio.model');
 const ReferralBonus = require('../models/user/referralBonus.model');
-const ReferralConfig = require('../models/user/referralConfig.model');
+const axios = require('axios');
+const QRCode = require('qrcode');
+const Accounts = require('../models/user/accountDetails.model');
+const secretKey =
+  '6C0-0DVUxLblgkhe7ViRCGI1DslhOjErhaoeuWkLRTrm4cIHEqwkHhSOkN9ywVhj';
 const multer = require('multer');
 
 const sendEmail = require('../utils/email');
@@ -613,125 +617,280 @@ const getInvestPortfolio = catchAsync(async (req, res) => {
 ///////////////Get Active Portfolio//////////////////////////////
 //////////////////////////////////////
 //////////////
-const getActivePortfolio = catchAsync(async (req, res) => {
+const fetchCryptoPrices = async (cryptocurrencies, targetCurrency) => {
+  try {
+    const response = await axios.get(
+      `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest`,
+      {
+        headers: {
+          'X-CMC_PRO_API_KEY': '53e53396-66c2-41bc-8531-8b45d59eb2d9',
+        },
+        params: {
+          symbol: cryptocurrencies.join(','),
+          convert: targetCurrency,
+        },
+      }
+    );
+    return response; // Return the entire response
+  } catch (error) {
+    console.error('Error fetching crypto prices:', error);
+    return {}; // Return an empty object on error
+  }
+};
+
+const getWalletDetail = catchAsync(async (req, res) => {
   const { id } = req.user; // Assuming the user ID is stored in req.user.id
+  const { amount } = req.body;
+  const targetCurrency = 'USD';
+
+  const walletAddress = [
+    {
+      name: 'BTC',
+      symbol: 'BTC',
+
+      address: '35fzCfP2rZAUmWyGXUUiBgFBRBarSBBZas',
+      price: amount,
+    },
+
+    {
+      name: 'ETH',
+      symbol: 'ETH',
+      address: '0x457f18b10467340db29c7e72581e5d4650928d78',
+      price: amount,
+    },
+    {
+      name: 'USDT',
+      symbol: 'USDT',
+      address: 'TLyFun55QXxxk8qqtfhwG2wvfhpN1Poh4M',
+      price: amount,
+    },
+  ];
+  const cryptocurrencies = walletAddress.map(crypto => crypto.symbol);
+
+  const response = await fetchCryptoPrices(cryptocurrencies, targetCurrency);
+  const cryptoPrices = response.data.data;
+
+  const walletAddressWithPrices = walletAddress.map((crypto, id) => {
+    const price =
+      cryptoPrices[walletAddress[id].symbol].quote[targetCurrency].price;
+    return { ...crypto, price };
+  });
+
+  const qrCodes = await Promise.all(
+    walletAddressWithPrices.map(async crypto => {
+      return QRCode.toDataURL(crypto.address);
+    })
+  );
+
+  const walletAddressWithQR = await Promise.all(
+    walletAddressWithPrices.map(async crypto => {
+      const qrCodeData = await QRCode.toDataURL(crypto.address);
+      const cryptoAmount = (amount / crypto.price).toFixed(6); // Calculating the cryptoAmount
+      return {
+        ...crypto,
+        qrCode: qrCodeData,
+        cryptoAmount, // Include cryptoAmount in the object
+      };
+    })
+  );
+  // Fetch portfolios for the user
   const buyPortfolios = await buyPortfolio.find({ userId: id });
 
-  // Calculate totalBalance across all portfolios
-  let totalBalance = 0;
-  buyPortfolios.forEach(portfolio => {
-    totalBalance += portfolio.balance;
+  // Fetch account details for the user
+  const accountDetails = await Accounts.findOne({ userId: id });
+
+  // Calculate totalAccount and TotalCompoundingBalance
+  const totalAccount = accountDetails
+    ? accountDetails.totalAccountBalance + accountDetails.totalReferralBonus
+    : 0;
+  const TotalCompoundingBalance = accountDetails
+    ? accountDetails.TotalCompoundingBalance
+    : 0;
+
+  const responseObject = {
+    walletDetails: walletAddressWithQR,
+  };
+
+  // Send JSON response
+  res.status(200).json(responseObject);
+});
+
+const getActivePortfolio = catchAsync(async (req, res) => {
+  const { id } = req.user; // Assuming the user ID is stored in req.user.id
+  const { amount } = req.body;
+  const targetCurrency = 'USD';
+
+  const walletAddress = [
+    {
+      name: 'BTC',
+      symbol: 'BTC',
+
+      address: '35fzCfP2rZAUmWyGXUUiBgFBRBarSBBZas',
+      price: amount,
+    },
+
+    {
+      name: 'ETH',
+      symbol: 'ETH',
+      address: '0x457f18b10467340db29c7e72581e5d4650928d78',
+      price: amount,
+    },
+    {
+      name: 'USDT',
+      symbol: 'USDT',
+      address: 'TLyFun55QXxxk8qqtfhwG2wvfhpN1Poh4M',
+      price: amount,
+    },
+  ];
+  const cryptocurrencies = walletAddress.map(crypto => crypto.symbol);
+
+  const response = await fetchCryptoPrices(cryptocurrencies, targetCurrency);
+  const cryptoPrices = response.data.data;
+
+  const walletAddressWithPrices = walletAddress.map((crypto, id) => {
+    const price =
+      cryptoPrices[walletAddress[id].symbol].quote[targetCurrency].price;
+    return { ...crypto, price };
   });
 
-  // Fetch all referral bonuses for this user
-  const totalBonusDocs = await ReferralBonus.find({ referringUserId: id });
+  const qrCodes = await Promise.all(
+    walletAddressWithPrices.map(async crypto => {
+      return QRCode.toDataURL(crypto.address);
+    })
+  );
 
-  // Calculate totalBonus
-  let totalBonus = 0;
-  totalBonusDocs.forEach(bonusDoc => {
-    if (bonusDoc.bonusAmount) {
-      totalBonus += parseFloat(bonusDoc.bonusAmount);
-    }
+  const walletAddressWithQR = walletAddressWithPrices.map(crypto => {
+    const cryptoAmount = (amount / crypto.price).toFixed(6);
+    return { ...crypto, qrCode: qrCodes, cryptoAmount };
   });
-  // Calculate the combined total for withdrawals
-  const totalForWithdrawals = totalBalance + totalBonus;
 
+  // Fetch portfolios for the user
+  const buyPortfolios = await buyPortfolio.find({ userId: id });
+
+  // Fetch account details for the user
+  const accountDetails = await Accounts.findOne({ userId: id });
+
+  // Calculate totalAccount and TotalCompoundingBalance
+  const totalAccount = accountDetails
+    ? accountDetails.totalAccountBalance + accountDetails.totalReferralBonus
+    : 0;
+  const TotalCompoundingBalance = accountDetails
+    ? accountDetails.TotalCompoundingBalance
+    : 0;
+
+  // Render the view
   res.status(200).render('portfolio/activeportfolio', {
     title: 'Active Portfolio',
-    totalForWithdrawals,
     buyPortfolios,
+    totalAccount,
+    TotalCompoundingBalance,
+    walletAddressWithQR,
   });
 });
 
 const postReInvestPortfolio = catchAsync(async (req, res) => {
   const { portfolioId } = req.params;
-
-  const { amount } = req.body;
+  const { availableAmount, newAmount } = req.body;
   const { id } = req.user;
-  const reInvestPortfolios = await buyPortfolio.find({ userId: id });
 
+  const reInvestPortfolios = await buyPortfolio.find({ userId: id });
+  const totalAmount = await Accounts.findOne({ userId: id });
   const userDetail = await User.findOne({ _id: id });
 
-  let totalBalance = 0;
-  reInvestPortfolios.forEach(portfolio => {
-    totalBalance += portfolio.balance;
-  });
+  // Scenario A: Re-Invest from available Balance
+  if (availableAmount) {
+    const portfolio = reInvestPortfolios.find(
+      p => p._id.toString() === portfolioId
+    );
 
-  const totalBonusDocs = await ReferralBonus.find({ referringUserId: id });
-  let totalBonus = 0;
-  totalBonusDocs.forEach(bonusDoc => {
-    if (bonusDoc.bonusAmount) {
-      totalBonus += parseFloat(bonusDoc.bonusAmount);
-    }
-  });
-
-  await buyPortfolio.updateOne(
-    { _id: portfolioId },
-    { $inc: { amount: parseFloat(amount) } }
-  );
-
-  const updatedPortfolio = await buyPortfolio.findOneAndUpdate(
-    { _id: portfolioId },
-    { $inc: { balance: -amount } },
-    { new: true }
-  );
-
-  // Check if the updated balance is zero
-  if (updatedPortfolio.balance === 0) {
-    // Find all referral bonuses associated with the user
-    const referralBonuses = await ReferralBonus.find({ referringUserId: id });
-
-    if (referralBonuses.length > 0) {
-      let allBonusesZero = true;
-
-      // Loop through each referralBonus document and update it
-      for (const referralBonus of referralBonuses) {
-        console.log(
-          `Current bonus amount before update: ${referralBonus.bonusAmount}`
+    if (portfolio) {
+      if (availableAmount) {
+        const portfolio = reInvestPortfolios.find(
+          p => p._id.toString() === portfolioId
         );
+        if (portfolio) {
+          const totalBalance =
+            totalAmount.totalAccountBalance +
+            totalAmount.totalReferralBonus +
+            totalAmount.TotalCompoundingBalance;
 
-        // If bonusAmount is greater than zero, set allBonusesZero to false
-        if (referralBonus.bonusAmount > 0) {
-          allBonusesZero = false;
+          if (totalBalance >= parseFloat(availableAmount)) {
+            portfolio.amount += parseFloat(availableAmount);
 
-          // Subtract the amount from each bonusAmount
-          const updatedReferralBonus = await ReferralBonus.findOneAndUpdate(
-            { _id: referralBonus._id },
-            { $inc: { bonusAmount: -parseFloat(amount) } },
-            { new: true }
-          );
+            // Subtract from the total balance
+            const subtractedAmount = parseFloat(availableAmount);
+            if (totalAmount.totalAccountBalance >= subtractedAmount) {
+              totalAmount.totalAccountBalance -= subtractedAmount;
+            } else if (
+              totalAmount.totalAccountBalance +
+                totalAmount.totalReferralBonus >=
+              subtractedAmount
+            ) {
+              totalAmount.totalReferralBonus -=
+                subtractedAmount - totalAmount.totalAccountBalance;
+              totalAmount.totalAccountBalance = 0;
+            } else {
+              totalAmount.TotalCompoundingBalance -=
+                subtractedAmount -
+                (totalAmount.totalAccountBalance +
+                  totalAmount.totalReferralBonus);
+              totalAmount.totalAccountBalance = 0;
+              totalAmount.totalReferralBonus = 0;
+            }
 
-          console.log(
-            `Updated bonus amount: ${updatedReferralBonus.bonusAmount}`
-          );
+            await portfolio.save();
+            await totalAmount.save();
+          } else {
+            return res.status(400).send('Insufficient balance.');
+          }
         }
       }
 
-      if (allBonusesZero) {
-        console.log('All bonuses are zero.');
-      }
-    } else {
-      console.log('No referral bonuses found for this user.');
+      // Sending an email to admin
+      const emailContent = `A user with the following email ${userDetail.email} has re-invested from available balance on ${portfolio.portfolioName}.`;
+      await sendEmail({
+        email: 'admin@solarisfinance.com',
+        subject: 'Re-Investment Alert',
+        message: emailContent,
+      });
+
+      // Updating the date of expiry for the portfolio
+      const oneYearFromNow = new Date();
+      oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+      await buyPortfolio.updateOne(
+        { _id: portfolioId },
+        { $set: { dateOfExpiry: oneYearFromNow } }
+      );
     }
   }
 
-  // 3. Send an email to admin
-  const emailContent = `A user with the following email ${userDetail.email} has re-invested on ${reInvestPortfolios[0].portfolioName}.`;
-  await sendEmail({
-    email: 'admin@solarisfinance.com',
-    subject: 'Re-Investment Alert',
-    message: emailContent,
-  });
+  // Scenario B: Re-invest using New Amount
+  if (newAmount) {
+    const portfolio = reInvestPortfolios.find(
+      p => p._id.toString() === portfolioId
+    );
+    if (portfolio) {
+      portfolio.amount += parseFloat(newAmount);
+      await portfolio.save();
 
-  // 4. Update buyPortfolio.dateOfExpiry to be one year from the current date for the portfolio being reinvested
-  const oneYearFromNow = new Date();
-  oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
-  await buyPortfolio.updateOne(
-    { _id: portfolioId },
-    { $set: { dateOfExpiry: oneYearFromNow } }
-  );
+      // Sending an email to admin
+      const emailContent = `A user with the following email ${userDetail.email} has sent a re-investment deposit for ${portfolio.portfolioName}.`;
+      await sendEmail({
+        email: 'admin@solarisfinance.com',
+        subject: 'New Re-Investment Deposit Alert',
+        message: emailContent,
+      });
 
-  res.redirect('/dashboard');
+      // Render response
+      return res.status(200).render('response/status', {
+        message:
+          'Your Re-investment payment has successfully been sent. Wait for approval shortly',
+      });
+    }
+  }
+
+  // Final Redirect to dashboard
+  return res.redirect('/dashboard');
 });
 
 const getInvestHistory = catchAsync(async (req, res) => {
@@ -778,6 +937,7 @@ module.exports = {
   getInvestHistory,
   getShortTermForm,
   getDetailsPage,
+  getWalletDetail,
   activation,
   getProfileVerification,
   getVerificationStatus,
