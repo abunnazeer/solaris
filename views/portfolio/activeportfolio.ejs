@@ -300,7 +300,7 @@
                       >
                         Close
                       </button>
-                     <button type="submit" class="withdrawal-button" onclick="toggleSpinner('purchaseSpinner')">
+                     <button id="submit-button" type="submit"  class="withdrawal-button" onclick="toggleSpinner('purchaseSpinner')">
   <span id="purchaseSpinner" class="spinner-border spinner-border-sm" style="display:none;"></span>
   Purchase
 </button>
@@ -467,6 +467,50 @@
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <script>
 
+
+ $(document).ready(function() {
+      function validateForm() {
+        const amountValue = parseFloat($('#amount').val());
+        const methodValue = $('#method').val();
+        const errorElement = $('#amount-error');
+        const submitButton = $('#submit-button');
+
+        let isValid = true;
+
+        if (amountValue < 100 || isNaN(amountValue)) {
+          errorElement.text('The amount must be at least $100');
+          errorElement.show();
+          isValid = false;
+        } else {
+          errorElement.hide();
+        }
+
+        if (!methodValue) {
+          // You can add another error element to show a specific message for this field if you want
+          isValid = false;
+        }
+
+        submitButton.prop('disabled', !isValid);
+      }
+
+      $('#amount').on('input', function() {
+        // Include your existing code here if you have any.
+        validateForm();
+      });
+
+      $('#method').on('change', function() {
+        validateForm();
+      });
+
+      $('#your-form').on('submit', function(e) {
+        if ($('#submit-button').prop('disabled')) {
+          e.preventDefault();
+        }
+      });
+
+      // Initial validation
+      validateForm();
+    });
 
   document
     .getElementById('generateCodeBtn')
