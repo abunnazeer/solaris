@@ -15,6 +15,7 @@ const secretKey =
 const multer = require('multer');
 
 const sendEmail = require('../utils/email');
+const TransactionsActivity = require('../models/portfolio/transaction.model');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -840,6 +841,27 @@ const postReInvestPortfolio = catchAsync(async (req, res) => {
 
             await portfolio.save();
             await totalAmount.save();
+            function generateRandomNumber() {
+              const min = 10000;
+              const max = 99999;
+              return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+            const date = new Date();
+            const transActivity = new TransactionsActivity({
+              sn: generateRandomNumber(),
+              date: date,
+              title: 'Re-Investment',
+              description: `Re-investment of $${availableAmount} made for ${portfolio.portfolioName} from available balance`,
+              buyPortfolioId: portfolio._id,
+              status: 'Re Invested',
+              amount: availableAmount,
+              userId: id,
+              method: portfolio.currency,
+              authCode: 0,
+            });
+
+            console.log(transActivity);
+            await transActivity.save();
           } else {
             return res.status(400).send('Insufficient balance.');
           }
@@ -870,9 +892,29 @@ const postReInvestPortfolio = catchAsync(async (req, res) => {
       p => p._id.toString() === portfolioId
     );
     if (portfolio) {
-      portfolio.amount += parseFloat(newAmount);
+      portfolio.depositAmount += parseFloat(newAmount);
+      portfolio.invstType = 'ReInvest';
+      portfolio.reInvestStatus = 'inactive';
       await portfolio.save();
-
+      function generateRandomNumber() {
+        const min = 10000;
+        const max = 99999;
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+      const date = new Date();
+      const transActivity = new TransactionsActivity({
+        sn: generateRandomNumber(),
+        date: date,
+        title: 'Re-Investment',
+        description: `A fresh re-investment of $${newAmount} made for ${portfolio.portfolioName}`,
+        buyPortfolioId: portfolio._id,
+        status: 'Pending Approval',
+        amount: newAmount,
+        userId: id,
+        method: portfolio.currency,
+        authCode: 0,
+      });
+      await transActivity.save();
       // Sending an email to admin
       const emailContent = `A user with the following email ${userDetail.email} has sent a re-investment deposit for ${portfolio.portfolioName}.`;
       await sendEmail({
