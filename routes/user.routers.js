@@ -4,7 +4,7 @@ const {
   getLoginForm,
   getForgetPasswordForm,
   getProfile,
-  getBizForm,
+
   getResetPasswordForm,
   getSuccess,
   getVerifyIndex,

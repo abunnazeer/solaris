@@ -48,6 +48,68 @@ const Accounts = require('../models/user/accountDetails.model');
 // };
 
 
+// const getActivity = async (req, res, next) => {
+//   const { id, role } = req.user;
+//   try {
+//     const page = parseInt(req.query.page) || 1;
+//     const limit = parseInt(req.query.limit) || 10;
+
+//     const getAllReferralBonus = await ReferralBonus.find({
+//       referringUserId: id,
+//     });
+
+//     const filterCriteria = role === 'admin' ? {} : { userId: id };
+
+//     const [count, activities] = await Promise.all([
+//       Transactions.countDocuments(filterCriteria),
+//       Transactions.find(filterCriteria)
+//         .populate('userId')
+//         .skip((page - 1) * limit)
+//         .limit(limit),
+//     ]);
+
+//     // Normalize activities and referral bonuses into a single array
+//     const normalizedActivities = activities.map(activity => ({
+//      title: activity.title,
+//       amount: activity.amount,
+//       date: activity.date,
+//       description: activity.description,
+     
+//       status: activity.status,
+     
+//     }));
+
+//     const normalizedReferralBonuses = getAllReferralBonus.map(bonus => ({
+     
+//       title: 'Referral Bonus',
+//       amount: bonus.bonusAmount,
+//       date: bonus.createdAt,
+//       description: bonus.description,
+//       status: 'Credited',
+     
+//     }));
+
+//     const combinedData = [
+//       ...normalizedActivities,
+//       ...normalizedReferralBonuses,
+//     ];
+
+//     res.status(200).render('activities/activity', {
+//       title: 'Transaction History',
+//       combinedData,
+//       totalPages: Math.ceil(count / limit),
+//       currentPage: page,
+//       limit,
+//     });
+//   } catch (err) {
+//     console.log(err);
+//     const error = new AppError('An error occurred', 500);
+//     next(error);
+//   }
+// };
+
+
+
 const getActivity = async (req, res, next) => {
   const { id, role } = req.user;
   try {
@@ -56,13 +118,14 @@ const getActivity = async (req, res, next) => {
 
     const getAllReferralBonus = await ReferralBonus.find({
       referringUserId: id,
-    });
+    }).sort({ createdAt: -1 }); // Sort in descending order based on the creation date
 
     const filterCriteria = role === 'admin' ? {} : { userId: id };
 
     const [count, activities] = await Promise.all([
       Transactions.countDocuments(filterCriteria),
       Transactions.find(filterCriteria)
+        .sort({ date: -1 }) // Sort in descending order based on date
         .populate('userId')
         .skip((page - 1) * limit)
         .limit(limit),
@@ -70,29 +133,25 @@ const getActivity = async (req, res, next) => {
 
     // Normalize activities and referral bonuses into a single array
     const normalizedActivities = activities.map(activity => ({
-     title: activity.title,
+      title: activity.title,
       amount: activity.amount,
       date: activity.date,
       description: activity.description,
-     
       status: activity.status,
-     
     }));
 
     const normalizedReferralBonuses = getAllReferralBonus.map(bonus => ({
-     
       title: 'Referral Bonus',
       amount: bonus.bonusAmount,
       date: bonus.createdAt,
       description: bonus.description,
       status: 'Credited',
-     
     }));
 
     const combinedData = [
       ...normalizedActivities,
       ...normalizedReferralBonuses,
-    ];
+    ].sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort combined data by date in descending order
 
     res.status(200).render('activities/activity', {
       title: 'Transaction History',
@@ -107,9 +166,6 @@ const getActivity = async (req, res, next) => {
     next(error);
   }
 };
-
-
-
 
 
 const postWithdrawal = async (req, res) => {

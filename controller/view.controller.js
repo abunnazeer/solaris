@@ -43,21 +43,9 @@ const multerFilter = (req, file, cb) => {
 };
 
 const getRegistrationForm = (req, res, next) => {
-  // const { email, password, passwordConfirm, role } = req.body;
-
   res.status(201).render('register', {
     title: 'Registration',
   });
-  res.redirect('/user/success');
-};
-
-const getBizForm = (req, res, next) => {
-  // const { email, password, passwordConfirm, role } = req.body;
-
-  res.status(201).render('bizregister', {
-    title: 'Business Registration',
-  });
-  res.redirect('/user/activation');
 };
 
 const getLoginForm = (req, res) => {
@@ -301,87 +289,6 @@ const postProfileVerification = catchAsync(async (req, res) => {
     `);
   }
 });
-// const postProfileVerification = catchAsync(async (req, res) => {
-//   const {
-//     firstName,
-//     middleName,
-//     lastName,
-//     phoneNumber,
-//     gender,
-//     addressStreet,
-//     addressCity,
-//     addressState,
-//     addressCountry,
-//     addressZipCode,
-//     idCardNumber,
-//     idCardType,
-//     proofType,
-//   } = req.body;
-
-//   const user = req.user;
-
-//   try {
-//     // Check if idCardImage file is uploaded and available in req.files
-//     if (!req.files || !req.files['idCardImage']) {
-//       throw new AppError('Please upload Identity Card', 400);
-//     }
-
-//     // Get the filename from req.files
-//     const idCardImageFilename = req.files['idCardImage'][0].filename;
-
-//     let proofImageFilename; // Initialize the variable
-
-//     // Check if proofImage file is uploaded and available in req.files
-//     if (req.files && req.files['proofImage']) {
-//       proofImageFilename = req.files['proofImage'][0].filename;
-//     }
-
-//     const profile = await Profile.create({
-//       _id: user._id,
-//       role: user.role,
-//       firstName,
-//       gender,
-//       middleName,
-//       lastName,
-//       phoneNumber,
-//       address: {
-//         street: addressStreet,
-//         city: addressCity,
-//         state: addressState,
-//         country: addressCountry,
-//         zipCode: addressZipCode,
-//       },
-//       idCard: {
-//         cardNumber: idCardNumber,
-//         iDCardType: idCardType,
-//         idCardImage: idCardImageFilename, // Use the filename obtained from req.files
-//       },
-//       proofOfAddress: {
-//         proofType,
-//         proofImage: proofImageFilename,
-//       },
-//       submittedDate: formatDate(new Date()),
-//     });
-
-//     const message = `
-//     <strong>Verification Sennt</strong>
-//     <br> A user with following email ${user.email} have submitted an new verification
-//    .
-// `;
-//     await sendEmail({
-//       email: 'verify-me@solarisfinance.com',
-//       subject: `[Solaris Finance] User has send a new  Verification - ${formatDate(
-//         new Date()
-//       )}`,
-//       message,
-//     });
-
-//     res.redirect('/user/user-verify-status');
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).send('Internal Server Error');
-//   }
-// });
 
 const getVerificationStatus = (req, res) => {
   res.status(200).render('user/verification_status', {
@@ -860,7 +767,6 @@ const postReInvestPortfolio = catchAsync(async (req, res) => {
               authCode: 0,
             });
 
-            console.log(transActivity);
             await transActivity.save();
           } else {
             return res.status(400).send('Insufficient balance.');
@@ -966,7 +872,7 @@ module.exports = {
   getLoginForm,
   getForgetPasswordForm,
   getProfile,
-  getBizForm,
+
   getResetPasswordForm,
   getSuccess,
 
