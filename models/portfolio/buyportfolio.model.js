@@ -15,6 +15,13 @@ const buyPortfolioSchema = new mongoose.Schema({
     enum: ['active', 'inactive', 'expired'],
     default: 'inactive',
   },
+
+  reInvestStatus: {
+    type: String,
+    enum: ['active', 'inactive'],
+    default: 'inactive',
+  },
+  invstType: String,
   amount: {
     type: Number,
 

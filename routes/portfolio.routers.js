@@ -18,8 +18,10 @@ const {
   getPayment,
   updatePayment,
   getStatusIndex,
+  getReInvestIndex,
 
   paymentComfirmation,
+  comfirmReInvest,
 } = require('../controller/view.portfolio');
 
 const {
@@ -49,6 +51,7 @@ router.get('/buy-portfolio/:id', protect, getBuyPortfolioForm);
 router.get('/create-portfolio', protect, getPortfolioForm);
 router.get('/', protect, getPortfolioIndex);
 router.get('/index', protect, restrictTo('admin'), getStatusIndex);
+router.get('/re-invested', protect, restrictTo('admin'), getReInvestIndex);
 // router.get('/portfolio', getPortfolioIndex);
 router.put(
   '/buyportfolio/:id',
@@ -56,6 +59,7 @@ router.put(
   restrictTo('admin'),
   paymentComfirmation
 );
+router.put('/re-invest/:id', protect, restrictTo('admin'), comfirmReInvest);
 router.post(
   '/create-portfolio',
   protect,

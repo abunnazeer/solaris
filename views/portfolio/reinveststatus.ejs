@@ -112,18 +112,19 @@
                           { month: 'short', day: 'numeric', year: 'numeric', })
                           %>
                         </td>
-                        <td class="table-action min-w-100">
-                          <button
-                            id="<%= item.userDetails._id %>"
-                            type="button"
-                            class="btn btn-sm btn-toggle <%= item.userDetails.status === 'active' ? 'btn-success active' : 'btn-warning-light' %>"
-                            data-bs-toggle="button"
-                            aria-pressed="<%= item.userDetails.status === 'active' ? 'true' : 'false' %>"
-                             <%= item.userDetails.status === 'active' ? 'disabled' : '' %>
-                          >
-                            <span class="handle"></span>
-                          </button>
-                        </td>
+                      <td class="table-action min-w-100">
+  <button
+    id="<%= item.userDetails._id %>"
+    type="button"
+    class="btn btn-sm btn-toggle <%= item.userDetails.reInvestStatus === 'active' ? 'btn-success active' : 'btn-warning-light' %>"
+    data-bs-toggle="button"
+    aria-pressed="<%= item.userDetails.reInvestStatus === 'active' ? 'true' : 'false' %>"
+    <%= item.userDetails.reInvestStatus === 'active' ? 'disabled' : '' %>
+  >
+    <span class="handle"></span>
+  </button>
+</td>
+
                       </tr>
                       <% } %> <% }) %>
                     </tbody>
@@ -211,13 +212,13 @@ async function toggleStatus(userId, currentStatus, button) {
   dateOfExpiry.setMonth(dateOfExpiry.getMonth() + 12);
 
   const updatedData = {
-    status: newStatus,
+    reInvestStatus: newStatus,
     dateOfPurchase: currentDate,
     dateOfExpiry: dateOfExpiry,
   };
 
   try {
-    const response = await fetch(`/portfolio/buyportfolio/${userId}`, {
+    const response = await fetch(`/portfolio/re-invest/${userId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

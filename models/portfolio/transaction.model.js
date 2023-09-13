@@ -54,6 +54,7 @@ const transactionsActivitySchema = new mongoose.Schema({
       'Failed',
       'Pending Approval',
       'Approved',
+      'Re Invested',
     ],
     default: 'Pending',
   },

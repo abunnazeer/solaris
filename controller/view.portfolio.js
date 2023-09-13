@@ -391,6 +391,56 @@ const paymentComfirmation = catchAsync(async (req, res) => {
   }
 });
 
+const comfirmReInvest = catchAsync(async (req, res) => {
+  const { id } = req.params;
+
+  const { reInvestStatus, dateOfPurchase, dateOfExpiry } = req.body;
+
+  try {
+    const portfoliodetail = await BuyPortfolio.findById(id);
+
+    if (!portfoliodetail) {
+      return res.status(404).json({ message: 'Portfolio not found' });
+    }
+
+    const depositedAmount = portfoliodetail.depositAmount;
+    const userId = portfoliodetail.userId;
+    const userDetail = await User.findOne({ _id: userId });
+
+    const buyPortfolio = await BuyPortfolio.findByIdAndUpdate(
+      id,
+      {
+        $inc: { amount: depositedAmount }, // increment the amount with the depositedAmount
+        reInvestStatus,
+        depositAmount: 0,
+        dateOfPurchase,
+        dateOfExpiry,
+      },
+      { new: true }
+    );
+
+    if (!buyPortfolio) {
+      return res.status(404).json({ message: 'BuyPortfolio not found' });
+    }
+
+    const emailContent = `Your payment for re-investment of ${portfoliodetail.portfolioName} has been confirmed, and your portfolio has been activated`;
+
+    // Send email to the user
+    await sendEmail({
+      email: userDetail.email,
+      subject: 'Your new re-investment deposit has been confirmed',
+      message: emailContent,
+    });
+
+    return res.json({
+      message: 'Status updated successfully',
+      portfolio: buyPortfolio,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Failed to update status' });
+  }
+});
 
 const getBuyPortfolioForm = catchAsync(async (req, res) => {
   const { id } = req.params;
@@ -444,6 +494,58 @@ const getPortfolioIndex = catchAsync(async (req, res) => {
   });
 });
 
+const getReInvestIndex = catchAsync(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const skip = (page - 1) * limit;
+
+  // Filter query for active users with depositAmount greater than 0
+  const filterQuery = {
+    status: 'active',
+    invstType: 'ReInvest',
+  };
+
+  const buyPortfolioCount = await BuyPortfolio.countDocuments(filterQuery);
+  const totalPages = Math.ceil(buyPortfolioCount / limit);
+
+  const userDetails = await BuyPortfolio.find(filterQuery)
+    .skip(skip)
+    .limit(limit)
+    // .populate('userId')
+    .exec();
+
+  const userObjects = [];
+
+  for (const user of userDetails) {
+    if (user.userId) {
+      const userId = user.userId._id;
+      const userProfile = await Profile.findOne({ _id: userId });
+
+      if (!userProfile) {
+        return res
+          .status(404)
+          .render('response/status', { message: 'User profile not found' });
+      }
+
+      const userObject = {
+        userDetails: user,
+        userProfile: userProfile,
+      };
+
+      userObjects.push(userObject);
+    } else {
+      console.warn('userId is null for user:', user);
+    }
+  }
+
+  res.render('portfolio/reinveststatus', {
+    title: 'Portfolio Status',
+    userObjects,
+    currentPage: page,
+    totalPages: totalPages,
+  });
+});
+
 const getStatusIndex = catchAsync(async (req, res) => {
   const page = parseInt(req.query.page) || 1; // Get the page number from the query parameters (default: page 1)
   const limit = 10; // Number of items per page
@@ -479,12 +581,10 @@ const getStatusIndex = catchAsync(async (req, res) => {
 
       userObjects.push(userObject); // Push the userObject to the array
     } else {
-     
       console.warn('userId is null for user:', user);
     }
   }
 
-  // console.log(userObjects);
   res.render('portfolio/statusindex', {
     title: 'Portfolio Status',
     userObjects,
@@ -630,9 +730,6 @@ const updatePayment = catchAsync(async (req, res) => {
   }
 });
 
-
-
-
 module.exports = {
   getPortfolioForm,
   getPortfolioIndex,
@@ -643,5 +740,7 @@ module.exports = {
   getPayment,
   updatePayment,
   getStatusIndex,
+  getReInvestIndex,
   paymentComfirmation,
+  comfirmReInvest,
 };
