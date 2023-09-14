@@ -115,9 +115,11 @@
         <% } else if (activity.status === 'Approved') { %>
           <span class="badge badge-primary">Withdrawed</span>
         <% } else if (activity.status === 'Pending Approval') { %>
-          <span class="badge badge-danger">Pending Withdrawal</span>
+          <span class="badge badge-danger">Pending Withdrawal </span>
         <% } else if (activity.status === 'Re Invested') { %>
           <span class="badge badge-primary">Re-Invested</span>
+        <% } else if (activity.status === 'Pending Re-Invested') { %>
+          <span class="badge badge-primary">Pending Approval</span>
         <% } %>
       </td>
     </tr>

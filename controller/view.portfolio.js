@@ -177,12 +177,11 @@ const postBuyPortfolio = catchAsync(async (req, res) => {
 
 const paymentComfirmation = catchAsync(async (req, res) => {
   const { id } = req.params;
- 
+
   const { status, dateOfPurchase, dateOfExpiry } = req.body;
 
   try {
     const portfoliodetail = await BuyPortfolio.findById(id);
-    
 
     if (!portfoliodetail) {
       return res.status(404).json({ message: 'Portfolio not found' });
@@ -223,32 +222,67 @@ const paymentComfirmation = catchAsync(async (req, res) => {
       });
 
       await referralBonus.save({ validateBeforeSave: false });
-  // Find AccountDetail where userId matches referringUserId
-  let accountDetail = await Accounts.findOne({ userId: referringUserId });
+      // Find AccountDetail where userId matches referringUserId
+      let accountDetail = await Accounts.findOne({ userId: referringUserId });
 
-  if (!accountDetail) {
-    // Initialize a new AccountDetail with default values
-    accountDetail = new Accounts({
-      userId: referringUserId,
-      TotalCompoundingBalance: 0.0,
-      accumulatedDividends: 0.0,
-      totalAccountBalance: 0.0,
-      totalReferralBonus: 0.0
-    });
-    await accountDetail.save();
-  }
-
-  // Update totalReferralBonus and accumulatedDividends in AccountDetail
-  await Accounts.findByIdAndUpdate(
-    accountDetail._id,
-    { 
-      $inc: { 
-        totalReferralBonus: bonusAmount,
-        accumulatedDividends: bonusAmount // Assuming you also want to increment this by the same amount
+      if (!accountDetail) {
+        // Initialize a new AccountDetail with default values
+        accountDetail = new Accounts({
+          userId: referringUserId,
+          TotalCompoundingBalance: 0.0,
+          accumulatedDividends: 0.0,
+          totalAccountBalance: 0.0,
+          totalReferralBonus: 0.0,
+        });
+        await accountDetail.save();
       }
-    },
-    { new: true }
-  );
+      const referringUserProfile = await Profile.findOne({
+        _id: referringUserId,
+      });
+
+      const message = `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+        <h4>Dear${referringUserProfile.firstName} ${referringUserProfile.lastName}</h4>
+        <p>We're thrilled to inform you that your diligent efforts have paid off – your downline's investment has been successfully processed, and your commission has been credited to your account!</p>
+
+        <p>We're delighted to see your network expanding and your contributions being rewarded. Your commitment to sharing our investment opportunities is truly appreciated.</p>
+        
+        <p>To view the details of this commission and your updated account balance, simply log in to your Solaris Finance account.</p>
+
+        <p>You'll find comprehensive information about your referrals, commissions, and the overall growth of your network.</p>
+
+        <p> Thank you for being a valuable member of our investor community. Your success is our success, and we're here to support you every step of the way. </p>
+
+        <p>If you have any questions or need assistance, please don't hesitate to contact our dedicated support team</p>
+
+
+        <p>Best regards,<br/>
+        The Solaris Finance Support Team</p>
+
+    </div>
+`;
+
+      const referringUserIdEmail = await User.findOne({
+        _id: referringUserId,
+      });
+
+      await sendEmail({
+        email: referringUserIdEmail.email,
+        subject: `Congratulations! You just  Earned $${bonusAmount} Commission`,
+        message,
+      });
+
+      // Update totalReferralBonus and accumulatedDividends in AccountDetail
+      await Accounts.findByIdAndUpdate(
+        accountDetail._id,
+        {
+          $inc: {
+            totalReferralBonus: bonusAmount,
+            accumulatedDividends: bonusAmount, // Assuming you also want to increment this by the same amount
+          },
+        },
+        { new: true }
+      );
 
       // Check if the referring user has a referrer (second-level referrer)
       const referringUser = await User.findOne({ _id: referringUserId });
@@ -276,108 +310,202 @@ const paymentComfirmation = catchAsync(async (req, res) => {
         await secondLevelReferralBonus.save({ validateBeforeSave: false });
 
         // Find AccountDetail where userId matches referringUserId
-         let accountDetail = await Accounts.findOne({
-           userId: secondLevelReferrerId,
-         });
+        let accountDetail = await Accounts.findOne({
+          userId: secondLevelReferrerId,
+        });
 
-         if (!accountDetail) {
-           // If not found, initialize a new AccountDetail with default values
-           accountDetail = new Accounts({
-             userId: secondLevelReferrerId,
-             TotalCompoundingBalance: 0.0,
-             accumulatedDividends: 0.0,
-             totalAccountBalance: 0.0,
-             totalReferralBonus: 0.0,
-           });
-           await accountDetail.save();
-         }
+        if (!accountDetail) {
+          // If not found, initialize a new AccountDetail with default values
+          accountDetail = new Accounts({
+            userId: secondLevelReferrerId,
+            TotalCompoundingBalance: 0.0,
+            accumulatedDividends: 0.0,
+            totalAccountBalance: 0.0,
+            totalReferralBonus: 0.0,
+          });
+          await accountDetail.save();
+        }
 
-         console.log('Referring User ID', secondLevelReferrerId);
-
-        
-           await Accounts.findByIdAndUpdate(
-             accountDetail._id,
-             {
-               $inc: {
-                 totalReferralBonus: secondLevelBonusAmount,
-                 accumulatedDividends: secondLevelBonusAmount, // Assuming you also want to increment this by the same amount
-               },
-             },
-             { new: true }
-           );
-      }
-
-
-        // Check if the second-level referrer has a referrer (third-level referrer)
-      const secondLevelReferrerId = referringUser.referredBy;
-        const secondLevelReferrerUser = await User.findOne({
+        const referringUserProfile = await Profile.findOne({
           _id: secondLevelReferrerId,
         });
 
-        if (secondLevelReferrerUser && secondLevelReferrerUser.referredBy) {
-          const thirdLevelReferrerId = secondLevelReferrerUser.referredBy;
+        const message = `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+        <h4>Dear${referringUserProfile.firstName} ${referringUserProfile.lastName}</h4>
+        <p>We're thrilled to inform you that your diligent efforts have paid off – your downline's investment has been successfully processed, and your commission has been credited to your account!</p>
 
-          const thirdLevelBonusAmount =
-            portfoliodetail.depositAmount *
-            parseFloat(allReferral[0].thirdLevel); // 2.5% of depositAmount
+        <p>We're delighted to see your network expanding and your contributions being rewarded. Your commitment to sharing our investment opportunities is truly appreciated.</p>
+        
+        <p>To view the details of this commission and your updated account balance, simply log in to your Solaris Finance account.</p>
 
-          const { _id: thirdLevelReferrerUserId } = await User.findOne({
-            _id: secondLevelReferrerId,
-          });
-          const userProfile = await Profile.findOne({ _id: userId });
-          const description = `Credited 2.5% $${thirdLevelBonusAmount}, as a referral from ${userProfile.firstName} - ${userProfile.lastName} to your account balance `;
-          const thirdLevelReferralBonus = new Referralbonus({
-            referringUserId: thirdLevelReferrerId, // The user who referred the second-level referrer
-            bonusAmount: thirdLevelBonusAmount,
-            referredUserId: thirdLevelReferrerUserId, // The second-level referrer who was referred
-            description: description,
-          });
+        <p>You'll find comprehensive information about your referrals, commissions, and the overall growth of your network.</p>
 
-          // Save it without validation
-          await thirdLevelReferralBonus.save({ validateBeforeSave: false });
-          // Find AccountDetail where userId matches referringUserId
-          let accountDetail = await Accounts.findOne({
-            userId: thirdLevelReferrerId,
-          });
+        <p> Thank you for being a valuable member of our investor community. Your success is our success, and we're here to support you every step of the way. </p>
 
-          if (!accountDetail) {
-            // If not found, initialize a new AccountDetail with default values
-            accountDetail = new Accounts({
-              userId: thirdLevelReferrerId,
-              TotalCompoundingBalance: 0.0,
-              accumulatedDividends: 0.0,
-              totalAccountBalance: 0.0,
-              totalReferralBonus: 0.0,
-            });
-            await accountDetail.save();
-          }
+        <p>If you have any questions or need assistance, please don't hesitate to contact our dedicated support team</p>
 
-          console.log('Referring User ID', thirdLevelBonusAmount);
 
-          await Accounts.findByIdAndUpdate(
-            accountDetail._id,
-            {
-              $inc: {
-                totalReferralBonus: thirdLevelBonusAmount,
-                accumulatedDividends: thirdLevelBonusAmount, // Assuming you also want to increment this by the same amount
-              },
+        <p>Best regards,<br/>
+        The Solaris Finance Support Team</p>
+
+    </div>
+`;
+
+        const referringUserIdEmail = await User.findOne({
+          _id: secondLevelReferrerId,
+        });
+
+        await sendEmail({
+          email: referringUserIdEmail.email,
+          subject: 'Referral commission email ',
+          message,
+        });
+
+        // console.log('Referring User ID', secondLevelReferrerId);
+
+        await Accounts.findByIdAndUpdate(
+          accountDetail._id,
+          {
+            $inc: {
+              totalReferralBonus: secondLevelBonusAmount,
+              accumulatedDividends: secondLevelBonusAmount, // Assuming you also want to increment this by the same amount
             },
-            { new: true }
-          );
+          },
+          { new: true }
+        );
+      }
+
+      // Check if the second-level referrer has a referrer (third-level referrer)
+      const secondLevelReferrerId = referringUser.referredBy;
+      const secondLevelReferrerUser = await User.findOne({
+        _id: secondLevelReferrerId,
+      });
+
+      if (secondLevelReferrerUser && secondLevelReferrerUser.referredBy) {
+        const thirdLevelReferrerId = secondLevelReferrerUser.referredBy;
+
+        const thirdLevelBonusAmount =
+          portfoliodetail.depositAmount * parseFloat(allReferral[0].thirdLevel); // 2.5% of depositAmount
+
+        const { _id: thirdLevelReferrerUserId } = await User.findOne({
+          _id: secondLevelReferrerId,
+        });
+        const userProfile = await Profile.findOne({ _id: userId });
+        const description = `Credited 2.5% $${thirdLevelBonusAmount}, as a referral from ${userProfile.firstName} - ${userProfile.lastName} to your account balance `;
+        const thirdLevelReferralBonus = new Referralbonus({
+          referringUserId: thirdLevelReferrerId, // The user who referred the second-level referrer
+          bonusAmount: thirdLevelBonusAmount,
+          referredUserId: thirdLevelReferrerUserId, // The second-level referrer who was referred
+          description: description,
+        });
+
+        // Save it without validation
+        await thirdLevelReferralBonus.save({ validateBeforeSave: false });
+        // Find AccountDetail where userId matches referringUserId
+        let accountDetail = await Accounts.findOne({
+          userId: thirdLevelReferrerId,
+        });
+
+        if (!accountDetail) {
+          // If not found, initialize a new AccountDetail with default values
+          accountDetail = new Accounts({
+            userId: thirdLevelReferrerId,
+            TotalCompoundingBalance: 0.0,
+            accumulatedDividends: 0.0,
+            totalAccountBalance: 0.0,
+            totalReferralBonus: 0.0,
+          });
+          await accountDetail.save();
         }
-      
+
+        const referringUserProfile = await Profile.findOne({
+          _id: thirdLevelReferrerId,
+        });
+
+        const message = `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+        <h4>Dear${referringUserProfile.firstName} ${referringUserProfile.lastName}</h4>
+        <p>We're thrilled to inform you that your diligent efforts have paid off – your downline's investment has been successfully processed, and your commission has been credited to your account!</p>
+
+        <p>We're delighted to see your network expanding and your contributions being rewarded. Your commitment to sharing our investment opportunities is truly appreciated.</p>
+        
+        <p>To view the details of this commission and your updated account balance, simply log in to your Solaris Finance account.</p>
+
+        <p>You'll find comprehensive information about your referrals, commissions, and the overall growth of your network.</p>
+
+        <p> Thank you for being a valuable member of our investor community. Your success is our success, and we're here to support you every step of the way. </p>
+
+        <p>If you have any questions or need assistance, please don't hesitate to contact our dedicated support team</p>
+
+
+        <p>Best regards,<br/>
+        The Solaris Finance Support Team</p>
+
+    </div>
+`;
+
+        const referringUserIdEmail = await User.findOne({
+          _id: thirdLevelReferrerId,
+        });
+
+        await sendEmail({
+          email: referringUserIdEmail.email,
+          subject: 'Referral commission email ',
+          message,
+        });
+        // console.log('Referring User ID', thirdLevelBonusAmount);
+
+        await Accounts.findByIdAndUpdate(
+          accountDetail._id,
+          {
+            $inc: {
+              totalReferralBonus: thirdLevelBonusAmount,
+              accumulatedDividends: thirdLevelBonusAmount, // Assuming you also want to increment this by the same amount
+            },
+          },
+          { new: true }
+        );
+      }
     }
 
     if (!buyPortfolio) {
       return res.status(404).json({ message: 'BuyPortfolio not found' });
     }
 
-    const emailContent = `Your payment for ${portfoliodetail.portfolioName} has been confirmed, and your portfolio has been activated`;
+    const emailContent = `
+  <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <h4>Portfolio Activation Confirmation</h4>
+
+    <p>Dear Investor,</p>
+  
+    <p>We are <strong>pleased to inform you</strong> that your payment for <span style="font-style: italic;"><strong>${portfoliodetail.portfolioName}</strong></span> has been confirmed. Your portfolio has now been activated, marking a significant milestone in your journey with Solaris Finance Management.</p>
+  
+    <p>Your commitment to strategic investment planning is truly commendable. We are confident that this step will pave the way for potential growth and wealth accumulation.</p>
+  
+    <p>We encourage you to take a moment to <strong>review your comprehensive portfolio</strong>.</p>
+  
+    <p>Our team of skilled analysts and advisors has worked diligently to ensure that your investment strategy aligns with your financial aspirations.</p>
+  
+    <p>If there are any specific preferences or adjustments you would like to discuss, please don't hesitate to reach out to your dedicated investment advisor or contact our support team at <a href="mailto:Contact@solarisfinance.com">Contact@solarisfinance.com</a>.</p>
+  
+    <p>At Solaris Finance Management, we are committed to providing exceptional service and fostering a lasting partnership.</p>
+  
+    <p>As you embark on this journey, rest assured that our team is available to address any inquiries or concerns you may have along the way.</p>
+
+    <p>We <strong>congratulate you</strong> on the successful activation of your investment portfolio and eagerly anticipate the opportunities it will bring.</p>
+
+    <p>Thank you for choosing Solaris Finance Management as your partner in financial growth.</p>
+  
+    <p>Best regards,</p>
+    <p><strong>The Solaris Finance Support Team</strong></p>
+  </div>
+`;
 
     // Send email to the user
     await sendEmail({
       email: userDetail.email,
-      subject: 'Payment confirmed, Portfolio Activation successful',
+      subject: 'Payment confirmed, Portfolio Activation successful.',
       message: emailContent,
     });
 
@@ -423,12 +551,12 @@ const comfirmReInvest = catchAsync(async (req, res) => {
       return res.status(404).json({ message: 'BuyPortfolio not found' });
     }
 
-    const emailContent = `Your payment for re-investment of ${portfoliodetail.portfolioName} has been confirmed, and your portfolio has been activated`;
+    const emailContent = `Capital Top-up of ${portfoliodetail.portfolioName} for the Basic Yield Portfolio`;
 
     // Send email to the user
     await sendEmail({
       email: userDetail.email,
-      subject: 'Your new re-investment deposit has been confirmed',
+      subject: 'Your Capital Top-up has been confirmed',
       message: emailContent,
     });
 

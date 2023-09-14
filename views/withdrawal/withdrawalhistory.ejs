@@ -37,6 +37,9 @@
                           SN
                         </th>
                         <th style="width: 20%; border-right: #fff2f2 1px solid">
+                          Name
+                        </th>
+                        <th style="width: 20%; border-right: #fff2f2 1px solid">
                           Date
                         </th>
                         <th style="width: 9%; border-right: #fff2f2 1px solid">
@@ -62,12 +65,16 @@
                         <td style="border-right: #d1d1d1 1px solid">
                           <%= activity.sn %>
                         </td>
+                        <td style="border-right: #d1d1d1 1px solid">
+                          <%= activity.profile.firstName %> <%= activity.profile.lastName %>
+                        </td>
                         <td>
                           <%= new Date(activity.date).toLocaleString('en-US', {
                           weekday: 'short', month: 'short', day: 'numeric',
                           year: 'numeric', hour: 'numeric', minute: 'numeric',
                           hour12: true }) %>
                         </td>
+
                         <td style="border-right: #d1d1d1 1px solid">
                           <%= activity.method %>
                         </td>

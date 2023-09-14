@@ -10,105 +10,7 @@ const Transactions = require('../models/portfolio/transaction.model');
 const TwoFactor = require('../models/user/twoFactor.model');
 const ReferralBonus = require('../models/user/referralBonus.model');
 const Accounts = require('../models/user/accountDetails.model');
-
-// const getActivity = async (req, res, next) => {
-//   const { id, role } = req.user;  // Extracting id and role from the request object
-//   try {
-//     // Pagination setup
-//     const page = parseInt(req.query.page) || 1;
-//     const limit = parseInt(req.query.limit) || 10;
-
-//     const getAllReferralBonus =  await ReferralBonus.find({ referringUserId : id});
-//     // Determine filter criteria based on the user role
-//     console.log(getAllReferralBonus)
-//     const filterCriteria = role === 'admin' ? {} : { userId: id };
-
-//     // Fetch the total count and activities in parallel
-//     const [count, activities] = await Promise.all([
-//       Transactions.countDocuments(filterCriteria),
-//       Transactions.find(filterCriteria)
-//         .populate('userId')  // Populate related fields
-//         .skip((page - 1) * limit)  // Skip for pagination
-//         .limit(limit),  // Limit records for pagination
-//     ]);
-
-//     // Send the response
-//     res.status(200).render('activities/activity', {
-//       title: 'Transaction History',
-//       activities,
-//       totalPages: Math.ceil(count / limit),
-//       currentPage: page,
-//       limit,
-//     });
-//   } catch (err) {
-//     console.log(err);
-//     const error = new AppError('An error occurred', 500);
-//     next(error);  // Move to the next middleware with the error
-//   }
-// };
-
-
-// const getActivity = async (req, res, next) => {
-//   const { id, role } = req.user;
-//   try {
-//     const page = parseInt(req.query.page) || 1;
-//     const limit = parseInt(req.query.limit) || 10;
-
-//     const getAllReferralBonus = await ReferralBonus.find({
-//       referringUserId: id,
-//     });
-
-//     const filterCriteria = role === 'admin' ? {} : { userId: id };
-
-//     const [count, activities] = await Promise.all([
-//       Transactions.countDocuments(filterCriteria),
-//       Transactions.find(filterCriteria)
-//         .populate('userId')
-//         .skip((page - 1) * limit)
-//         .limit(limit),
-//     ]);
-
-//     // Normalize activities and referral bonuses into a single array
-//     const normalizedActivities = activities.map(activity => ({
-//      title: activity.title,
-//       amount: activity.amount,
-//       date: activity.date,
-//       description: activity.description,
-     
-//       status: activity.status,
-     
-//     }));
-
-//     const normalizedReferralBonuses = getAllReferralBonus.map(bonus => ({
-     
-//       title: 'Referral Bonus',
-//       amount: bonus.bonusAmount,
-//       date: bonus.createdAt,
-//       description: bonus.description,
-//       status: 'Credited',
-     
-//     }));
-
-//     const combinedData = [
-//       ...normalizedActivities,
-//       ...normalizedReferralBonuses,
-//     ];
-
-//     res.status(200).render('activities/activity', {
-//       title: 'Transaction History',
-//       combinedData,
-//       totalPages: Math.ceil(count / limit),
-//       currentPage: page,
-//       limit,
-//     });
-//   } catch (err) {
-//     console.log(err);
-//     const error = new AppError('An error occurred', 500);
-//     next(error);
-//   }
-// };
-
-
+const Profile = require('../models/user/profile.model');
 
 const getActivity = async (req, res, next) => {
   const { id, role } = req.user;
@@ -166,7 +68,6 @@ const getActivity = async (req, res, next) => {
     next(error);
   }
 };
-
 
 const postWithdrawal = async (req, res) => {
   const { id } = req.user;
@@ -260,141 +161,6 @@ const postWithdrawal = async (req, res) => {
   }
 };
 
-// const postWithdrawal = async (req, res) => {
-//   const { id } = req.user;
-//   const { amount, walletAddress, authCode, method } = req.body;
-
-//   // Validate input data
-//   if (!amount || !walletAddress || !authCode || !method) {
-//     return res.status(400).send('Missing required information.');
-//   }
-
-//   const authRecord = await TwoFactor.findOne({ userId: id });
-
-//   if (!authRecord || authRecord.userId.toString() !== id.toString()) {
-//     return res.status(400).send('Invalid user or authentication record.');
-//   }
-
-//   if (!authRecord.code) {
-//     return res.status(400).send('Authentication code is empty.');
-//   }
-
-//   if (Number(authCode) !== Number(authRecord.code)) {
-//     return res.status(400).send('Invalid authentication code.');
-//   }
-
-//   try {
-//     // Generate a serial number
-//     function generateRandomNumber() {
-//       const min = 10000;
-//       const max = 99999;
-//       return Math.floor(Math.random() * (max - min + 1)) + min;
-//     }
-
-//     const date = new Date();
-//     const portfolioBuy = await BuyPortfolio.findOne({
-//       payout: 'Daily Payout',
-//       balance: { $ne: 0 },
-//       userId: id,
-//     });
-//     const portfolios = await BuyPortfolio.find({
-//       userId: id,
-//       balance: { $ne: 0 },
-//     });
-
-//     let totalBonus = 0;
-//     const totalBonusDocs = await ReferralBonus.find({ referringUserId: id });
-//     totalBonusDocs.forEach(bonusDoc => {
-//       if (bonusDoc.bonusAmount) {
-//         totalBonus += parseFloat(bonusDoc.bonusAmount);
-//       }
-//     });
-
-//     let totalBalance = 0;
-//     portfolios.forEach(portfolio => {
-//       totalBalance += portfolio.balance;
-//     });
-
-//     const totalAccountBalance = totalBalance + totalBonus;
-//     if (totalAccountBalance < amount) {
-//       return res.status(400).send('Insufficient total account balance.');
-//     }
-
-//     let buyPortfolioId = null;
-//     let status = 'Pending Approval';
-//     if (totalBalance >= amount) {
-//       buyPortfolioId = portfolios[0]._id;
-//       status = 'Pending Approval';
-//     }
-
-//     const transActivityData = {
-//       sn: generateRandomNumber(),
-//       date: date,
-//       description: 'Withdrawal',
-//       status: status,
-//       amount: amount,
-//       authCode: authCode,
-//       walletAddress: walletAddress,
-//       method: method,
-//       userId: id,
-     
-//     };
-
-//     if (buyPortfolioId !== null) {
-//       transActivityData.buyPortfolioId = buyPortfolioId;
-//     }
-
-//     const transActivity = new Transactions(transActivityData);
-//     const savedTransActivity = await transActivity.save({
-//       validateBeforeSave: false,
-//     });
-
-//     if (!savedTransActivity) {
-//       return res.status(500).send('Failed to save transaction activity.');
-//     }
-
-//     // Perform subtractions only after successfully saving the transaction
-//     let deductions = [];
-//     if (totalBalance >= amount) {
-//       for (const portfolio of portfolios) {
-//         const deduction = (portfolio.balance / totalBalance) * amount;
-//         deductions.push(
-//           BuyPortfolio.updateOne(
-//             { _id: portfolio._id },
-//             { $inc: { balance: -deduction } }
-//           )
-//         );
-//       }
-//     } else if (totalBonus >= amount) {
-//       for (const bonusDoc of totalBonusDocs) {
-//         const deduction = (bonusDoc.bonusAmount / totalBonus) * amount;
-//         deductions.push(
-//           ReferralBonus.updateOne(
-//             { _id: bonusDoc._id },
-//             { $inc: { bonusAmount: -deduction } }
-//           )
-//         );
-//       }
-//     }
-
-//     // Execute all deductions
-//     await Promise.all(deductions);
-
-//     // Your remaining code for email and response
-//     await TwoFactor.deleteOne({ userId: id });
-
-//     // Your code for sending email remains here
-
-//     res.status(200).json({
-//       message: 'Your withdrawal request has been successfully processed.',
-//       redirectUrl: '/user/withdrawal-status',
-//     });
-//   } catch (err) {
-//     console.error('An error occurred while processing the withdrawal:', err);
-//     res.status(500).send('An error occurred while processing the withdrawal.');
-//   }
-// };
-
 const getTransfer = (req, res) => {
   res.status(200).render('activities/transfer', {
     title: 'Transfer',
@@ -417,9 +183,9 @@ const getWithdrawalRequest = async (req, res, next) => {
       ? userAccountDetail.totalAccountBalance
       : 0;
 
-        const totalBonus = userAccountDetail
-          ? userAccountDetail.totalReferralBonus
-          : 0;
+    const totalBonus = userAccountDetail
+      ? userAccountDetail.totalReferralBonus
+      : 0;
 
     // Calculate the combined total for withdrawals
     const totalForWithdrawals = totalBalance + totalBonus;
@@ -435,7 +201,6 @@ const getWithdrawalRequest = async (req, res, next) => {
   }
 };
 
-
 const getwithdrawalHistory = async (req, res, next) => {
   const { id, role } = req.user;
 
@@ -446,6 +211,7 @@ const getwithdrawalHistory = async (req, res, next) => {
     let conditions = {};
 
     if (role === 'admin') {
+      // No specific conditions for admin
     } else if (role === 'personal') {
       conditions = { userId: id };
     }
@@ -454,14 +220,30 @@ const getwithdrawalHistory = async (req, res, next) => {
     const totalPages = Math.ceil(count / limit);
 
     const skip = (page - 1) * limit;
+    const activities = await Transactions.find(conditions)
+      .skip(skip)
+      .limit(limit);
 
-    const activities = await Transactions.find(conditions).populate({
-      path: 'userId',
+    // Get all userIds from the activities
+    const userIds = activities.map(activity => activity.userId);
+
+    // Fetch profiles based on those userIds
+    const profiles = await Profile.find({ _id: { $in: userIds } });
+
+    // Map profiles back to their corresponding activities
+    const activitiesWithProfile = activities.map(activity => {
+      const profile = profiles.find(
+        profile => profile._id.toString() === activity.userId.toString()
+      );
+      return {
+        ...activity._doc,
+        profile,
+      };
     });
 
     res.status(200).render('withdrawal/withdrawalhistory', {
       title: 'Withdrawal History',
-      activities: activities,
+      activities: activitiesWithProfile,
       totalPages: totalPages,
       currentPage: page,
       limit: limit,
@@ -472,6 +254,46 @@ const getwithdrawalHistory = async (req, res, next) => {
     next(error);
   }
 };
+
+// const getwithdrawalHistory = async (req, res, next) => {
+//   const { id, role } = req.user;
+
+//   try {
+//     const page = parseInt(req.query.page) || 1;
+//     const limit = parseInt(req.query.limit) || 10;
+
+//     let conditions = {};
+
+//     if (role === 'admin') {
+//     } else if (role === 'personal') {
+//       conditions = { userId: id };
+//     }
+
+//     const count = await Transactions.countDocuments(conditions);
+//     const totalPages = Math.ceil(count / limit);
+
+//     const skip = (page - 1) * limit;
+//     const activities = await Transactions.find(conditions).populate({
+//       path: 'userId',
+//     });
+//     const userInActivies = await Transactions.find();
+//     const userprofile = await Profile.find({ _id: userInActivies.userId });
+//     // console.log(userInActivies);
+//     console.log(userDetail.firstName);
+
+//     res.status(200).render('withdrawal/withdrawalhistory', {
+//       title: 'Withdrawal History',
+//       activities: activities,
+//       totalPages: totalPages,
+//       currentPage: page,
+//       limit: limit,
+//     });
+//   } catch (err) {
+//     console.log(err);
+//     const error = new AppError('An error occurred', 500);
+//     next(error);
+//   }
+// };
 
 const getVerifyWithdrawal = async (req, res, next) => {
   const { id, role } = req.user;
@@ -483,6 +305,7 @@ const getVerifyWithdrawal = async (req, res, next) => {
     let conditions = {};
 
     if (role === 'admin') {
+      // No specific conditions for admin
     } else if (role === 'personal') {
       conditions = { userId: id };
     }
@@ -491,24 +314,77 @@ const getVerifyWithdrawal = async (req, res, next) => {
     const totalPages = Math.ceil(count / limit);
 
     const skip = (page - 1) * limit;
+    const activities = await Transactions.find(conditions)
+      .skip(skip)
+      .limit(limit);
 
-    const activities = await Transactions.find(conditions).populate({
-      path: 'userId',
-    });
+    // Get all userIds from the activities
+    const userIds = activities.map(activity => activity.userId);
 
-    res.status(200).render('withdrawal/verifyWithdrawal', {
-      title: 'Withdrawal History',
-      activities: activities,
-      totalPages: totalPages,
-      currentPage: page,
-      limit: limit,
+    // Fetch profiles based on those userIds
+    const profiles = await Profile.find({ _id: { $in: userIds } });
+
+    // Map profiles back to their corresponding activities
+    const activitiesWithProfile = activities.map(activity => {
+      const profile = profiles.find(
+        profile => profile._id.toString() === activity.userId.toString()
+      );
+      return {
+        ...activity._doc,
+        profile,
+      };
     });
+    console.log(activitiesWithProfile);
+res.status(200).render('withdrawal/verifyWithdrawal', {
+  title: 'Withdrawal History',
+  activities: activitiesWithProfile,
+  totalPages: totalPages,
+  currentPage: page,
+  limit: limit,
+});
   } catch (err) {
     console.log(err);
     const error = new AppError('An error occurred', 500);
     next(error);
   }
 };
+
+// const getVerifyWithdrawal = async (req, res, next) => {
+//   const { id, role } = req.user;
+
+//   try {
+//     const page = parseInt(req.query.page) || 1;
+//     const limit = parseInt(req.query.limit) || 10;
+
+//     let conditions = {};
+
+//     if (role === 'admin') {
+//     } else if (role === 'personal') {
+//       conditions = { userId: id };
+//     }
+
+//     const count = await Transactions.countDocuments(conditions);
+//     const totalPages = Math.ceil(count / limit);
+
+//     const skip = (page - 1) * limit;
+
+//     const activities = await Transactions.find(conditions).populate({
+//       path: 'userId',
+//     });
+
+//     res.status(200).render('withdrawal/verifyWithdrawal', {
+//       title: 'Withdrawal History',
+//       activities: activities,
+//       totalPages: totalPages,
+//       currentPage: page,
+//       limit: limit,
+//     });
+//   } catch (err) {
+//     console.log(err);
+//     const error = new AppError('An error occurred', 500);
+//     next(error);
+//   }
+// };
 
 const getVerifyDetails = async (req, res, next) => {
   const paramId = req.params.id;
