@@ -272,12 +272,7 @@ const postProfileVerification = catchAsync(async (req, res) => {
     res.redirect('/user/user-verify-status');
   } catch (err) {
     console.error(err);
-    //     res
-    //       .status(err.statusCode || 500)
-    //       .render('response/error', { message: err.message });
-    //     // res.status(err.statusCode || 500).json({ message: err.message });
-    //   }
-    // });
+
     res.status(err.statusCode || 500).send(`
       <script>
         alert('${err.message.replace(
@@ -428,16 +423,30 @@ const postApproval = async (req, res) => {
       const user = await User.findOne({ _id: id });
       if (user && user.email) {
         const message = `
-    <strong>Verification Successful</strong>
-    <br>
-    Congratulations, you have passed the review and are now a Verified customer.
+  <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <h4">Welcome to Solaris Finance Management</h4>
+  
+    <p>Dear ${approved.firstName} ${approved.lastName},</p>
+  
+    <p>We are <strong>pleased to inform you</strong> that your Know Your Customer (KYC) verification process has been <strong>successfully completed</strong>. This marks an important milestone in your journey with Solaris Finance Management.</p>
+  
+    <p><em>KYC verification</em> is an essential component for ensuring the security and integrity of our investment platform.</p>
+  
+    <p>We greatly appreciate your cooperation and prompt submission of the required documents. We're excited to officially welcome you as a verified member of our esteemed community.</p>
+  
+    <p>With your KYC verification now in place, you can proceed confidently with your investment plans. Our team of experts is dedicated to providing you with top-notch financial guidance and support as you navigate the world of investments.</p>
+  
+    <p>Should you have any questions, require further assistance, or wish to discuss your investment strategy, feel free to reach out to our responsive support team at <a href="mailto:contact@solarisfinance.com">contact@solarisfinance.com</a>. <strong>Your success is our priority</strong>, and we're here to assist you every step of the way.</p>
+  
+    <p>We look forward to a fruitful and rewarding partnership with you. Thank you for choosing Solaris Finance Management as your preferred investment platform.</p>
+  
+    <p>Best regards,</p>
+    <p><strong>The Solaris Finance Support Team</strong></p>
+  </div>
 `;
-
         await sendEmail({
           email: user.email,
-          subject: `[Solaris Finance] Verification Successful - ${formatDate(
-            new Date()
-          )}`,
+          subject: `KYC Verification Successful: - ${formatDate(new Date())}`,
           message,
         });
       }
@@ -758,7 +767,7 @@ const postReInvestPortfolio = catchAsync(async (req, res) => {
               sn: generateRandomNumber(),
               date: date,
               title: 'Re-Investment',
-              description: `Re-investment of $${availableAmount} made for ${portfolio.portfolioName} from available balance`,
+              description: `Capital Top-up of $${availableAmount} made for ${portfolio.portfolioName} from available balance`,
               buyPortfolioId: portfolio._id,
               status: 'Re Invested',
               amount: availableAmount,
@@ -811,10 +820,10 @@ const postReInvestPortfolio = catchAsync(async (req, res) => {
       const transActivity = new TransactionsActivity({
         sn: generateRandomNumber(),
         date: date,
-        title: 'Re-Investment',
-        description: `A fresh re-investment of $${newAmount} made for ${portfolio.portfolioName}`,
+        title: 'Capital Top-up',
+        description: `Capital Top-up of $${newAmount} made for ${portfolio.portfolioName}`,
         buyPortfolioId: portfolio._id,
-        status: 'Pending Approval',
+        status: 'Pending Re-Invested',
         amount: newAmount,
         userId: id,
         method: portfolio.currency,
@@ -832,7 +841,7 @@ const postReInvestPortfolio = catchAsync(async (req, res) => {
       // Render response
       return res.status(200).render('response/status', {
         message:
-          'Your Re-investment payment has successfully been sent. Wait for approval shortly',
+          'Your Capital Top-up has successfully been sent. Wait for approval shortly',
       });
     }
   }
