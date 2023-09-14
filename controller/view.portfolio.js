@@ -11,6 +11,7 @@ const sendEmail = require('../utils/email');
 const axios = require('axios');
 // const { Plisio } = require('@plisio/api-client');
 const ReferralConfig = require('../models/user/referralConfig.model');
+const TransactionsActivity = require('../models/portfolio/transaction.model');
 
 // const AppError = require('../utils/appError');
 const secretKey =
@@ -550,8 +551,12 @@ const comfirmReInvest = catchAsync(async (req, res) => {
     if (!buyPortfolio) {
       return res.status(404).json({ message: 'BuyPortfolio not found' });
     }
+    await TransactionsActivity.updateMany(
+      { userId: userId, status: 'Pending Re-Invested' },
+      { status: 'Re Invested' }
+    );
 
-    const emailContent = `Capital Top-up of ${portfoliodetail.portfolioName} for the Basic Yield Portfolio`;
+    const emailContent = `Capital Top-up of ${depositedAmount} made to ${portfoliodetail.portfolioName}`;
 
     // Send email to the user
     await sendEmail({

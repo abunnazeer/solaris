@@ -3,12 +3,11 @@ function renderPieChart() {
   axios
     .get('/chart/pie-chart') // Replace with your API endpoint
     .then(response => {
-      const buyPortfolioData = response.data; // Assuming you receive the buyportfolio data here
+      const buyPortfolioData = response.data.accountDetails[0]; // Assuming you receive the buyportfolio data here
 
-      // Extract relevant data
-      const compoundingDividends = buyPortfolioData.compBalance;
-      const accountBalance = buyPortfolioData.accountBalance;
-      const accumulatedDividends = compoundingDividends + accountBalance;
+      const compoundingDividends = buyPortfolioData.TotalCompoundingBalance;
+      const accountBalance = buyPortfolioData.totalAccountBalance;
+      const accumulatedDividends = buyPortfolioData.accumulatedDividends;
 
       var options = {
         chart: {
