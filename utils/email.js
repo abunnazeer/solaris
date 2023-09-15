@@ -27,6 +27,7 @@ const sendEmail = async options => {
         <style>
           body {
             font-family: Arial, sans-serif;
+           
           }
           .header {
             background-color: #fff;
@@ -34,15 +35,23 @@ const sendEmail = async options => {
             padding: 20px;
           }
           .header img {
-            width: 50px; /* Setting the width to make it smaller */
+            width: 200px;
           }
           .footer {
             background-color: #0202a2;
             color: #f89f1e;
             padding: 10px;
           }
+          .footer a {
+            color:#f89f1e;
+          }
+
+          .footer a:hover {
+            color:#ffdaa4;
+          }
           .content {
             padding: 20px;
+            font-size: 16px; /* Increased font size */
           }
           .social-icons img {
             width: 25px;
@@ -50,24 +59,27 @@ const sendEmail = async options => {
           }
         </style>
       </head>
-      <body>
-        <div class="header" style="border-bottom: 2px solid #0202a2;">
-          <img src="https://app.solarisfinance.com/images/blacktrans.png" alt="Logo" />
-        </div>
-        <div class="content">
-          ${options.message}
-        </div>
-        <div class="footer">
-          <div class="social-icons">
-            <a href="TWITTER_URL_HERE"><img src="https://app.solarisfinance.com/images/icons/twitter.png" alt="Twitter" /></a>
-            <a href="FACEBOOK_URL_HERE"><img src="https://app.solarisfinance.com/images/icons/facebook.png" alt="Facebook" /></a>
-            <a href="INSTAGRAM_URL_HERE"><img src="https://app.solarisfinance.com/images/icons/instagram.png" alt="Instagram" /></a>
-            <a href="LINKEDIN_URL_HERE"><img src="https://app.solarisfinance.com/images/icons/linkedin.png" alt="LinkedIn" /></a>
+      <body style="background-color: #f1f1f1;
+    padding: 50px 30px;">
+        <div style="width:70%; margin:auto; background-color:#fff">
+          <div class="header" style="border-bottom: 2px solid #0202a2; text-align:center">
+            <img src="https://app.solarisfinance.com/images/blacktrans.png" alt="Logo" />
           </div>
-          <p>
-            Visit our website: <a href="https://solarisfinance.com" style="color: #f89f1e;">solarisfinance.com</a>
-          </p>
-          <p>Contact Details: support@solarisfinance.com | contact@solarisfinance.com</p>
+          <div class="content">
+            ${options.message}
+          </div>
+          <div class="footer" style="border-top: 2px solid #0202a2; text-align:center">
+            <div class="social-icons">
+              <a href="TWITTER_URL_HERE"><img src="https://app.solarisfinance.com/images/icons/twitter.png" alt="Twitter" /></a>
+              <a href="FACEBOOK_URL_HERE"><img src="https://app.solarisfinance.com/images/icons/facebook.png" alt="Facebook" /></a>
+              <a href="INSTAGRAM_URL_HERE"><img src="https://app.solarisfinance.com/images/icons/instagram.png" alt="Instagram" /></a>
+              <a href="LINKEDIN_URL_HERE"><img src="https://app.solarisfinance.com/images/icons/linkedin.png" alt="LinkedIn" /></a>
+            </div>
+            <p>
+              Visit our website: <a href="https://solarisfinance.com" style="color: #f89f1e;">solarisfinance.com</a>
+            </p>
+            <p>Contact Details: support@solarisfinance.com | contact@solarisfinance.com</p>
+          </div>
         </div>
       </body>
     </html>
