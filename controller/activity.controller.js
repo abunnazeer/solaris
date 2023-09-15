@@ -208,12 +208,14 @@ const getwithdrawalHistory = async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
 
-    let conditions = {};
+    let conditions = { description: 'Withdrawal' };
 
     if (role === 'admin') {
-      // No specific conditions for admin
+      // No additional specific conditions for admin
     } else if (role === 'personal') {
-      conditions = { userId: id };
+      conditions.userId = id;
+    } else {
+      return res.status(403).send('Unauthorized');
     }
 
     const count = await Transactions.countDocuments(conditions);
@@ -221,16 +223,14 @@ const getwithdrawalHistory = async (req, res, next) => {
 
     const skip = (page - 1) * limit;
     const activities = await Transactions.find(conditions)
+      .sort({ date: -1 }) // Sorting by date in descending order
       .skip(skip)
       .limit(limit);
 
-    // Get all userIds from the activities
     const userIds = activities.map(activity => activity.userId);
 
-    // Fetch profiles based on those userIds
     const profiles = await Profile.find({ _id: { $in: userIds } });
 
-    // Map profiles back to their corresponding activities
     const activitiesWithProfile = activities.map(activity => {
       const profile = profiles.find(
         profile => profile._id.toString() === activity.userId.toString()
@@ -255,46 +255,6 @@ const getwithdrawalHistory = async (req, res, next) => {
   }
 };
 
-// const getwithdrawalHistory = async (req, res, next) => {
-//   const { id, role } = req.user;
-
-//   try {
-//     const page = parseInt(req.query.page) || 1;
-//     const limit = parseInt(req.query.limit) || 10;
-
-//     let conditions = {};
-
-//     if (role === 'admin') {
-//     } else if (role === 'personal') {
-//       conditions = { userId: id };
-//     }
-
-//     const count = await Transactions.countDocuments(conditions);
-//     const totalPages = Math.ceil(count / limit);
-
-//     const skip = (page - 1) * limit;
-//     const activities = await Transactions.find(conditions).populate({
-//       path: 'userId',
-//     });
-//     const userInActivies = await Transactions.find();
-//     const userprofile = await Profile.find({ _id: userInActivies.userId });
-//     // console.log(userInActivies);
-//     console.log(userDetail.firstName);
-
-//     res.status(200).render('withdrawal/withdrawalhistory', {
-//       title: 'Withdrawal History',
-//       activities: activities,
-//       totalPages: totalPages,
-//       currentPage: page,
-//       limit: limit,
-//     });
-//   } catch (err) {
-//     console.log(err);
-//     const error = new AppError('An error occurred', 500);
-//     next(error);
-//   }
-// };
-
 const getVerifyWithdrawal = async (req, res, next) => {
   const { id, role } = req.user;
 
@@ -302,12 +262,14 @@ const getVerifyWithdrawal = async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
 
-    let conditions = {};
+    let conditions = { description: 'Withdrawal' }; // Adding this condition to filter by 'Withdrawal'
 
     if (role === 'admin') {
-      // No specific conditions for admin
+      // No additional specific conditions for admin
     } else if (role === 'personal') {
-      conditions = { userId: id };
+      conditions.userId = id;
+    } else {
+      return res.status(403).send('Unauthorized');
     }
 
     const count = await Transactions.countDocuments(conditions);
@@ -315,6 +277,7 @@ const getVerifyWithdrawal = async (req, res, next) => {
 
     const skip = (page - 1) * limit;
     const activities = await Transactions.find(conditions)
+      .sort({ date: -1 }) // Sorting by date in descending order
       .skip(skip)
       .limit(limit);
 
@@ -334,14 +297,14 @@ const getVerifyWithdrawal = async (req, res, next) => {
         profile,
       };
     });
-    console.log(activitiesWithProfile);
-res.status(200).render('withdrawal/verifyWithdrawal', {
-  title: 'Withdrawal History',
-  activities: activitiesWithProfile,
-  totalPages: totalPages,
-  currentPage: page,
-  limit: limit,
-});
+
+    res.status(200).render('withdrawal/verifyWithdrawal', {
+      title: 'Withdrawal History',
+      activities: activitiesWithProfile,
+      totalPages: totalPages,
+      currentPage: page,
+      limit: limit,
+    });
   } catch (err) {
     console.log(err);
     const error = new AppError('An error occurred', 500);
@@ -349,42 +312,8 @@ res.status(200).render('withdrawal/verifyWithdrawal', {
   }
 };
 
-// const getVerifyWithdrawal = async (req, res, next) => {
-//   const { id, role } = req.user;
 
-//   try {
-//     const page = parseInt(req.query.page) || 1;
-//     const limit = parseInt(req.query.limit) || 10;
 
-//     let conditions = {};
-
-//     if (role === 'admin') {
-//     } else if (role === 'personal') {
-//       conditions = { userId: id };
-//     }
-
-//     const count = await Transactions.countDocuments(conditions);
-//     const totalPages = Math.ceil(count / limit);
-
-//     const skip = (page - 1) * limit;
-
-//     const activities = await Transactions.find(conditions).populate({
-//       path: 'userId',
-//     });
-
-//     res.status(200).render('withdrawal/verifyWithdrawal', {
-//       title: 'Withdrawal History',
-//       activities: activities,
-//       totalPages: totalPages,
-//       currentPage: page,
-//       limit: limit,
-//     });
-//   } catch (err) {
-//     console.log(err);
-//     const error = new AppError('An error occurred', 500);
-//     next(error);
-//   }
-// };
 
 const getVerifyDetails = async (req, res, next) => {
   const paramId = req.params.id;
