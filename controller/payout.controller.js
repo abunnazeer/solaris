@@ -2,6 +2,7 @@
 const catchAsync = require('../utils/catchAsync');
 const PayoutConfig = require('../models/portfolio/payoutConfig.model');
 const Portfolio = require('../models/portfolio/portfolio.model');
+const BuyPortfolio = require('../models/portfolio/buyportfolio.model');
 
 const createPayout = catchAsync(async (req, res) => {
   try {
@@ -110,7 +111,6 @@ const updatePortfolioPercentage = catchAsync(async (req, res) => {
 
     if (!existingPortfolio) {
       console.log('Portfolio not found:', portfolioId);
-
       return res.status(500).render('response/status', {
         message: 'Portfolio percentage not found',
       });
@@ -133,11 +133,19 @@ const updatePortfolioPercentage = catchAsync(async (req, res) => {
     // Save the updated document back to the database
     await existingPortfolio.save();
 
+    // Update all BuyPortfolios with the matching portfolioName
+    await BuyPortfolio.updateMany(
+      { portfolioName: existingPortfolio.portfolioTitle },
+      {
+        dailyPercentage: rioPercentage,
+        compPercentage: cPercentage,
+      }
+    );
+
     // Redirect to the payout settings route upon successful creation
     return res.redirect('/user/payout-settings');
   } catch (err) {
     // Log the error
-
     console.error('Error updating Portfolio percentage:', err);
 
     // Handle errors
