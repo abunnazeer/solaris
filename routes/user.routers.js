@@ -29,6 +29,7 @@ const {
   postApproval,
   postDisApproval,
   getWalletDetail,
+  getUserDashbaord,
 } = require('../controller/view.controller');
 
 const {
@@ -167,6 +168,12 @@ router.get(
   protect,
   restrictTo('admin'),
   getVerifyDetail
+);
+router.get(
+  '/get-user-dashboard',
+  protect,
+  restrictTo('admin'),
+  getUserDashbaord
 );
 
 // PORTFOLIO

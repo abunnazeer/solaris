@@ -409,6 +409,25 @@ const getVerifyDetail = async (req, res) => {
   });
 };
 
+const getUserDashbaord = async (req, res) => {
+  const getAllprofile = await Profile.find();
+
+  // Assuming you have a currentPage value from somewhere (e.g. query parameters)
+  const currentPage = parseInt(req.query.page) || 1;
+
+  // Define how many profiles you want to show per page
+  const profilesPerPage = 10;
+  const totalProfiles = await Profile.countDocuments();
+  const totalPages = Math.ceil(totalProfiles / profilesPerPage);
+
+  res.status(200).render('user/user_dashobard', {
+    getAllprofile,
+    title: 'User Dashbaord',
+    currentPage,
+    totalPages,
+  });
+};
+
 const postApproval = async (req, res) => {
   try {
     const { id } = req.params;
@@ -908,4 +927,5 @@ module.exports = {
   getVerifyDetail,
   postApproval,
   postDisApproval,
+  getUserDashbaord,
 };

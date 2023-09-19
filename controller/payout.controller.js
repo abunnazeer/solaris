@@ -2,6 +2,7 @@
 const catchAsync = require('../utils/catchAsync');
 const PayoutConfig = require('../models/portfolio/payoutConfig.model');
 const Portfolio = require('../models/portfolio/portfolio.model');
+const BuyPortfolio = require('../models/portfolio/buyportfolio.model');
 
 const createPayout = catchAsync(async (req, res) => {
   try {
@@ -105,18 +106,15 @@ const updatePortfolioPercentage = catchAsync(async (req, res) => {
   const { rioPercentage, cPercentage } = req.body;
 
   try {
-    // Find the existing Portfolio by its ID and update it in the database
     const existingPortfolio = await Portfolio.findById(portfolioId);
 
     if (!existingPortfolio) {
       console.log('Portfolio not found:', portfolioId);
-
       return res.status(500).render('response/status', {
         message: 'Portfolio percentage not found',
       });
     }
 
-    // Ensure that the nested properties 'returnOnInvestment' and 'compounding' exist
     if (
       !existingPortfolio.returnOnInvestment ||
       !existingPortfolio.compounding
@@ -126,21 +124,32 @@ const updatePortfolioPercentage = catchAsync(async (req, res) => {
       });
     }
 
+    // Convert the numbers to strings and add '%' suffix
+    const rioPText = `${rioPercentage.toString()}%`;
+    const cPText = `${cPercentage.toString()}%`;
+
     // Update the 'Roi Percentage' and 'compounding percentage' fields
+    existingPortfolio.returnOnInvestment.rioPText = rioPText;
     existingPortfolio.returnOnInvestment.rioPercentage = rioPercentage;
+    existingPortfolio.compounding.cPText = cPText;
     existingPortfolio.compounding.cPercentage = cPercentage;
 
     // Save the updated document back to the database
     await existingPortfolio.save();
 
+    // Update all BuyPortfolios based on the condition
+    await BuyPortfolio.updateMany(
+      { portfolioName: existingPortfolio.portfolioTitle },
+      {
+        dailyPercentage: rioPercentage,
+        compPercentage: cPercentage,
+      }
+    );
+
     // Redirect to the payout settings route upon successful creation
     return res.redirect('/user/payout-settings');
   } catch (err) {
-    // Log the error
-
     console.error('Error updating Portfolio percentage:', err);
-
-    // Handle errors
     return res.status(500).render('response/status', {
       message: 'Error updating Portfolio percentage',
     });
