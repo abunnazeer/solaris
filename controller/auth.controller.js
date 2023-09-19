@@ -122,7 +122,7 @@ const register = catchAsync(async (req, res, next) => {
 
   <p>Your journey with us is about to begin, and to ensure everything goes smoothly, we kindly ask you to click on the button below. By doing so, you'll be verifying your email address and unlocking the full potential of your Solaris experience.</p>
   
-  <a href="${emailVerificationURL}" style="background-color:  #0202a2; color: white; padding: 14px 20px; margin: 8px 5px; border: none; cursor: pointer;">CLICK TO VERIFY</a>
+  <p><a href="${emailVerificationURL}" style="background-color:  #0202a2; color: white; padding: 10px 15px; margin: 8px 5px; border: none; cursor: pointer;">CLICK TO VERIFY</a></p>
   
   <p>Should you encounter any difficulties, simply copy and paste the following URL into your web browser:</p>
   

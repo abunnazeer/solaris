@@ -5,6 +5,7 @@ const Account = require('../models/user/account.model'); // Assuming you have an
 const AccountDetail = require('../models/user/accountDetails.model'); // Assuming you have an Account model
 
 const dashboard = async (req, res) => {
+  // const userParam = req.param;
   const { id } = req.user;
 
   try {
@@ -59,4 +60,67 @@ const dashboard = async (req, res) => {
   }
 };
 
-module.exports = dashboard;
+const userDashboard = async (req, res) => {
+  const userParam = req.params.id; // assuming "userId" is the param you're using
+  let id;
+
+  // Check if admin and userParam exists
+  if (req.user.role === 'admin' && userParam) {
+    id = userParam;
+  } else {
+    id = req.user.id;
+  }
+
+  try {
+    const portfolios = await buyPortfolio.find({ userId: id });
+    const portfoliosBalance = await AccountDetail.findOne({ userId: id });
+
+    const portfolioData = portfolios.map(portfolio => {
+      return {
+        status: portfolio.status,
+      };
+    });
+
+    let accumulatedDividends = 0;
+    let totalAccountBalance = 0;
+    let compoundBalance = 0;
+    let totalReferralBalance = 0;
+
+    if (portfoliosBalance) {
+      accumulatedDividends = portfoliosBalance.accumulatedDividends;
+      totalAccountBalance = portfoliosBalance.totalAccountBalance;
+      compoundBalance = portfoliosBalance.TotalCompoundingBalance;
+      totalReferralBalance = portfoliosBalance.totalReferralBonus;
+    }
+
+    const referredUsersCount = await User.countDocuments({
+      referredBy: id,
+    });
+
+    const totalBonusDocs = await referralBonus.find({ referringUserId: id });
+
+    let totalBonus = 0;
+    totalBonusDocs.forEach(bonusDoc => {
+      if (bonusDoc.bonusAmount) {
+        totalBonus += parseFloat(bonusDoc.bonusAmount);
+      }
+    });
+
+    const grandTotal = totalAccountBalance + totalReferralBalance;
+
+    res.status(200).render('users_dashboard', {
+      title: 'Dashboard',
+      portfolioData,
+      totalBonus,
+      referredUsersCount,
+      accumulatedDividends,
+      totalAccountBalance: grandTotal,
+      compoundBalance,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('An error occurred while fetching the portfolios.');
+  }
+};
+
+module.exports = { dashboard, userDashboard };

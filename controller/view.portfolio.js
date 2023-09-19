@@ -426,7 +426,7 @@ const paymentComfirmation = catchAsync(async (req, res) => {
 
         const message = `
     <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-        <h4>Dear${referringUserProfile.firstName} ${referringUserProfile.lastName}</h4>
+        <h4>Dear ${referringUserProfile.firstName} ${referringUserProfile.lastName}</h4>
         <p>We're thrilled to inform you that your diligent efforts have paid off – your downline's investment has been successfully processed, and your commission has been credited to your account!</p>
 
         <p>We're delighted to see your network expanding and your contributions being rewarded. Your commitment to sharing our investment opportunities is truly appreciated.</p>

@@ -26,12 +26,16 @@ const {
   dailyPayout,
   compoundingPayout,
 } = require('./controller/paying.controller');
-const dashboard = require('./controller/dashboard.controller');
+const {
+  dashboard,
+  userDashboard,
+} = require('./controller/dashboard.controller');
 const chartRouter = require('./routes/chart.router');
 
 const {
   protect,
   verificationMiddleWare,
+  restrictTo,
 } = require('./controller/auth.controller');
 const config = require('./routes/config.router');
 const globalErrorHandler = require('./controller/error.controller');
@@ -125,6 +129,12 @@ app.use('/user', activity);
 app.use('/user', referral);
 app.use('/user', config);
 app.use('/dashboard', protect, dashboard);
+app.use(
+  '/user/users-dashboard/:id',
+  protect,
+  restrictTo('admin'),
+  userDashboard
+);
 app.use('/chart', chartRouter);
 
 // Error handling middleware

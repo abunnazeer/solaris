@@ -27,7 +27,6 @@ const sendEmail = async options => {
         <style>
           body {
             font-family: Arial, sans-serif;
-           
           }
           .header {
             background-color: #fff;
@@ -57,11 +56,21 @@ const sendEmail = async options => {
             width: 25px;
             margin-right: 10px;
           }
+
+          /* Mobile responsiveness */
+          @media screen and (max-width: 768px) {
+            body {
+              padding: 20px 10px;
+            }
+            .content {
+              padding: 10px;
+              font-size: 14px;
+            }
+          }
         </style>
       </head>
-      <body style="background-color: #f1f1f1;
-    padding: 50px 30px;">
-        <div style="width:70%; margin:auto; background-color:#fff">
+      <body style="background-color: #f1f1f1; padding: 50px 30px;">
+        <div style="max-width:800px; margin:auto; background-color:#fff">
           <div class="header" style="border-bottom: 2px solid #0202a2; text-align:center">
             <img src="https://app.solarisfinance.com/images/blacktrans.png" alt="Logo" />
           </div>
