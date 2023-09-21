@@ -15,11 +15,6 @@
         position: absolute;
         left: 95%;
       }
-       .spinner-border {
-    width: 1.5rem;
-    height: 1.5rem;
-    border-width: 2px;
-  }
     </style>
   </head>
 
@@ -97,19 +92,13 @@
                       </div>
                       <!-- /.col -->
                       <div class="col-12 text-center">
-<button
-  type="submit"
-  class="waves-effect waves-light btn mb-5 bg-gradient-warning w-p100 mt-10"
-  onclick="startSpinner(); validateForm(event);"
->
-  <span id="spinner" style="display: none;">
-    <i class="fas fa-spinner fa-spin"></i>
-  </span>
-  SIGN IN
-</button>
-
-
-
+                        <button
+                          type="submit"
+                          class="waves-effect waves-light btn mb-5 bg-gradient-warning w-p100 mt-10"
+                          onclick="validateForm(event)"
+                        >
+                          SIGN IN
+                        </button>
                       </div>
                       <!-- /.col -->
                     </div>
@@ -133,12 +122,6 @@
     </div>
 
     <!-- Vendor JS -->
-<script>
-  function startSpinner() {
-    const spinner = document.getElementById("spinner");
-    spinner.style.display = "inline-block";
-  }
-</script>
 
     <script src="/js/validation.js"></script>
     <script src="/js/vendors.min.js"></script>

@@ -22,6 +22,11 @@
     color: #fff !important;
     cursor: pointer;
   }
+   .spinner-border {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-width: 2px;
+  }
 </style>
 </head>
 
@@ -69,7 +74,7 @@
 
                   <div class="text-start mt-3 text-center">
                   
-                      <h3 class="ms-2 text-center"><%= userProfile.firstName +  userProfile.lastName%>  </h3>
+                      <h3 class="ms-2 text-center"><%= userProfile.firstName + ' '+  userProfile.lastName%>  </h3>
                  
                      <hr>
                      <br>
@@ -208,8 +213,10 @@
                     <!-- end row -->
 
                     <div class="text-start">
-                      <button type="submit" class="withdrawal-button">
-                        <i class="mdi mdi-content-save"></i> Update Profile
+                      <button type="submit" class="withdrawal-button"  onclick="startSpinner();">
+                        <i class="mdi mdi-content-save"></i>  <span id="spinner" style="display: none;">
+    <i class="fas fa-spinner fa-spin"></i></span>
+    Update Profile
                       </button>
                     </div>
                   </form>
@@ -236,6 +243,10 @@
 
 
     <script>
+       function startSpinner() {
+    const spinner = document.getElementById("spinner");
+    spinner.style.display = "inline-block";
+  }
       function handleFileSelection(event) {
         const fileInput = event.target;
         const file = fileInput.files[0];

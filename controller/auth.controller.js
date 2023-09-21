@@ -9,6 +9,7 @@ const catchAsync = require('../utils/catchAsync');
 const sendEmail = require('../utils/email');
 const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
+const { emailVerification } = require('../utils/message/email_verification');
 //Function for JWT
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -113,26 +114,7 @@ const register = catchAsync(async (req, res, next) => {
   )}/user/verify-email/${emailVerificationToken}`;
 
   // Send verification email
-  const message = `
-  <p>Please verify your email address</p>
-
-  <p>Welcome Aboard</p>
-
-  <p>We're thrilled that you've taken the step to join Solaris Finance Management!</p>
-
-  <p>Your journey with us is about to begin, and to ensure everything goes smoothly, we kindly ask you to click on the button below. By doing so, you'll be verifying your email address and unlocking the full potential of your Solaris experience.</p>
-  
-  <p><a href="${emailVerificationURL}" style="background-color:  #0202a2; color: white; padding: 10px 15px; margin: 8px 5px; border: none; cursor: pointer;">CLICK TO VERIFY</a></p>
-  
-  <p>Should you encounter any difficulties, simply copy and paste the following URL into your web browser:</p>
-  
-  <p>${emailVerificationURL}</p>
-  
-  <p>Thank you for choosing Solaris Finance Management. We're excited to have you with us and look forward to embarking on this journey together!</p>
- 
-  <p>Sincerely,</p>
- 
-  <p>The Solaris Finance Support Team.</p>`;
+  const message = emailVerification(emailVerificationURL);
 
   await sendEmail({
     email: newUser.email,
@@ -150,32 +132,7 @@ const register = catchAsync(async (req, res, next) => {
 });
 
 // Email verification endpoint
-// const verifyEmail = catchAsync(async (req, res, next) => {
-//   const response = 'Email verified. You can now log in.';
 
-//   const hashedToken = crypto
-//     .createHash('sha256')
-//     .update(req.params.token)
-//     .digest('hex');
-
-//   const user = await User.findOne({
-//     emailVerificationToken: hashedToken,
-//     emailVerificationExpires: { $gt: Date.now() },
-//   });
-
-//   if (!user) {
-//     return next(
-//       new AppError('Verification token is invalid or has expired.', 400)
-//     );
-//   }
-
-//   user.isActive = true; // Activate the user's account
-//   user.emailVerificationToken = undefined;
-//   user.emailVerificationExpires = undefined;
-//   await user.save({ validateBeforeSave: false });
-
-//   res.render('response', { response });
-// });
 const verifyEmail = catchAsync(async (req, res, next) => {
   const response = 'Email verified. You can now log in.';
 
@@ -210,69 +167,96 @@ const verifyEmail = catchAsync(async (req, res, next) => {
 const login = catchAsync(async (req, res, next) => {
   const { email, password, twoFactorAuthCode } = req.body;
 
-  // Check if email and password are provided
-  if (!email || !password) {
-    return next(new AppError('Please provide email and password.', 400));
-  }
+  try {
+    // Check if email and password are provided
+    if (!email || !password) {
+      console.error('Email or password is missing.');
+      return next(new AppError('Please provide email and password.', 400));
+    }
 
-  // Check if the user's account is activated
-  const user = await User.findOne({ email }).select('+password');
+    // Check if the user's account is activated
+    const user = await User.findOne({ email }).select('+password');
 
-  if (!user || !(await user.correctPassword(password, user.password))) {
-    return next(new AppError('Incorrect email or password.', 401));
-  }
+    if (!user || !(await user.correctPassword(password, user.password))) {
+      console.error('Incorrect email or password.');
+      return next(new AppError('Incorrect email or password.', 401));
+    }
 
-  // If the user's account is not active, resend email verification
-  if (!user.isActive) {
-    const emailVerificationToken = user.generateEmailVerificationToken();
-    await user.save({ validateBeforeSave: false });
+    // If the user's account is not active, resend email verification
+    if (!user.isActive) {
+      console.error('User account is not active.');
+      const emailVerificationToken = user.generateEmailVerificationToken();
+      await user.save({ validateBeforeSave: false });
 
-    const emailVerificationURL = `${req.protocol}://${req.get(
-      'host'
-    )}/user/verify-email/${emailVerificationToken}`;
+      const emailVerificationURL = `${req.protocol}://${req.get(
+        'host'
+      )}/user/verify-email/${emailVerificationToken}`;
 
-    const message = `Please click on the following link to verify your email: ${emailVerificationURL}`;
-    await sendEmail({
-      email: user.email,
-      subject: 'Email Verification',
-      message,
-    });
-
-    await user.save({ validateBeforeSave: false });
-
-    return res.redirect('/user/activation'); // Redirect the user to a page informing about email verification
-  }
-  // Check if the user has 2FA enabled and setup complete
-  if (
-    user.twoFactorSecret &&
-    user.isTwoFactorEnabled &&
-    user.isTwoFactorSetupComplete
-  ) {
-    if (!twoFactorAuthCode) {
-      // Show the 2FA verification form
-      return res.render('user/2fa_verification', {
-        userId: user._id,
-        email,
-        password,
+      const message = `Please click on the following link to verify your email: ${emailVerificationURL}`;
+      await sendEmail({
+        email: user.email,
+        subject: 'Email Verification',
+        message,
       });
+
+      await user.save({ validateBeforeSave: false });
+
+      return res.redirect('/user/activation'); // Redirect the user to a page informing about email verification
     }
 
-    // Verify the 2FA code
-    const isTwoFactorCodeValid = speakeasy.totp.verify({
-      secret: user.twoFactorSecret,
-      encoding: 'base32',
-      token: twoFactorAuthCode,
-    });
+    if (
+      user.twoFactorSecret &&
+      user.isTwoFactorEnabled &&
+      user.isTwoFactorSetupComplete
+    ) {
+      if (!twoFactorAuthCode) {
+        // Show the 2FA verification form
+        return res.render('user/2fa_verification', {
+          userId: user._id,
+          email,
+          password,
+        });
+      }
 
-    if (!isTwoFactorCodeValid) {
-      return next(new AppError('Invalid 2FA code.', 401));
+      // Verify the 2FA code
+      const isTwoFactorCodeValid = speakeasy.totp.verify({
+        secret: user.twoFactorSecret,
+        encoding: 'base32',
+        token: twoFactorAuthCode,
+      });
+
+      // Check if the provided code matches any unused recovery code
+      if (!isTwoFactorCodeValid) {
+        const validRecoveryCode = user.recoveryCodes.find(
+          code => code.code === twoFactorAuthCode && !code.used
+        );
+
+        if (validRecoveryCode) {
+          // Mark the recovery code as used
+          validRecoveryCode.used = true;
+          await user.save({ validateBeforeSave: false });
+          // Grant access to the user
+          const statusCode = 201;
+          const redirectUrl = '/dashboard';
+          createSendToken(user, statusCode, res, redirectUrl);
+          console.log('Access granted using a recovery code.');
+          return;
+        }
+
+        console.error('Invalid 2FA code.');
+        return next(new AppError('Invalid 2FA code.', 401));
+      }
     }
+
+    // If everything is ok, send token to client
+    const statusCode = 201;
+    const redirectUrl = '/dashboard';
+    createSendToken(user, statusCode, res, redirectUrl);
+    console.log('User successfully logged in.');
+  } catch (err) {
+    console.error('Error during login:', err);
+    return res.status(500).json({ error: 'Login failed.' });
   }
-
-  // If everything is ok, send token to client
-  const statusCode = 201;
-  const redirectUrl = '/dashboard';
-  createSendToken(user, statusCode, res, redirectUrl);
 });
 
 const logout = (req, res) => {
@@ -557,206 +541,6 @@ const postTwoFactor = catchAsync(async (req, res) => {
     .json({ message: 'Two-Factor Authentication code sent successfully' });
 });
 
-// Step 1: Generate the two-factor authentication (2FA) code and setup QR code for scanning
-const generateTwoFaCode = catchAsync(async (req, res) => {
-  try {
-    // Generate a new secret key for the user
-    const secret = speakeasy.generateSecret({ length: 20 });
-
-    // Store the secret key in the user's account securely (this could be stored in the database)
-    req.user.twoFactorSecret = secret.base32; // Secret should be stored securely, not in the user object
-    req.user.isTwoFactorEnabled = true;
-    await req.user.save({ validateBeforeSave: false });
-
-    console.log('Generated secret key:', req.user.twoFactorSecret);
-
-    // Generate the QR code for the user to scan with their authenticator app
-    const otpAuthUrl = speakeasy.otpauthURL({
-      secret: secret.ascii, // Use ASCII secret for the QR code
-      label: `Solaris Finance:${req.user.email}`, // Replace with your app and user-specific data
-      algorithm: 'sha1', // Use SHA1 algorithm for the QR code (compatible with most authenticator apps)
-    });
-
-    // Generate a data URL for the QR code image
-    const qrCodeUrl = await qrcode.toDataURL(otpAuthUrl);
-
-    // Render the authenticator_setup.ejs template and pass the qrCodeUrl variable
-    return res.render('user/authenticatorsetup', { qrCodeUrl });
-  } catch (err) {
-    console.error('Error generating QR code:', err);
-    return res.status(500).json({ error: 'QR code generation failed.' });
-  }
-});
-
-// Step 3: Set up two-factor authentication (2FA) for the user
-const setupTwoFactor = catchAsync(async (req, res) => {
-  try {
-    const { twoFactorAuthCode } = req.body;
-
-    // Ensure that the user's twoFactorSecret is available
-    if (!req.user || !req.user.twoFactorSecret) {
-      console.error('Two-factor secret key not found for the user.');
-      return res
-        .status(500)
-        .json({ error: 'Two-factor secret key not found.' });
-    }
-
-    // Verify the user's 2FA code
-    const isTwoFactorCodeValid = speakeasy.totp.verify({
-      secret: req.user.twoFactorSecret,
-      encoding: 'base32',
-      token: twoFactorAuthCode,
-      window: 1, // Set a window of 1 period (30 seconds) to allow for time skew
-    });
-
-    console.log('User Input 2FA Code:', twoFactorAuthCode);
-    console.log(
-      'Generated 2FA Code:',
-      speakeasy.totp({
-        secret: req.user.twoFactorSecret,
-        encoding: 'base32',
-      })
-    );
-
-    if (!isTwoFactorCodeValid) {
-      console.log('Invalid 2FA Code');
-      return res.status(401).json({ error: 'Invalid 2FA code.' });
-    }
-
-    // Mark 2FA setup as completed for the user
-    req.user.isTwoFactorSetupComplete = true;
-    await req.user.save({ validateBeforeSave: false }); // Save the updated user object
-
-    console.log('2FA setup completed for the user.');
-
-    // Redirect to the /user/two-factor route after successful 2FA setup
-    return res.redirect('/user/two-factor');
-  } catch (err) {
-    console.error('Error setting up 2FA:', err);
-    return res.status(500).json({ error: '2FA setup failed.' });
-  }
-});
-
-const verifyTwoFactor = catchAsync(async (req, res, next) => {
-  const { twoFactorAuthCode } = req.body;
-
-  // Get the user ID from the session or the request, depending on your implementation
-  const userId = req.user;
-
-  try {
-    // Find the user by the provided user ID
-    const user = await User.findById(userId).select('+twoFactorSecret');
-
-    if (!user) {
-      return next(new AppError('User not found.', 404));
-    }
-
-    if (!user.twoFactorSecret) {
-      // 2FA is not enabled for this user, redirect them to the login page
-      return res.redirect('/user/login');
-    }
-
-    if (!twoFactorAuthCode) {
-      // If 2FA code is not provided, prompt the user to provide it again
-      return res.render('user/2fa_verification', {
-        userId: user._id,
-        errorMessage: 'Please provide the 2FA code.',
-      });
-    }
-
-    // Verify the 2FA code using the speakeasy library
-    const isTwoFactorCodeValid = speakeasy.totp.verify({
-      secret: user.twoFactorSecret,
-      encoding: 'base32',
-      token: twoFactorAuthCode,
-    });
-
-    if (!isTwoFactorCodeValid) {
-      return res.render('user/2fa_verification', {
-        userId: user._id,
-        errorMessage: 'Invalid 2FA code.',
-      });
-    }
-
-    // If the 2FA code is valid, continue with the login process
-    const statusCode = 201;
-    const redirectUrl = '/dashboard';
-    createSendToken(user, null, statusCode, res, redirectUrl);
-  } catch (error) {
-    next(error);
-  }
-});
-
-// const enableTwoFactor = catchAsync(async (req, res) => {
-//   try {
-//     // Check if 2FA is already enabled for the user
-//     if (req.user.isTwoFactorEnabled) {
-//       return res
-//         .status(400)
-//         .json({ message: '2FA is already enabled for this user.' });
-//     }
-
-//     // Generate a new secret key for the user
-//     const secret = speakeasy.generateSecret({ length: 20 });
-
-//     // Store the secret key in the user's account
-//     req.user.twoFactorSecret = secret.base32;
-//     req.user.isTwoFactorEnabled = true;
-//     await req.user.save({ validateBeforeSave: false });
-
-//     console.log(
-//       'Enabled 2FA for the user. Secret key:',
-//       req.user.twoFactorSecret
-//     );
-
-//     // Redirect to Step 3: Set up two-factor authentication (2FA) for the user
-//     return res.redirect('/user/2fa-setup');
-//   } catch (err) {
-//     console.error('Error enabling 2FA:', err);
-//     return res.status(500).json({ error: '2FA enabling failed.' });
-//   }
-// });
-const disable2FA = async (req, res, next) => {
-  try {
-    const user = req.user; // Assuming you have the authenticated user in req.user
-    if (!user) {
-      return res.status(401).json({ message: 'User not authenticated.' });
-    }
-
-    // Clear the 2FA secret for the user in the database
-    user.twoFactorSecret = undefined;
-    req.user.isTwoFactorEnabled = false;
-    req.user.isTwoFactorSetupComplete = false;
-    await user.save({ validateBeforeSave: false });
-
-    // Redirect the user to a relevant page (e.g., dashboard or profile)
-    res.redirect('/user/two-factor');
-  } catch (err) {
-    next(err);
-  }
-};
-
-const enable2FA = async (req, res, next) => {
-  try {
-    const user = req.user; // Assuming you have the authenticated user in req.user
-    if (!user) {
-      return res.status(401).json({ message: 'User not authenticated.' });
-    }
-
-    // Generate a new 2FA secret for the user
-    const { base32: secret } = speakeasy.generateSecret();
-
-    // Save the 2FA secret for the user in the database
-    user.twoFactorSecret = secret;
-    await user.save();
-
-    // Redirect the user to the 2FA verification page
-    res.redirect('/user/2fa-verify');
-  } catch (err) {
-    next(err);
-  }
-};
-
 const verificationMiddleWare = catchAsync(async (req, res, next) => {
   if (req.user.role === 'admin') {
     // Check if there is a userProfile with the same _id as the user
@@ -822,11 +606,5 @@ module.exports = {
   logout,
   changePassword,
   postTwoFactor,
-
-  generateTwoFaCode,
-  enable2FA,
-  setupTwoFactor,
-  verifyTwoFactor,
-  disable2FA,
   verificationMiddleWare,
 };

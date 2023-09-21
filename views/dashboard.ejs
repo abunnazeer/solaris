@@ -16,6 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>;
 
 <style>
+  
 .icon__custom{
     color: #f89f1e; 
     font-size: 40px;
@@ -54,10 +55,39 @@
     border-radius: 10px;
     padding: 4px;
 }
-#donutChart {
-  width: 150px; /* Change to a fixed width temporarily */
-  height: 150px; /* Change to a fixed height temporarily */
+.custom_height{
+  height: 370px;
 }
+#donutChart {
+  width: 190px; /* Change to a fixed width temporarily */
+  height: 190px; /* Change to a fixed height temporarily */
+}
+/* CSS */
+#financialOverview {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  #financialOverview {
+    height: 200px; /* Increase the height for mobile */
+
+  }
+  .custom_height{
+      height: 570px; 
+  }
+}
+@media (max-width: 768px) {
+  #walletOverview {
+    height: 40px;  /* Increase the height for mobile */
+  }
+
+  .no-data {
+    text-align: center;
+    font-size: 18px;
+    color: #c9c9c9;
+  }
+}
+
 
 </style>
   </head>
@@ -108,7 +138,7 @@
                           <h3 class="m-0 fw-600">
                            
                           </h3>
-                        <h1 class="m-0 fw-600 text-white" style="font-size: 2rem;"> <%= activePortfoliosCount %></h1>
+                        <h1 class="m-0 fw-600 text-white" style="font-size: 1.6rem;"> <%= activePortfoliosCount %></h1>
                         
                       </div>
 
@@ -193,29 +223,24 @@
               </div>
               </div> 
 
-              <div class="col-xl-9 col-lg-10">
-              
-                <div class="box mb-15">
-                  <h4 class="fw-500 p-20 pb-10">Wallet Overview</h4>
-                  <div class="box-body" style="height: 370px">
-                        <div class="row align-items-center">
-  <div class="col-6">
-                        <div id="walletOverview" style="width: 100%; height: 180px;"></div>
-                      </div>
-                      <div class="col-6">
-                       
-  <div id="financialOverview" style="width: 95%; height: 180px;"></div>
-
-                      </div>
+             <div class="col-xl-9 col-lg-10">
+  <div class="box mb-15">
+    <h4 class="fw-500 p-20 pb-5">Account Overview</h4>
+    <div class="box-body custom_height">
+      <div class="row align-items-center">
+       
+        <div class="col-12 col-md-6">
+          <div id="walletOverview" style="width: 100%; height: 180px;"></div>
+        </div>
+       
+        <div class="col-12 col-md-6">
+          <div id="financialOverview" style="width: 100%; height: 180px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-
-
-                  </div>
-                   
-                </div>
-
-              </div>
               <div class="col-xl-3 col-lg-4">
                 <div class="box mb-15 ">
                   <div class="box-body" style="height: 160px">
@@ -277,8 +302,8 @@
 
 
 
+    <script type="module" src="/js/barchart.js"></script>
      <script type="module" src="/js/lineChart.js"></script>
-     <script type="module" src="/js/barchart.js"></script>
      <script type="module" src="/js/piechart.js"></script>
      <script type="module" src="/js/donutchart.js"></script>
 

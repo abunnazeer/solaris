@@ -5,6 +5,22 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
+    <style>
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* Creates 3 equal columns */
+    gap: 1px; /* Gap between grid items */
+    
+  }
+
+  .grid-item {
+    padding: 0px 0px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+   
+  }
+</style>
+
   </head>
 
   <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
@@ -33,14 +49,62 @@
             srcset=""
           />
           <section class="content">
-            <div class="col-md-4 offset-md-4">
+            <div class="row">
+            <div class="col-md-6 ">
+              <div class="card b-groove">
+                <br>
+                <h2  style="margin: 10px 10px 0px 10px;">
+                 2FA Setup Instructions
+                </h2>
+                <div class="card-body">
+                  <h3> 1. Before You Start:  </h3>
+                    <p>Before beginning the 2FA (Two-Factor Authentication) setup process, please ensure that you have downloaded the Authenticator app from either the Apple App Store or Google Play Store.</p>
+                
+                  <h3> 2. Do Not Refresh Your Browser:  </h3>
+                    <p>While on the 2FA setup page, it is crucial not to refresh your browser. Refreshing the page may disrupt the setup process and lead to issues.</p>
+                    <h3>In Case of Browser Refresh:</h3>
+                    <p>If, for any reason, you accidentally refresh your browser during the 2FA setup:</p>
+                    <p><Strong>- Delete Existing 2FA:</Strong> Open your Authenticator app and remove the existing 2FA entry associated with the website or service. </p>
+                    <p><Strong>- Rescan the QR Code:</Strong>  Return to the 2FA setup page on the website and scan the QR code again to add a new 2FA entry.</p>
+            <h3>3. Copy 2FA Code from the Authenticator App:</h3>
+            <p>Paste the copied 2FA code into the designated form field on the 2FA setup page. Once you've pasted the 2FA code into the form field, click the "Verify and Enable 2FA" button to complete the setup process.</p>
+
+            <h3>4. Copy your 2FA Recovery Backup Code in safe place.:</h3>
+            <p>After scanning the QR code with your Authenticator app, make sure to copy your 2FA Recovery Backup Code to a secure location. This code can be used for account recovery in case you lose access to your Authenticator app.</p>
+
+
+                </div>
+              </div>
+            </div>
+            
+
+
+             <div class="col-md-6">
+  <div class="card b-groove">
+  <br>
+  <h3 class="text-center" style="margin: 10px 10px 0px 10px;">
+    Recovery Backup Codes
+  </h3>
+  <div class="card-body">
+    <div class="grid-container"> <!-- New grid container -->
+      <% recoveryCodes.forEach(function(code, index) { %>
+        <div class="grid-item"> <!-- Each item in the grid -->
+          <p>
+            <%= index + 1 %>. <%= code.code %>
+          </p>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</div>
+
               <div class="card b-groove">
                 <br>
                 <p class="text-center" style="margin: 10px 10px 0px 10px;">
                   Scan this QR code with the authenticator app to enable 2FA.
                 </p>
                 <div class="card-body">
-                  <div class="text-center mb-1">
+                  <div class=" text-center mb-1">
                     <img  class=" w-150 h-150" src="<%= qrCodeUrl %>" alt="2FA QR Code" />
                   </div>
 
@@ -57,28 +121,38 @@
                   </div>
 <br>
 <br>
+<form action="/user/2fa-setup" method="post" id="2faForm">
+    <div class="form-group">
+        <input
+            type="text"
+            class="form-control"
+            name="twoFactorAuthCode"
+            id="twoFactorAuthCode"
+            required
+            placeholder="Enter 2FA Code from Authenticator App:"
+        />
+        <!-- Add a span element for error message -->
+        <span id="errorText" style="color: red;"></span>
+    </div>
 
-                  <form action="/user/2fa-setup" method="post">
-                    <div class="form-group">
-                     
-                      <input
-                        type="text"
-                        class="form-control"
-                        name="twoFactorAuthCode"
-                        id="twoFactorAuthCode"
-                        required
-                        placeholder="Enter 2FA Code from Authenticator App:"
-                      />
-                    </div>
+    <br>
+    <br>
+    <div class="text-center">
+      <button type="submit" class="btn bg-gradient-info-dark" id="verifyEnableButton">
+    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+    Verify and Enable 2FA
+</button>
 
-                    <div class="text-center">
-                      <button type="submit" class="btn bg-gradient-info-dark">
-                        Verify and Enable 2FA
-                      </button>
-                    </div>
-                  </form>
-                </div>
+    </div>
+</form>
+
+
+</div>
               </div>
+            </div>
+
+            </div>
+
             </div>
           </section>
         </div>
@@ -89,7 +163,68 @@
 
     <!-- Initialize Clipboard.js -->
     <script>
-      document.addEventListener('DOMContentLoaded', function () {
+
+      
+      async function verify2FA(event) {
+          // Prevent the default form submission behavior
+          event.preventDefault();
+      
+          // Clear previous error message and red border
+          document.getElementById('errorText').textContent = '';
+          document.getElementById('twoFactorAuthCode').style.border = '';
+      
+          // Get the 2FA code from the input field
+        const twoFactorAuthCode = document.getElementById('twoFactorAuthCode').value;
+
+      
+          // Validate the 2FA code (you may replace this with your validation logic)
+          if (!twoFactorAuthCode || twoFactorAuthCode.length !== 6) {
+              document.getElementById('errorText').textContent = 'Invalid 2FA code. It should be 6 characters.';
+              document.getElementById('twoFactorAuthCode').style.border = '1px solid red';
+              return;
+          }
+      
+         
+      
+          // Get the spinner element
+          const spinner = document.querySelector('#verifyEnableButton .spinner-border');
+          spinner.style.display = 'inline-block';
+      
+           const fetchOptions = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ twoFactorAuthCode }),
+  };
+          try {
+              // Send a POST request to the server
+            const response = await fetch('/user/2fa-setup', fetchOptions);
+              spinner.style.display = 'none';
+      
+              if (response.status === 200) {
+                  window.location.href = '/user/two-factor';
+              } else if (response.status === 401) {
+                  document.getElementById('errorText').textContent = 'Invalid 2FA code. Please try again.';
+                  document.getElementById('twoFactorAuthCode').style.border = '1px solid red';
+              } else {
+                  alert('An error occurred. Please try again later.');
+              }
+          } catch (error) {
+              console.error('Error:', error);
+              alert('An error occurred. Please try again later.');
+          }
+      }
+      
+      // Attach the event listener to the form
+      const form = document.getElementById('2faForm');
+      form.addEventListener('submit', verify2FA);
+      
+      
+       
+
+
+
         const copyButton = document.getElementById('copyButton');
         const twoFactorSecret = document.getElementById('twoFactorSecret');
 
@@ -106,7 +241,9 @@
         clipboard.on('error', function (e) {
           alert('Failed to copy 2FA Secret to clipboard.');
         });
-      });
+
+
+
     </script>
 
     <footer class="main-footer bg-white">

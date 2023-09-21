@@ -2,6 +2,24 @@
 <html lang="en">
   <head>
     <title><%= title %></title>
+       <style>
+       @media (max-width: 768px) {
+        .custom_mg{
+margin-bottom: 20px;
+
+        }
+  .custom_p{
+  padding: 10px !important;
+}
+#referralCode{
+  display: block;
+}
+.custom__p{
+  padding: 5px 5px !important;
+  margin-bottom: 10px;
+}
+      }
+    </style>
   </head>
   <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
     <div class="wrapper">
@@ -37,7 +55,7 @@
                 </div>
                 <div class="col-5">
                   <div class="input-group">
-                    <div
+                    <div class="custom__p"
                       style="
                         border: 1px solid #8c8c8d;
                         padding: 14px 3px;
@@ -71,6 +89,7 @@
               </div>
               <div class="mt-20" style="border: 1px solid #cbcbcb">
                 <div class="card-body">
+                    <div class="table-responsive">
                   <table class="table table-striped b-1 border-gray-700">
                     <thead class="bg-dark">
                       <tr class="p-10">
@@ -117,7 +136,7 @@
                       <% } %>
                     </tbody>
                   </table>
-
+</div>
                   <div
                     class="dataTables_paginate paging_simple_numbers align-right"
                     id="example_paginate"

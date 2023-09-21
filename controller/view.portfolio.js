@@ -9,15 +9,22 @@ const Profile = require('../models/user/profile.model');
 const catchAsync = require('../utils/catchAsync');
 const sendEmail = require('../utils/email');
 const axios = require('axios');
-// const { Plisio } = require('@plisio/api-client');
+
 const ReferralConfig = require('../models/user/referralConfig.model');
 const TransactionsActivity = require('../models/portfolio/transaction.model');
+const {
+  referralEmail,
+  emailSubject,
+} = require('../utils/message/referral_message');
 
+const {
+  paymentComfirmationEmail,
+} = require('../utils/message/Payment_confirmation');
 // const AppError = require('../utils/appError');
-const secretKey =
-  '6C0-0DVUxLblgkhe7ViRCGI1DslhOjErhaoeuWkLRTrm4cIHEqwkHhSOkN9ywVhj';
 // const secretKey =
-//   '84aaoal2XcwHDHgZe2TfgtbPVUXbX-IqBWTFwAsf2uKkbgNSTbrOgR7ikq_KsrrP';
+//   '6C0-0DVUxLblgkhe7ViRCGI1DslhOjErhaoeuWkLRTrm4cIHEqwkHhSOkN9ywVhj';
+// // const secretKey =
+// //   '84aaoal2XcwHDHgZe2TfgtbPVUXbX-IqBWTFwAsf2uKkbgNSTbrOgR7ikq_KsrrP';
 
 const getPortfolioForm = (req, res) => {
   res.status(200).render('portfolio/portfolioform', {
@@ -241,27 +248,11 @@ const paymentComfirmation = catchAsync(async (req, res) => {
         _id: referringUserId,
       });
 
-      const message = `
-    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-        <h4>Dear${referringUserProfile.firstName} ${referringUserProfile.lastName}</h4>
-        <p>We're thrilled to inform you that your diligent efforts have paid off – your downline's investment has been successfully processed, and your commission has been credited to your account!</p>
-
-        <p>We're delighted to see your network expanding and your contributions being rewarded. Your commitment to sharing our investment opportunities is truly appreciated.</p>
-        
-        <p>To view the details of this commission and your updated account balance, simply log in to your Solaris Finance account.</p>
-
-        <p>You'll find comprehensive information about your referrals, commissions, and the overall growth of your network.</p>
-
-        <p> Thank you for being a valuable member of our investor community. Your success is our success, and we're here to support you every step of the way. </p>
-
-        <p>If you have any questions or need assistance, please don't hesitate to contact our dedicated support team</p>
-
-
-        <p>Best regards,<br/>
-        The Solaris Finance Support Team</p>
-
-    </div>
-`;
+      const message = referralEmail(
+        referringUserProfile.firstName,
+        referringUserProfile.lastName,
+        bonusAmount
+      );
 
       const referringUserIdEmail = await User.findOne({
         _id: referringUserId,
@@ -269,7 +260,8 @@ const paymentComfirmation = catchAsync(async (req, res) => {
 
       await sendEmail({
         email: referringUserIdEmail.email,
-        subject: `Congratulations! You just  Earned $${bonusAmount} Commission`,
+        subject: emailSubject(bonusAmount),
+        // `Congratulations! You just Earned $${bonusAmount.toLocaleString()} Commission`,
         message,
       });
 
@@ -331,35 +323,19 @@ const paymentComfirmation = catchAsync(async (req, res) => {
           _id: secondLevelReferrerId,
         });
 
-        const message = `
-    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-        <h4>Dear${referringUserProfile.firstName} ${referringUserProfile.lastName}</h4>
-        <p>We're thrilled to inform you that your diligent efforts have paid off – your downline's investment has been successfully processed, and your commission has been credited to your account!</p>
-
-        <p>We're delighted to see your network expanding and your contributions being rewarded. Your commitment to sharing our investment opportunities is truly appreciated.</p>
-        
-        <p>To view the details of this commission and your updated account balance, simply log in to your Solaris Finance account.</p>
-
-        <p>You'll find comprehensive information about your referrals, commissions, and the overall growth of your network.</p>
-
-        <p> Thank you for being a valuable member of our investor community. Your success is our success, and we're here to support you every step of the way. </p>
-
-        <p>If you have any questions or need assistance, please don't hesitate to contact our dedicated support team</p>
-
-
-        <p>Best regards,<br/>
-        The Solaris Finance Support Team</p>
-
-    </div>
-`;
-
+        const message = referralEmail(
+          referringUserProfile.firstName,
+          referringUserProfile.lastName,
+          secondLevelBonusAmount
+        );
         const referringUserIdEmail = await User.findOne({
           _id: secondLevelReferrerId,
         });
 
         await sendEmail({
           email: referringUserIdEmail.email,
-          subject: 'Referral commission email ',
+          subject: emailSubject(secondLevelBonusAmount),
+          // subject: `Congratulations! You just Earned $${secondLevelBonusAmount.toLocaleString()} Commission`,
           message,
         });
 
@@ -423,28 +399,11 @@ const paymentComfirmation = catchAsync(async (req, res) => {
         const referringUserProfile = await Profile.findOne({
           _id: thirdLevelReferrerId,
         });
-
-        const message = `
-    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-        <h4>Dear ${referringUserProfile.firstName} ${referringUserProfile.lastName}</h4>
-        <p>We're thrilled to inform you that your diligent efforts have paid off – your downline's investment has been successfully processed, and your commission has been credited to your account!</p>
-
-        <p>We're delighted to see your network expanding and your contributions being rewarded. Your commitment to sharing our investment opportunities is truly appreciated.</p>
-        
-        <p>To view the details of this commission and your updated account balance, simply log in to your Solaris Finance account.</p>
-
-        <p>You'll find comprehensive information about your referrals, commissions, and the overall growth of your network.</p>
-
-        <p> Thank you for being a valuable member of our investor community. Your success is our success, and we're here to support you every step of the way. </p>
-
-        <p>If you have any questions or need assistance, please don't hesitate to contact our dedicated support team</p>
-
-
-        <p>Best regards,<br/>
-        The Solaris Finance Support Team</p>
-
-    </div>
-`;
+        const message = referralEmail(
+          referringUserProfile.firstName,
+          referringUserProfile.lastName,
+          thirdLevelBonusAmount
+        );
 
         const referringUserIdEmail = await User.findOne({
           _id: thirdLevelReferrerId,
@@ -452,7 +411,8 @@ const paymentComfirmation = catchAsync(async (req, res) => {
 
         await sendEmail({
           email: referringUserIdEmail.email,
-          subject: 'Referral commission email ',
+          subject: emailSubject(thirdLevelBonusAmount),
+          // subject: 'Referral commission email ',
           message,
         });
         // console.log('Referring User ID', thirdLevelBonusAmount);
@@ -474,34 +434,9 @@ const paymentComfirmation = catchAsync(async (req, res) => {
       return res.status(404).json({ message: 'BuyPortfolio not found' });
     }
 
-    const emailContent = `
-  <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-    <h4>Portfolio Activation Confirmation</h4>
-
-    <p>Dear Investor,</p>
-  
-    <p>We are <strong>pleased to inform you</strong> that your payment for <span style="font-style: italic;"><strong>${portfoliodetail.portfolioName}</strong></span> has been confirmed. Your portfolio has now been activated, marking a significant milestone in your journey with Solaris Finance Management.</p>
-  
-    <p>Your commitment to strategic investment planning is truly commendable. We are confident that this step will pave the way for potential growth and wealth accumulation.</p>
-  
-    <p>We encourage you to take a moment to <strong>review your comprehensive portfolio</strong>.</p>
-  
-    <p>Our team of skilled analysts and advisors has worked diligently to ensure that your investment strategy aligns with your financial aspirations.</p>
-  
-    <p>If there are any specific preferences or adjustments you would like to discuss, please don't hesitate to reach out to your dedicated investment advisor or contact our support team at <a href="mailto:Contact@solarisfinance.com">Contact@solarisfinance.com</a>.</p>
-  
-    <p>At Solaris Finance Management, we are committed to providing exceptional service and fostering a lasting partnership.</p>
-  
-    <p>As you embark on this journey, rest assured that our team is available to address any inquiries or concerns you may have along the way.</p>
-
-    <p>We <strong>congratulate you</strong> on the successful activation of your investment portfolio and eagerly anticipate the opportunities it will bring.</p>
-
-    <p>Thank you for choosing Solaris Finance Management as your partner in financial growth.</p>
-  
-    <p>Best regards,</p>
-    <p><strong>The Solaris Finance Support Team</strong></p>
-  </div>
-`;
+    const emailContent = paymentComfirmationEmail(
+      portfoliodetail.portfolioName
+    );
 
     // Send email to the user
     await sendEmail({
