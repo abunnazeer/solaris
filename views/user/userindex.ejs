@@ -1,6 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head> </head>
+  <head> 
+  <style>
+  .spinner {
+    border: 4px solid rgba(240, 188, 1, 0.622);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border-left-color: #09d;
+    background-color: #cbcbcb49;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>
+
+
+  </head>
 
   <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
     <div class="wrapper">
@@ -62,41 +82,46 @@
                         </th>
 
                         <th style="width: 10%">Actions</th>
+                        <th style="width: 10%">Disable 2fa</th>
                       </tr>
                     </thead>
 
-                    <tbody>
-                      <% users.forEach((item) => { %>
-                      <tr>
-                        <td style="border-right: #d1d1d1 1px solid">
-                          <%= item.firstName + ' ' + item.middleName +' ' + item.lastName %>
-                        </td>
-                        <td style="border-right: #d1d1d1 1px solid">
-                          <%= item.email %>
-                        </td>
-                        <td style="border-right: #d1d1d1 1px solid">
-                          <%= item.role %>
-                        </td>
+                   <tbody>
+      <% users.forEach((item) => { %>
+      <tr>
+        <td style="border-right: #d1d1d1 1px solid">
+          <%= item.firstName + ' ' + item.middleName +' ' + item.lastName %>
+        </td>
+        <td style="border-right: #d1d1d1 1px solid">
+          <%= item.email %>
+        </td>
+        <td style="border-right: #d1d1d1 1px solid">
+          <%= item.role %>
+        </td>
+        <td class="table-action min-w-100">
+          <a href="/user/profile/<%= item._id %>" class="text-fade hover-primary">
+            <i data-feather="eye" style="color: #308345"></i>
+          </a>
+          <a href="#" class="text-fade hover-primary" onclick="deleteUser('<%= item._id %>')">
+            <i data-feather="trash" style="color: #e74949"></i>
+          </a>
+        </td>
+        <td class="table-action min-w-100">
+         <button
+  id="<%= item._id %>"
+  type="button"
+  class="btn btn-sm btn-toggle <%= (item.isTwoFactorSetupComplete && item.isTwoFactorEnabled) ? 'btn-success active' : 'btn-warning-light' %>"
+  data-bs-toggle="button"
+  aria-pressed="<%= (item.isTwoFactorSetupComplete && item.isTwoFactorEnabled) ? 'true' : 'false' %>"
+  <%= (!item.isTwoFactorSetupComplete && !item.isTwoFactorEnabled) ? 'disabled' : '' %>
+>
+  <span class="handle"></span>
+</button>
 
-                        <td class="table-action min-w-100">
-                          <a
-                            href="/user/profile/<%= item._id %>"
-                            class="text-fade hover-primary"
-                          >
-                            <i data-feather="eye" style="color: #308345"></i>
-                          </a>
-
-                          <a
-                            href="#"
-                            class="text-fade hover-primary"
-                            onclick="deleteUser('<%= item._id %>')"
-                          >
-                            <i data-feather="trash" style="color: #e74949"></i>
-                          </a>
-                        </td>
-                      </tr>
-                      <% }) %>
-                    </tbody>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
                   </table>
 
                   <div
@@ -152,6 +177,7 @@
         </div>
       </div>
     </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
       function deleteUser(userId) {
@@ -170,6 +196,45 @@
             });
         }
       }
+$(document).ready(function() {
+  $('.btn-toggle').click(function() {
+    const userId = this.id;
+    const isPressed = $(this).attr('aria-pressed') === 'true';
+   
+
+    // Create a spinner element and append it to the button
+    const spinner = $('<div class="spinner"></div>');
+    $(this).append(spinner);
+
+   
+
+    $.ajax({
+      url: `/user/2fa-disable/${userId}`,
+      type: 'POST',
+      success: function(response) {
+        // Remove the spinner
+        spinner.remove();
+
+     
+
+        // Handle success - Redirect to /user/users
+        window.location.href = '/user/users';
+        window.location.reload();
+      },
+      error: function(err) {
+        // Remove the spinner
+        spinner.remove();
+
+       
+
+        // Handle error - Show error message
+        alert('An error occurred: ' + err.responseText);
+      }
+    });
+  });
+});
+
+
     </script>
     <footer class="main-footer bg-white">
       <!-- footer-->

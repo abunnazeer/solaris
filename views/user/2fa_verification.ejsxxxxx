@@ -10,11 +10,14 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
     <style>
-        .spinner-border {
-    width: 1.5rem;
-    height: 1.5rem;
-    border-width: 2px;
-        }
+      .password-toggle {
+        position: absolute;
+        left: 95%;
+      }
+      .passwordConfirm-toggle {
+        position: absolute;
+        left: 95%;
+      }
     </style>
   </head>
 
@@ -65,10 +68,7 @@
                         <button
                           type="submit"
                           class="waves-effect waves-light btn mb-5 bg-gradient-warning w-p100 mt-10"
-                        onclick="startSpinner(); validateForm(event);"
->
-  <span id="spinner" style="display: none;">
-    <i class="fas fa-spinner fa-spin"></i></span>
+                        >
                           Verify 2FA Code
                         </button>
                       </div>
@@ -82,11 +82,5 @@
         </div>
       </div>
     </div>
-    <script>
-  function startSpinner() {
-    const spinner = document.getElementById("spinner");
-    spinner.style.display = "inline-block";
-  }
-</script>
   </body>
 </html>

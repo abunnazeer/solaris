@@ -65,6 +65,8 @@ const getUserIndex = catchAsync(async (req, res) => {
         email: user.email,
         role: user.role,
         isActive: user.isActive,
+        isTwoFactorSetupComplete: user.isTwoFactorSetupComplete,
+        isTwoFactorEnabled: user.isTwoFactorEnabled,
       };
     } else {
       return user;

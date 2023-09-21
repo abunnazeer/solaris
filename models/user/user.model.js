@@ -3,7 +3,19 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 
+const recoveryCodeSchema = new mongoose.Schema({
+  code: {
+    type: String,
+    required: true,
+  },
+  used: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 const userSchema = new mongoose.Schema({
+  recoveryCodes: [recoveryCodeSchema],
   email: {
     type: String,
     required: [true, 'Please provide your email'],
@@ -86,7 +98,13 @@ const userSchema = new mongoose.Schema({
       },
     },
   ],
+  regDate: {
+    type: Date,
+    default: Date.now, // Set the default value to the current date and time
+  },
 });
+
+
 
 userSchema.pre('save', async function (next) {
   // Hash the password only if it is modified or new

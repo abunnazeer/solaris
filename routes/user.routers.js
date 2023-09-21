@@ -47,11 +47,11 @@ const {
   changePassword,
   postTwoFactor,
 
-  generateTwoFaCode,
+  // generateTwoFaCode,
 
-  setupTwoFactor,
+  // setupTwoFactor,
 
-  disable2FA,
+  // disable2FA,
   verificationMiddleWare,
 } = require('../controller/auth.controller');
 const { updateProfile, uploadProfilePhoto } = require('./user.controller');
@@ -71,6 +71,13 @@ const {
   dailyPayout,
   compoundingPayout,
 } = require('../controller/paying.controller');
+const {
+  adminDisable2FA,
+  disable2FA,
+  enable2FA,
+  setupTwoFactor,
+  generateTwoFaCode,
+} = require('../controller/2fa.controller');
 
 // const uploadDocument = require('../middleware/uploadDocument');
 const router = express();
@@ -89,6 +96,7 @@ router.get('/test-comp-payout', protect, compoundingPayout);
 router.post('/register/:referredByCode?', register);
 
 router.post('/login', login);
+router.post('/2fa-verify', login);
 //  this is a api baised url
 router.post('/forget-password', forgetPassword);
 router.post('/reset-password/:token', resetPassword);
@@ -139,26 +147,32 @@ router.post(
   postProfileVerification
 );
 router.get('/verification-status', protect, getVerificationStatus);
+
+router.get('/success', getSuccess);
+router.get('/two-factor', getTwoFactor);
+router.get('/forget-password', getForgetPasswordForm);
 router.use(protect, verificationMiddleWare);
 // router.get()
+router.post('/2fa-setup', protect, setupTwoFactor);
 // GET ME ROUTE
 router.get('/profile', protect, getProfile);
 router.get('/verification', protect, getVerification);
 
-router.get('/forget-password', getForgetPasswordForm);
 // Route to display the change password form
 router.get('/change-password', protect, getChangePasswordForm);
 
 router.post('/two-factor', protect, postTwoFactor);
-router.get('/two-factor', getTwoFactor);
 
 // first step
 router.get('/2fa-generate', protect, generateTwoFaCode);
 // router.post('/2fa-enable', protect, enable2FA);
 router.post('/2fa-disable', protect, disable2FA);
-router.post('/2fa-setup', protect, setupTwoFactor);
-router.post('/2fa-verify', login);
-router.get('/success', getSuccess);
+router.post(
+  '/2fa-disable/:userId',
+  protect,
+  restrictTo('admin'),
+  adminDisable2FA
+);
 
 router.get('/user-verify-status', protect, restrictTo('admin'), getVerifyIndex);
 router.post('/approve/:id', protect, restrictTo('admin'), postApproval);

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
- 
   <head>
     <%- include('layouts/head') %>
   </head>
@@ -26,58 +25,69 @@
         <div class="container mt-30">
           <img
             src="/images/header/2FA_Web_113732.png"
-            alt="refaral"
+            alt="referral"
             srcset=""
           />
           <section class="content">
-<div class="col-xl-4 col-lg-4 offset-md-4">
-<div class="card  b-groove">
-    <div class="card-body text-center">
-      
-      
-      <% if (user.twoFactorSecret && user.isTwoFactorEnabled && user.isTwoFactorSetupComplete) { %>
-        <!-- Form to disable 2FA -->
-        <h3>To disable 2fa click on this button </h3>
-        <br>
-        <br>
-       
-        <form action="/user/2fa-disable" method="post">
-          <button  class="btn bg-gradient-danger"type="submit">Disable 2FA</button>
-        </form>
-<br>
-<br>
-      <% } else { %>
-        <!-- Form to enable 2FA -->
-        <h3>To enable 2fa click on this button </h3>
-        <br>
-        <br>
-       
-        <form action="/user/2fa-generate" method="get">
-          <button  class="btn bg-gradient-info-dark" type="submit">Enable 2FA</button>
-        </form>
-        <br>
-        <br>
-      <% } %>
-
-</div>
-  </div> <!-- end card -->
-</div> <!-- end col -->
-
-			</div>
-			<!-- end row-->
-
-		</section>
-		<!-- /.content -->
+            <div class="col-xl-4 col-lg-4 offset-md-4">
+              <div class="card  b-groove">
+                <div class="card-body text-center">
+                  <% if (user.twoFactorSecret && user.isTwoFactorEnabled && user.isTwoFactorSetupComplete) { %>
+                    <!-- Form to disable 2FA -->
+                    <h3>To disable 2fa click on this button </h3>
+                    <br />
+                    <br />
+                    <form action="/user/2fa-disable" method="post" class="btn-spinner" onsubmit="showSpinner(this)">
+                      <button class="btn bg-gradient-danger" type="submit">  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span> Disable 2FA</button>
+                     
+                    </form>
+                    <br />
+                    <br />
+                  <% } else { %>
+                    <!-- Form to enable 2FA -->
+                    <h3>To enable 2fa click on this button </h3>
+                    <br />
+                    <br />
+                    <form action="/user/2fa-generate" method="get" class="btn-spinner" onsubmit="showSpinner(this)">
+                      <button class="btn bg-gradient-info-dark" type="submit">  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span> Enable 2FA</button>
+                     
+                    </form>
+                    <br />
+                    <br />
+                  <% } %>
+                </div>
+              </div>
+              <!-- end card -->
+            </div>
+            <!-- end col -->
+          </section>
+          <!-- /.content -->
         </div>
       </div>
       <!-- /.content-wrapper -->
+      <script>
+        // Function to show the spinner on button click
+        function showSpinner(form) {
+          // Get the form element
+          var spinner = form.querySelector(".spinner-border");
 
+          // Show the spinner
+          spinner.style.display = "inline-block";
+
+          // Simulate some processing time (you can replace this with your actual logic)
+          setTimeout(function () {
+            // Submit the form
+            form.submit();
+          }, 2000); // Replace 2000 with the actual processing time in milliseconds
+          
+          // Prevent the default form submission
+          return false;
+        }
+      </script>
       <footer class="main-footer bg-white">
         <!-- footer -->
         <%- include('layouts/footer') %>
       </footer>
-    
+    </div>
   </body>
-  
- 
 </html>

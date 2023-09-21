@@ -2,6 +2,17 @@
 <html lang="en">
 <head>
     <title><%= title %></title>
+        <style>
+        .spinner-border {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-width: 2px;
+        }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
 </head>
 <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
     <div class="wrapper">
@@ -74,7 +85,8 @@
 
     <!-- Approve Form -->
     <form action="/user/approve/<%=getDetail._id%>" method="post" style="display:inline;">
-        <button type="submit" class="waves-effect waves-light btn btn-success mb-5">Approve</button>
+        <button type="submit" class="btn bg-gradient-info-dark"   onclick="startSpinner();"> <span id="spinner" style="display: none;">
+    <i class="fas fa-spinner fa-spin"></i></span> Approve</button>
     </form>
 
 </div>
@@ -126,7 +138,8 @@
 					
 
 					<div class="mt-10 text-center">
-						<button class="waves-effect waves-light btn btn-danger mb-5" type="submit">Send</button>
+						<button class="waves-effect waves-light btn btn-danger mb-5" type="submit" onclick="startSpinnerModal();"> <span id="spinnermodal" style="display: none;">
+    <i class="fas fa-spinner fa-spin"></i></span>Send</button>
 					</div>
 
 				</form>
@@ -138,7 +151,16 @@
                 </section>
             </div>
         </div>
-
+  <script>
+  function startSpinner() {
+    const spinner = document.getElementById("spinner");
+    spinner.style.display = "inline-block";
+  }
+    function startSpinnerModal() {
+    const spinner = document.getElementById("spinnermodal");
+    spinner.style.display = "inline-block";
+  }
+</script>
         
         <footer class="main-footer bg-white">
             <!-- footer-->

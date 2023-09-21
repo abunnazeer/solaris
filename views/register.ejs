@@ -16,6 +16,25 @@
         position: absolute;
         left: 95%;
       }
+           .spinner-border {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-width: 2px;
+        }
+        .password-requirements {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+  }
+
+  .password-requirements strong {
+    color: #333;
+  }
+
+  .password-requirements ul {
+    margin: 0;
+    padding-left: 20px;
+  }
     </style>
   </head>
 
@@ -102,7 +121,15 @@
                       </div>
                       <span class="error" id="passwordConfirmError"></span>
                     </div>
-
+<div class="password-requirements">
+    <p>Password must contain:</p>
+    <ul>
+      <li>At least one special character (e.g., !, @, #, $, etc.)</li>
+      <li>At least one uppercase letter (A-Z)</li>
+      <li>At least one lowercase letter (a-z)</li>
+      <li>At least one number (0-9)</li>
+    </ul>
+  </div>
                     <div class="row">
                       <div class="col-12">
                         <div class="checkbox">
@@ -125,8 +152,8 @@
                         <button
                           type="submit"
                           class="waves-effect waves-light btn mb-5 bg-gradient-warning w-p100 mt-10"
-                          onclick="validateForm(event)"
-                        >
+                          onclick="validateForm(event)" onclick="startSpinner();"> <span id="spinner" style="display: none;">
+    <i class="fas fa-spinner fa-spin"></i></span>
                           REGISTER
                         </button>
                       </div>
@@ -152,6 +179,7 @@
 
     <!-- Vendor JS -->
     <script>
+    
       function checkEmailExistence() {
         const emailInput = document.getElementById('email');
         const emailError = document.getElementById('emailError');

@@ -2,16 +2,8 @@
 <html lang="en">
   <head>
     <title><%= title %></title>
-  </head>
-
-  <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
-    <div class="wrapper">
-      <header class="main-header">
-        <!-- header-->
-        <%- include('../layouts/header') %>
-       <!-- Add this to your HTML head or a separate CSS file -->
-<style>
-  .withdrawal-button {
+    <style>
+      .withdrawal-button {
     border-radius: 5px;
     border: 1px solid transparent;
     cursor: pointer;
@@ -30,7 +22,25 @@
     color: #fff !important;
     cursor: pointer;
   }
-</style>
+      @media (max-width: 768px) {
+        .custom_mg{
+margin-bottom: 20px;
+
+        }
+  .custom_p{
+  padding: 10px !important;
+}
+      }
+      
+    </style>
+  </head>
+
+  <body class="hold-transition light-skin sidebar-mini theme-primary fixed">
+    <div class="wrapper">
+      <header class="main-header">
+        <!-- header-->
+        <%- include('../layouts/header') %>
+       <!-- Add this to your HTML head or a separate CSS file -->
 
 
       </header>
@@ -51,7 +61,7 @@
             srcset=""
           />
           <section class="content">
-            <div class="col-10 offset-md-1">
+            <div class="col-12 col-md-10 offset-md-1">
               <div class="mt-20" style="border: 1px solid #cbcbcb">
                 <div class="card-body">
                   <!-- content herwe -->
@@ -67,7 +77,7 @@
                           <div
                             class="d-md-flex justify-content-between align-items-center"
                           >
-                            <div class="col-7">
+                           <div class="col-12 col-md-7 custom_mg">
                               <input
                                 type="number"
                                 name="authCode"
@@ -155,7 +165,7 @@
 
                         <div class="mt-10">
                           
-<button type="submit" class="btn btn bg-gradient-info-dark">
+<button type="submit" class="btn btn bg-gradient-info-dark custom_mg">
   <span id="spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
   Make Withdrawal
 </button>
@@ -164,7 +174,7 @@
                       </form>
                     </div>
                     <div class="col-lg-6 col-12">
-                      <div class="card p-100 text-center">
+                      <div class="card custom_p  text-center " style="padding: 100px;">
                         <div>
                           <h4>Account Balance:</h4>
                           <h1>
