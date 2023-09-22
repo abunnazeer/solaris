@@ -81,6 +81,17 @@
 // renderBarChart();
 
 // Add a window resize listener to re-render the chart
+// Singleton instance for chart
+// Initialize variable to store the chart instance
+let chartInstance = null;
+
+// Function to destroy an existing chart
+function destroyChart() {
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
+}
+
 window.addEventListener('resize', function () {
   renderBarChart();
 });
@@ -96,9 +107,7 @@ function renderBarChart() {
       const withdrawedAmount = overViewData.totalWithdrawalAmount;
       const months = overViewData.months;
 
-      // Get the window width for responsive settings
-      // Determine chart height based on screen size
-      const chartHeight = window.innerWidth <= 768 ? '250px' : '300px';
+      const chartHeight = '300px';
       const windowWidth = window.innerWidth;
 
       const options = {
@@ -156,14 +165,16 @@ function renderBarChart() {
         referralBonus.length === 0 &&
         withdrawedAmount.length === 0
       ) {
+        destroyChart(); // Destroy existing chart if any
         chartContainer.innerHTML =
           '<div class="no-data">No data available yet</div>';
         chartContainer.style.display = 'block';
-        options.legend.show = false;
+        chartContainer.style.height = '300px';
       } else {
         chartContainer.style.display = 'block';
-        const chart = new ApexCharts(chartContainer, options);
-        chart.render();
+        destroyChart(); // Destroy existing chart if any
+        chartInstance = new ApexCharts(chartContainer, options);
+        chartInstance.render();
       }
     })
     .catch(error => {

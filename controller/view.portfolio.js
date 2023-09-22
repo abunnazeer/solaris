@@ -433,10 +433,15 @@ const paymentComfirmation = catchAsync(async (req, res) => {
     if (!buyPortfolio) {
       return res.status(404).json({ message: 'BuyPortfolio not found' });
     }
+     const referringUserProfile = await Profile.findOne({
+       _id: userId,
+     });
 
-    const emailContent = paymentComfirmationEmail(
-      portfoliodetail.portfolioName
-    );
+     const emailContent = paymentComfirmationEmail(
+       referringUserProfile.firstName,
+       referringUserProfile.lastName,
+       portfoliodetail.portfolioName
+     );
 
     // Send email to the user
     await sendEmail({

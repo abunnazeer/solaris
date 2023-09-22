@@ -1,10 +1,10 @@
-function paymentComfirmationEmail(name) {
+function paymentComfirmationEmail(firstName, lastName, portfolioName) {
   return `<div style="font-family: Arial, sans-serif; line-height: 1.6;">
-    <h4>Portfolio Activation Confirmation</h4>
+    <h4><strong>Portfolio Activation Confirmation</strong></h4>
 
-    <p>Dear Investor,</p>
+    <p>Dear ${firstName} ${lastName},</p>
   
-    <p>We are <strong>pleased to inform you</strong> that your payment for <span style="font-style: italic;"><strong>${name}</strong></span> has been confirmed. Your portfolio has now been activated, marking a significant milestone in your journey with Solaris Finance Management.</p>
+    <p>We are <strong>pleased to inform you</strong> that your payment for <span style="font-style: italic;"><strong>${portfolioName}</strong></span> has been confirmed. Your portfolio has now been activated, marking a significant milestone in your journey with Solaris Finance Management.</p>
   
     <p>Your commitment to strategic investment planning is truly commendable. We are confident that this step will pave the way for potential growth and wealth accumulation.</p>
   

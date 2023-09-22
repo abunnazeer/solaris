@@ -55,9 +55,21 @@
 //     });
 // }
 
-// renderPieChart();
+// let chartInstance; // Global variable to hold the chart instance
+
+// window.addEventListener('resize', function () {
+//   // Destroy existing chart before re-rendering
+//   if (chartInstance) {
+//     chartInstance.destroy();
+//   }
+//   renderPieChart();
+// });
+let chartInstance = null; // Global variable to hold the chart instance
+
 window.addEventListener('resize', function () {
-  // Re-render the chart when the window is resized
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
   renderPieChart();
 });
 
@@ -67,18 +79,14 @@ function renderPieChart() {
     .get('/chart/pie-chart') // Replace with your API endpoint
     .then(response => {
       const buyPortfolioData = response.data.accountDetails[0];
-
       const compoundingDividends = buyPortfolioData.TotalCompoundingBalance;
       const accountBalance = buyPortfolioData.totalAccountBalance;
       const accumulatedDividends = buyPortfolioData.accumulatedDividends;
 
-      // Get window width to adjust chart options
-      // const windowWidth = window.innerWidth;
-
       var options = {
         chart: {
           type: 'pie',
-          height: window.innerWidth <= 768 ? '300px' : '180px', // Adjust height for mobile
+          height: window.innerWidth <= 768 ? '280px' : '180px',
         },
         series: [accumulatedDividends, compoundingDividends, accountBalance],
         labels: [
@@ -110,8 +118,11 @@ function renderPieChart() {
         chartContainer.style.fontSize = '14px';
         chartContainer.style.color = '#c9c9c9';
       } else {
-        var chart = new ApexCharts(chartContainer, options);
-        chart.render();
+        if (chartInstance) {
+          chartInstance.destroy(); // Destroy the previous chart instance if it exists
+        }
+        chartInstance = new ApexCharts(chartContainer, options); // Create a new chart instance and store it in the global variable
+        chartInstance.render();
         console.log('Pie chart rendered successfully');
       }
     })
@@ -120,4 +131,5 @@ function renderPieChart() {
     });
 }
 
+// Initial render
 renderPieChart();
