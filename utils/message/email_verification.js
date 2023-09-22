@@ -1,8 +1,8 @@
 function emailVerification(url) {
   return `
-  <p>Please verify your email address</p>
+  <h4><strong>Please verify your email address</strong></h4>
 
-  <p>Welcome Aboard</p>
+  <p>Welcome Aboard!</p>
 
   <p>We're thrilled that you've taken the step to join Solaris Finance Management!</p>
 

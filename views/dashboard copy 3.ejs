@@ -16,14 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>;
 
 <style>
-/* CSS for placeholder */
-.no-data {
-  text-align: center;
-  line-height: 300px;
-  color: #666;
-  font-size: 18px;
-}
-
+  
 .icon__custom{
     color: #f89f1e; 
     font-size: 40px;
@@ -62,13 +55,12 @@
     border-radius: 10px;
     padding: 4px;
 }
-.custom_height, .custom_height_no_data{
-  height: 372px;
+.custom_height{
+  height: 370px;
 }
-.custom_height_no_data
 #donutChart {
-  width: 190px; 
-  height: 190px; 
+  width: 190px; /* Change to a fixed width temporarily */
+  height: 190px; /* Change to a fixed height temporarily */
 }
 /* CSS */
 #financialOverview {
@@ -77,20 +69,16 @@
 
 @media (max-width: 768px) {
   #financialOverview {
-    height: 200px; 
-    margin-top: 50px;
+    height: 200px; /* Increase the height for mobile */
 
   }
   .custom_height{
-      height: 700px; 
-  }
-  .custom_height_no_data{
-    height: 300px;
+      height: 570px; 
   }
 }
 @media (max-width: 768px) {
   #walletOverview {
-    height: 40px;  
+    height: 40px;  /* Increase the height for mobile */
   }
 
   .no-data {
@@ -145,7 +133,7 @@
                     <div
                       class="d-flex align-items-center justify-content-between"
                     >
-                      <h4 class="fw-600 text-white">Active Portfolio</h4>
+                      <h4 class="fw-700 text-white">Active Portfolio</h4>
                     </div>
                     <div class="row align-items-center mt-10">
                        <div class="col-8">
@@ -180,7 +168,7 @@
                     <div
                       class="d-flex align-items-center justify-content-between"
                     >
-                      <h4 class="fw-600">Compounding Dividends</h4>
+                      <h4 class="fw-700">Compounding Dividends</h4>
                     </div>
                     <div class="row align-items-center mt-10">
                       <div class="col-8">
@@ -206,7 +194,7 @@
                     <div
                       class="d-flex align-items-center justify-content-between"
                     >
-                      <h4 class="fw-600">Total Referral commission</h4>
+                      <h4 class="fw-700">Total Referral commission</h4>
                     </div>
                     <div class="row align-items-center mt-10">
                       <div class="col-8">
@@ -226,13 +214,13 @@
                     <div
                       class="d-flex align-items-center justify-content-between"
                     >
-                      <h4 class="fw-600">Accumulated Dividends</h4>
+                      <h4 class="fw-700">Accumulated Dividends</h4>
                     </div>
                     <div class="row align-items-center mt-10">
                       <div class="col-8">
 
 <h1 class="m-0 fw-600" style="font-size: 1.6rem; color: #f89f1e;">
- $<%= accumulatedDividends.toLocaleString() || 0 %>
+ $<%= formatNumber(accumulatedDividends) || 0 %>
 </h1>
 
                       </div>
@@ -249,38 +237,14 @@
 
              <div class="col-xl-9 col-lg-10">
   <div class="box mb-15">
-    <h4 class="fw-600 p-20 pb-5">Account Overview</h4>
-    <% 
-  let displayData = true;
-  if (
-    investedAmount.length === 0 || 
-    totalWithdrawalAmount.length === 0 || 
-    referralBonusTotal.length === 0 || 
-    months.length === 0
-  ) {
-    displayData = false;
-  }
-%>
-   
-       
-
-
-<% if (displayData) { %>
-   <div class="box-body custom_height">
+    <h4 class="fw-700 p-20 pb-5">Account Overview</h4>
+    <div class="box-body custom_height">
       <div class="row align-items-center">
-  <div class="col-12 col-md-6">
-    <div id="walletOverview" style="min-height: 300px;"></div>
-  </div>
-<% } else { %>
-   <div class="box-body custom_height_no_data">
-      <div class="row align-items-center">
-  <div class="col-12">
-    <p class="no-data ">No data available yet.</p>
-  </div>
-<% } %>
-
        
-      
+        <div class="col-12 col-md-6">
+          <div id="walletOverview" style="width: 100%; height: 180px;"></div>
+        </div>
+       
         <div class="col-12 col-md-6">
           <div id="financialOverview" style="width: 100%; height: 180px;"></div>
         </div>
@@ -295,7 +259,7 @@
                     <div
                       class="d-flex align-items-center justify-content-between"
                     >
-                      <h4 class="fw-600">Referred Members</h4>
+                      <h4 class="fw-700">Referred Members</h4>
                     </div>
                     <div class="row align-items-center mt-35">
                       <div class="col-6 mb-50">
@@ -318,14 +282,14 @@
                   style="height: 254px; position: relative"
                 >
                   <div class="box-header with-border text-center">
-                    <h4 class="fw-600">Account Balance</h4>
+                    <h4 class="fw-700">Account Balance</h4>
                   </div>
                   <div class="box-body p-0">
                     <div class="text-center">
                       <div id="balanceChart" style="width: 250px;  margin: auto;"> </div>
                       
 <h1 class="m-0 fw-600" style="font-size: 1.6rem; color: #f89f1e;">
- 
+  $<%= formatNumber(totalAccountBalance) || 0 %><br>
  $<%= totalAccountBalance.toLocaleString() || 0 %>
 
 </h1>

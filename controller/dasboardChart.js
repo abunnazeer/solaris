@@ -3,32 +3,6 @@ const TransactionsActivity = require('../models/portfolio/transaction.model');
 const referralBonus = require('../models/user/referralBonus.model');
 const AccountDetail = require('../models/user/accountDetails.model');
 
-// const getPieChart = async (req, res) => {
-//   const { id } = req.user;
-
-//   try {
-//     // Assuming you have some logic to get the user's portfolios
-//     const portfolios = await BuyPortfolio.find({ userId: id });
-
-//     const totalCompBalance = portfolios.reduce((sum, portfolio) => {
-//       return sum + portfolio.compBalance;
-//     }, 0);
-
-//     const totalAccountBalance = portfolios.reduce((sum, portfolio) => {
-//       return sum + portfolio.balance;
-//     }, 0);
-
-//     res.status(200).json({
-//       compBalance: totalCompBalance,
-//       accountBalance: totalAccountBalance,
-//     });
-//   } catch (error) {
-//     console.error('Error fetching dashboard data:', error);
-//     res
-//       .status(500)
-//       .json({ error: 'An error occurred while fetching the dashboard data.' });
-//   }
-// };
 
 const getPieChart = async (req, res) => {
   const { id } = req.user;
@@ -59,7 +33,7 @@ const getBarChart = async (req, res) => {
       description: 'Withdrawal',
       status: 'Approved',
     });
-    console.log(totalWithdrawal);
+ 
     const investedAmountArray = [];
     const withdrawedAmountArray = [];
     const referralBonusTotalArray = [];
