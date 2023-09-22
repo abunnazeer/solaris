@@ -30,6 +30,8 @@ const {
   postDisApproval,
   getWalletDetail,
   getUserDashbaord,
+  getDataAdmin,
+  deleteDataAdmin,
 } = require('../controller/view.controller');
 
 const {
@@ -189,6 +191,15 @@ router.get(
   restrictTo('admin'),
   getUserDashbaord
 );
+
+router.get('/get-admin-data', protect, restrictTo('admin'), getDataAdmin);
+router.delete(
+  '/delete-admin-data/:id',
+  protect,
+  restrictTo('admin'),
+  deleteDataAdmin
+);
+
 
 // PORTFOLIO
 router.get('/view-investments-portfolio', protect, getInvestPortfolio);

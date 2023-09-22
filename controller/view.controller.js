@@ -10,6 +10,7 @@ const ReferralBonus = require('../models/user/referralBonus.model');
 const axios = require('axios');
 const QRCode = require('qrcode');
 const Accounts = require('../models/user/accountDetails.model');
+const dataAdmin = require('../models/user/dataadmin.model');
 const secretKey =
   '6C0-0DVUxLblgkhe7ViRCGI1DslhOjErhaoeuWkLRTrm4cIHEqwkHhSOkN9ywVhj';
 const multer = require('multer');
@@ -427,6 +428,49 @@ const getUserDashbaord = async (req, res) => {
     currentPage,
     totalPages,
   });
+};
+const getDataAdmin = async (req, res) => {
+  try {
+    // Parse the current page from the query parameters (default to 1 if not present)
+    const currentPage = parseInt(req.query.page) || 1;
+
+    // Define how many admin records you want to show per page
+    const dataAdminPerPage = 10;
+
+    // Count the total number of admin records
+    const totalDataAdmin = await dataAdmin.countDocuments();
+
+    // Calculate the total number of pages
+    const totalPages = Math.ceil(totalDataAdmin / dataAdminPerPage);
+
+    // Fetch the admin records for the current page
+    const getAllData = await dataAdmin
+      .find()
+      .skip((currentPage - 1) * dataAdminPerPage)
+      .limit(dataAdminPerPage);
+
+    // Render the page with the fetched data
+    res.status(200).render('user/data_admin', {
+      getAllData,
+      title: 'Admin Data',
+      currentPage,
+      totalPages,
+    });
+  } catch (error) {
+    console.error('An error occurred:', error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
+const deleteDataAdmin = async (req, res) => {
+  try {
+    const id = req.params.id;
+    await dataAdmin.findByIdAndDelete(id);
+    res.status(200).json({ message: 'User data deleted successfully.' });
+  } catch (error) {
+    console.error('An error occurred:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 };
 
 const postApproval = async (req, res) => {
@@ -909,4 +953,6 @@ module.exports = {
   postApproval,
   postDisApproval,
   getUserDashbaord,
+  getDataAdmin,
+  deleteDataAdmin,
 };
