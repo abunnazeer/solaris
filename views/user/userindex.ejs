@@ -90,9 +90,15 @@
                    <tbody>
       <% users.forEach((item) => { %>
       <tr>
-        <td style="border-right: #d1d1d1 1px solid">
-          <%= item.firstName + ' ' + item.middleName +' ' + item.lastName %>
-        </td>
+       
+          <td style="border-right: #d1d1d1 1px solid">
+  <% if (item.firstName !== undefined && item.lastName !== undefined && item.firstName !== null && item.lastName !== null) { %>
+    <%= item.firstName + ' ' + item.lastName %>
+  <% } else { %>
+     Not KYC yet
+  <% } %>
+</td>
+
         <td style="border-right: #d1d1d1 1px solid">
           <%= item.email %>
         </td>

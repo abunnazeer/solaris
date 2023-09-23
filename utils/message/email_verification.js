@@ -18,7 +18,7 @@ function emailVerification(url) {
  
   <p>Sincerely,</p>
  
-  <p>The Solaris Finance Support Team.</p>`;
+  <p><strong>The Solaris Finance Support Team.</strong></p>`;
 }
 module.exports = {
   emailVerification,

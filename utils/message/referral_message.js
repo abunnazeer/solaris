@@ -2,7 +2,7 @@
 function referralEmail(firstName, lastName, bonusAmount) {
   return `
     <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-        <h4>Dear ${firstName} ${lastName}</h4>
+        <h4>Dear ${firstName} ${lastName},</h4>
         <p>We're thrilled to inform you that your diligent efforts have paid off – your downline's investment has been successfully processed, and your commission of <strong>$${bonusAmount.toLocaleString()}</strong> has been credited to your account!</p>
 
         <p>We're delighted to see your network expanding and your contributions being rewarded. Your commitment to sharing our investment opportunities is truly appreciated.</p>
@@ -16,7 +16,7 @@ function referralEmail(firstName, lastName, bonusAmount) {
         <p>If you have any questions or need assistance, please don't hesitate to contact our dedicated support team</p>
 
         <p>Best regards,<br/>
-        The Solaris Finance Support Team</p>
+        <strong>The Solaris Finance Support Team</strong></p>
     </div>
     `;
 }

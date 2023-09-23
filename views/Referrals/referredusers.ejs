@@ -38,7 +38,7 @@ margin-bottom: 20px;
 
       <div
         class="content-wrapper bg-white"
-        style="border-radius: 0; border-top: 1px solid rgb(203, 203, 203)"
+        style="border-radius: 0; border-top: 1px solid #cbcbcb"
       >
         <div class="container mt-30">
           <img
@@ -51,16 +51,17 @@ margin-bottom: 20px;
               <div
                 class="d-md-flex justify-content-between align-items-center mb-10"
               >
-                <div class="col-5">
+                <div class="col-12 col-md-5">
                   <h2 class="title fw-600"><%= title %></h2>
                 </div>
-                <div class="col-5">
+                <div class="col-12 col-md-5">
                   <div class="input-group">
                     <div class="custom__p"
                       style="
-                        border: 1px solid #8c8c8d;
+                        border: 1px solid #cbcbcb;
                         padding: 14px 3px;
-                        border-radius: 10px;
+
+                        width: 100%;
                       "
                     >
                       Referal Link:
@@ -114,7 +115,15 @@ margin-bottom: 20px;
     <% referredUsers.forEach((user, index) => { %>
       <tr>
         <td style="border-right: #d1d1d1 1px solid"><%= index + 1 %></td>
-        <td style="border-right: #d1d1d1 1px solid"><%= user.profile.firstName + ' ' + user.profile.lastName %></td>
+     
+<td style="border-right: #d1d1d1 1px solid">
+  <% if (user && user.profile && user.profile.firstName !== undefined && user.profile.lastName !== undefined && user.profile.firstName !== null && user.profile.lastName !== null) { %>
+    <%= user.profile.firstName + ' ' + user.profile.lastName %>
+  <% } else { %>
+    Not KYC yet
+  <% } %>
+</td>
+
         <td style="border-right: #d1d1d1 1px solid"><%= user.user.email %></td>
         <td style="border-right: #d1d1d1 1px solid">
           <% if (user.buyPortfolio && user.buyPortfolio.depositAmount) { %>

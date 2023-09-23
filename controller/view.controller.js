@@ -16,7 +16,7 @@ const secretKey =
 const multer = require('multer');
 
 const sendEmail = require('../utils/email');
-const { emailKyc } = require('../utils/message/referral_message');
+const { emailKyc } = require('../utils/message/message_kyc');
 const TransactionsActivity = require('../models/portfolio/transaction.model');
 
 const storage = multer.diskStorage({
@@ -292,7 +292,7 @@ const getVerificationStatus = (req, res) => {
     title: 'Verification Status',
     heading: 'Verification Status in Progress',
     message:
-      'Thank you for your recent application! We want to inform you that your verification status is currently in progress. Our team is diligently reviewing the provided information to ensure accuracy and compliance with our requirements',
+      'Thank you for your recent application! We want to inform you that your verification status is currently in progress. Our team is diligently reviewing the provided information to ensure accuracy and compliance with our requirements.',
   });
 };
 
