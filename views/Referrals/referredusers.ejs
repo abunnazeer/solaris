@@ -120,7 +120,7 @@ margin-bottom: 20px;
   <% if (user && user.profile && user.profile.firstName !== undefined && user.profile.lastName !== undefined && user.profile.firstName !== null && user.profile.lastName !== null) { %>
     <%= user.profile.firstName + ' ' + user.profile.lastName %>
   <% } else { %>
-    Not KYC yet
+  <span style="color: red;">Please Complete KYC</span>
   <% } %>
 </td>
 
