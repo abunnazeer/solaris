@@ -128,7 +128,7 @@ body {
   font-size: 1rem;
   font-style: normal;
   font-weight: 400;
-  font-family: 'Poppins', sans-serif;
+  font-family:  sans-serif;
   line-height: 1.5;
   background-color: #eaedf7;
 }
@@ -157,7 +157,7 @@ h6,
 .h4,
 .h5,
 .h6 {
-  font-family: 'Poppins', sans-serif;
+  font-family:  sans-serif;
   font-weight: 400;
   line-height: 1.2;
 }
@@ -263,11 +263,11 @@ img {
 }
 
 .base-font {
-  font-family: 'Poppins', sans-serif !important;
+  font-family:  sans-serif !important;
 }
 
 .heading-font {
-  font-family: 'Poppins', sans-serif !important;
+  font-family:  sans-serif !important;
 }
 
 .fs-0 {
