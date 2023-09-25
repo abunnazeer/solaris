@@ -97,12 +97,12 @@
         <% 
           if (activity.description === 'Withdrawal') {
             if (activity.status === 'Approved') {
-              const message = `${activity.description} of $${activity.amount} has been sent`;
+              const message = `${activity.description} of $${activity.amount.toLocaleString()} has been sent`;
         %>
           <%= message %>
         <% 
             } else if (activity.status === 'Pending Approval') {
-              const message = `${activity.description} of $${activity.amount} has been requested from your account`;
+              const message = `${activity.description} of $${activity.amount.toLocaleString()} has been requested from your account`;
         %>
           <%= message %>
         <% 
@@ -115,7 +115,7 @@
         %>
       </td>
       <td style="border-right: #d1d1d1 1px solid">
-        $<%= activity.amount %>
+        $<%= activity.amount.toLocaleString() %>
       </td>
       <td>
         <% if (activity.status === 'Credited') { %>
