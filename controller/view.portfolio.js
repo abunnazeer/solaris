@@ -220,7 +220,9 @@ const paymentComfirmation = catchAsync(async (req, res) => {
 
       const { _id } = await User.findOne({ _id: userId });
       const userProfile = await Profile.findOne({ _id: userId });
-      const description = `Credited 10% $${bonusAmount}, as a referral from ${userProfile.firstName} - ${userProfile.lastName} to your account balance `;
+      const description = `Credited 10% $${bonusAmount.toLocaleString()}, as a referral from ${
+        userProfile.firstName
+      } - ${userProfile.lastName} to your account balance `;
 
       const referralBonus = new Referralbonus({
         referringUserId, // The user who referred the current user
@@ -291,7 +293,9 @@ const paymentComfirmation = catchAsync(async (req, res) => {
           _id: referringUserId,
         });
         const userProfile = await Profile.findOne({ _id: userId });
-        const description = `Credited 5% $${secondLevelBonusAmount}, as a referral from ${userProfile.firstName} - ${userProfile.lastName} to your account balance  `;
+        const description = `Credited 5% $${secondLevelBonusAmount.toLocaleString()}, as a referral from ${
+          userProfile.firstName
+        } - ${userProfile.lastName} to your account balance  `;
         const secondLevelReferralBonus = new Referralbonus({
           referringUserId: secondLevelReferrerId, // The user who referred the referring user
           bonusAmount: secondLevelBonusAmount,
@@ -369,7 +373,9 @@ const paymentComfirmation = catchAsync(async (req, res) => {
           _id: secondLevelReferrerId,
         });
         const userProfile = await Profile.findOne({ _id: userId });
-        const description = `Credited 2.5% $${thirdLevelBonusAmount}, as a referral from ${userProfile.firstName} - ${userProfile.lastName} to your account balance `;
+        const description = `Credited 2.5% $${thirdLevelBonusAmount.toLocaleString()}, as a referral from ${
+          userProfile.firstName
+        } - ${userProfile.lastName} to your account balance `;
         const thirdLevelReferralBonus = new Referralbonus({
           referringUserId: thirdLevelReferrerId, // The user who referred the second-level referrer
           bonusAmount: thirdLevelBonusAmount,
@@ -433,15 +439,15 @@ const paymentComfirmation = catchAsync(async (req, res) => {
     if (!buyPortfolio) {
       return res.status(404).json({ message: 'BuyPortfolio not found' });
     }
-     const referringUserProfile = await Profile.findOne({
-       _id: userId,
-     });
+    const referringUserProfile = await Profile.findOne({
+      _id: userId,
+    });
 
-     const emailContent = paymentComfirmationEmail(
-       referringUserProfile.firstName,
-       referringUserProfile.lastName,
-       portfoliodetail.portfolioName
-     );
+    const emailContent = paymentComfirmationEmail(
+      referringUserProfile.firstName,
+      referringUserProfile.lastName,
+      portfoliodetail.portfolioName
+    );
 
     // Send email to the user
     await sendEmail({
@@ -496,7 +502,9 @@ const comfirmReInvest = catchAsync(async (req, res) => {
       { status: 'Re Invested' }
     );
 
-    const emailContent = `Capital Top-up of ${depositedAmount} made to ${portfoliodetail.portfolioName}`;
+    const emailContent = `Capital Top-up of ${depositedAmoun.toLocaleString()} made to ${
+      portfoliodetail.portfolioName
+    }`;
 
     // Send email to the user
     await sendEmail({
@@ -727,7 +735,9 @@ const updatePayment = catchAsync(async (req, res) => {
       sn: generateRandomNumber(),
       date: date,
       title: portfolio.payout,
-      description: `Deposit of $${portfolio.depositAmount} made for ${portfolio.portfolioName}`,
+      description: `Deposit of $${portfolio.depositAmount.toLocaleString()} made for ${
+        portfolio.portfolioName
+      }`,
       buyPortfolioId: id,
       status: statusValue,
       amount: portfolio.depositAmount,
