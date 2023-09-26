@@ -91,8 +91,8 @@ router.patch(
   restrictTo('admin', 'farmer'),
   updateProfile
 );
-router.get('/test-daily-payout', protect, dailyPayout);
-router.get('/test-comp-payout', protect, compoundingPayout);
+router.get('/daily-payout', protect, dailyPayout);
+router.get('/comp-payout', protect, compoundingPayout);
 
 // router.post('/register', register);
 router.post('/register/:referredByCode?', register);

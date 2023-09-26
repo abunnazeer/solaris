@@ -85,7 +85,7 @@ const dailyPayout = async () => {
         sn: generateRandomNumber(),
         date: new Date(),
         title: 'Daily Payout commission',
-        description: `Daily payout commission of $${payout} added to your account balance`,
+        description: `Daily payout commission of $${payout.toLocaleString()} added to your account balance`,
         buyPortfolioId: portfolio._id,
         status: 'Credited',
         amount: payout.toFixed(2),
@@ -97,7 +97,9 @@ const dailyPayout = async () => {
       await transActivity.save();
 
       messages.push(
-        `Payout of ${payout} added to balance for portfolio ${portfolio._id}`
+        `Payout of ${payout.toLocaleString()} added to balance for portfolio ${
+          portfolio._id
+        }`
       );
     }
 
@@ -184,7 +186,9 @@ const compoundingPayout = async () => {
           sn: generateRandomNumber(),
           date: new Date(),
           title: 'Compounding commission',
-          description: `Compounding commission of $${payout} added to your ${portfolio.portfolioName}`,
+          description: `Compounding commission of $${payout.toLocaleString()} added to your ${
+            portfolio.portfolioName
+          }`,
           buyPortfolioId: portfolio._id,
           status: 'Credited',
           amount: payout.toFixed(2),
@@ -195,7 +199,9 @@ const compoundingPayout = async () => {
 
         await transActivity.save();
         messages.push(
-          `Payout of ${payout} added to compounding balance for portfolio ${portfolio._id}`
+          `Payout of ${payout.toLocaleString()} added to compounding balance for portfolio ${
+            portfolio._id
+          }`
         );
       }
     }

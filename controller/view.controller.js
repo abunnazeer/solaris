@@ -811,7 +811,9 @@ const postReInvestPortfolio = catchAsync(async (req, res) => {
               sn: generateRandomNumber(),
               date: date,
               title: 'Capital Top-up',
-              description: `Capital Top-up of $${availableAmount} made to ${portfolio.portfolioName}`,
+              description: `Capital Top-up of $${availableAmount.toLocaleString()} made to ${
+                portfolio.portfolioName
+              }`,
               buyPortfolioId: portfolio._id,
               status: 'Re Invested',
               amount: availableAmount,
@@ -865,7 +867,9 @@ const postReInvestPortfolio = catchAsync(async (req, res) => {
         sn: generateRandomNumber(),
         date: date,
         title: 'Capital Top-up',
-        description: `Capital Top-up of $${newAmount} made to ${portfolio.portfolioName}`,
+        description: `Capital Top-up of $${newAmount.toLocaleString()} made to ${
+          portfolio.portfolioName
+        }`,
         buyPortfolioId: portfolio._id,
         status: 'Pending Re-Invested',
         amount: newAmount,
