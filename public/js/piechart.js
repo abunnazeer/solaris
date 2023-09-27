@@ -78,17 +78,35 @@ function renderPieChart() {
   axios
     .get('/chart/pie-chart') // Replace with your API endpoint
     .then(response => {
-      const buyPortfolioData = response.data.accountDetails[0];
-      const compoundingDividends = buyPortfolioData.TotalCompoundingBalance;
-      const accountBalance = buyPortfolioData.totalAccountBalance;
-      const accumulatedDividends = buyPortfolioData.accumulatedDividends;
+      // const buyPortfolioData = response.data.accountDetails[0];
+      // const compoundingDividends = buyPortfolioData.TotalCompoundingBalance;
+      // const accountBalance = buyPortfolioData.totalAccountBalance;
+      // const accumulatedDividends = buyPortfolioData.accumulatedDividends;
+      const accountDetailsArray = response.data.accountDetails;
+
+      // Initialize variables to store the sum of each field
+      let totalCompoundingDividends = 0;
+      let totalAccountBalance = 0;
+      let totalAccumulatedDividends = 0;
+
+      // Loop through each accountDetail object and accumulate the sums
+      accountDetailsArray.forEach(buyPortfolioData => {
+        totalCompoundingDividends +=
+          buyPortfolioData.TotalCompoundingBalance || 0;
+        totalAccountBalance += buyPortfolioData.totalAccountBalance || 0;
+        totalAccumulatedDividends += buyPortfolioData.accumulatedDividends || 0;
+      });
 
       var options = {
         chart: {
           type: 'pie',
           height: window.innerWidth <= 768 ? '280px' : '180px',
         },
-        series: [accumulatedDividends, compoundingDividends, accountBalance],
+        series: [
+          totalAccumulatedDividends,
+          totalCompoundingDividends,
+          totalAccountBalance,
+        ],
         labels: [
           'Accumulated Dividends',
           'Compounding Dividends',
@@ -109,9 +127,9 @@ function renderPieChart() {
       var chartContainer = document.querySelector('#financialOverview');
 
       if (
-        accumulatedDividends === 0 &&
-        compoundingDividends === 0 &&
-        accountBalance === 0
+        totalAccumulatedDividends === 0 &&
+        totalAccumulatedDividends === 0 &&
+        totalAccountBalance === 0
       ) {
         chartContainer.innerHTML = '<p>No data available yet</p>';
         chartContainer.style.textAlign = 'center';

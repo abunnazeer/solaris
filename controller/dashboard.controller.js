@@ -71,28 +71,43 @@ const dashboard = async (req, res) => {
     );
     referralBonusTotalArray.push(totalReferralBonus);
 
-    // dashbard detail
+    // // dashbard detail
     const portfolios = await buyPortfolio.find({ userId: id });
-    const portfoliosBalance = await AccountDetail.findOne({ userId: id });
+    // const portfoliosBalance = await AccountDetail.find({ userId: id });
 
+    // console.log(portfoliosBalance);
     const portfolioData = portfolios.map(portfolio => {
       return {
         status: portfolio.status,
       };
     });
 
+    // let accumulatedDividends = 0;
+    // let totalAccountBalance = 0;
+    // let compoundBalance = 0;
+    // let totalReferralBalance = 0;
+
+    // if (portfoliosBalance) {
+    //   accumulatedDividends = portfoliosBalance.accumulatedDividends;
+    //   totalAccountBalance = portfoliosBalance.totalAccountBalance;
+    //   compoundBalance = portfoliosBalance.TotalCompoundingBalance;
+    //   totalReferralBalance = portfoliosBalance.totalReferralBonus;
+    // }
+    const portfoliosBalances = await AccountDetail.find({ userId: id });
+
+    // Initialize variables to hold account details.
     let accumulatedDividends = 0;
     let totalAccountBalance = 0;
     let compoundBalance = 0;
     let totalReferralBalance = 0;
 
-    if (portfoliosBalance) {
-      accumulatedDividends = portfoliosBalance.accumulatedDividends;
-      totalAccountBalance = portfoliosBalance.totalAccountBalance;
-      compoundBalance = portfoliosBalance.TotalCompoundingBalance;
-      totalReferralBalance = portfoliosBalance.totalReferralBonus;
-    }
-
+    // Sum up the details from all portfolios.
+    portfoliosBalances.forEach(portfolioBalance => {
+      accumulatedDividends += portfolioBalance.accumulatedDividends || 0;
+      totalAccountBalance += portfolioBalance.totalAccountBalance || 0;
+      compoundBalance += portfolioBalance.TotalCompoundingBalance || 0;
+      totalReferralBalance += portfolioBalance.totalReferralBonus || 0;
+    });
     const referredUsersCount = await User.countDocuments({
       referredBy: id,
     });
