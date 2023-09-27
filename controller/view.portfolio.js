@@ -502,7 +502,7 @@ const comfirmReInvest = catchAsync(async (req, res) => {
       { status: 'Re Invested' }
     );
 
-    const emailContent = `Capital Top-up of ${depositedAmoun.toLocaleString()} made to ${
+    const emailContent = `Capital Top-up of ${depositedAmount.toLocaleString()} made to ${
       portfoliodetail.portfolioName
     }`;
 

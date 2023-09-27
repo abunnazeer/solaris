@@ -176,18 +176,19 @@ server.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
 });
 
-cron.schedule('0 3 * * 1-5', dailyPayout);
-cron.schedule('0 3 * * 1-5', compoundingPayout);
-
+// cron.schedule('0 3 * * 1-5', dailyPayout);
+// cron.schedule('0 3 * * 1-5', compoundingPayout);
 // cron.schedule('*/40 * * * * *', () => {
-//   console.log('Running a task every 40 seconds');
+//   console.log('==============================================');
+//   console.log('Running daily a task every 40 seconds');
 //   dailyPayout();
 // });
-
 // cron.schedule('*/40 * * * * *', () => {
-//   console.log('Running a task every 40 seconds');
+//   console.log('Running compounding a task every 40 seconds');
+//   console.log('==============================================');
 //   compoundingPayout();
 // });
+
 // Handle unhandled promise rejections
 process.on('unhandledRejection', err => {
   console.log('UNHANDLED REJECTION! Server is shutting down now');
