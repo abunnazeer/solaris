@@ -189,6 +189,22 @@ server.listen(PORT, () => {
 //   compoundingPayout();
 // });
 
+// Cron jobs with improved logging
+cron.schedule('0 3 * * *', () => {
+  console.log('Starting dailyPayout cron job at', new Date().toISOString());
+  dailyPayout();
+});
+
+cron.schedule('0 3 * * *', () => {
+  console.log(
+    'Starting compoundingPayout cron job at',
+    new Date().toISOString()
+  );
+  compoundingPayout();
+});
+
+
+
 // Handle unhandled promise rejections
 process.on('unhandledRejection', err => {
   console.log('UNHANDLED REJECTION! Server is shutting down now');
