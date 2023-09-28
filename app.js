@@ -190,15 +190,18 @@ server.listen(PORT, () => {
 // });
 
 // Cron jobs with improved logging
-// cron.schedule('0 3 * * *', () => {
-//   console.log('Starting dailyPayout cron job at', new Date().toISOString());
-//   dailyPayout();
-// });
+cron.schedule('0 3 * * *', () => {
+  console.log('Starting dailyPayout cron job at', new Date().toISOString());
+  dailyPayout();
+});
 
-// cron.schedule('0 3 * * *', () => {
-//   console.log('Starting compoundingPayout cron job at', new Date().toISOString());
-//   compoundingPayout();
-// });
+cron.schedule('0 3 * * *', () => {
+  console.log(
+    'Starting compoundingPayout cron job at',
+    new Date().toISOString()
+  );
+  compoundingPayout();
+});
 
 
 
