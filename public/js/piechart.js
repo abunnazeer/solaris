@@ -96,7 +96,7 @@ function renderPieChart() {
         totalAccountBalance += buyPortfolioData.totalAccountBalance || 0;
         totalAccumulatedDividends += buyPortfolioData.accumulatedDividends || 0;
       });
-
+console.log(totalCompoundingDividends);
       var options = {
         chart: {
           type: 'pie',
