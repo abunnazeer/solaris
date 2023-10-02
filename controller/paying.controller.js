@@ -368,11 +368,11 @@ const compoundingPayout = async next => {
       throw new Error('Invalid day name');
     }
 
-    // // Check if it's a weekend
-    // if (['Saturday', 'Sunday'].includes(dayName)) {
-    //   console.log('No compounding payouts on weekends.');
-    //   return;
-    // }
+    // Check if it's a weekend
+    if (['Saturday', 'Sunday'].includes(dayName)) {
+      console.log('No compounding payouts on weekends.');
+      return;
+    }
 
     // Fetch active portfolios
     let portfolios;
