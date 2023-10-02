@@ -16,6 +16,7 @@ const cron = require('node-cron');
 
 // Importing routers
 const Transactions = require('./models/portfolio/transaction.model');
+const CronJobState = require('./models/portfolio/CronJobState');
 const Portfolio = require('./models/portfolio/portfolio.model');
 const buyPortfolio = require('./models/portfolio/buyportfolio.model');
 const userRouter = require('./routes/user.routers');
@@ -181,6 +182,7 @@ server.listen(PORT, () => {
 // cron.schedule('*/40 * * * * *', () => {
 //   console.log('==============================================');
 //   console.log('Running daily a task every 40 seconds');
+//   compoundingPayout();
 //   dailyPayout();
 // });
 // cron.schedule('*/40 * * * * *', () => {
@@ -190,18 +192,74 @@ server.listen(PORT, () => {
 // });
 
 // Cron jobs with improved logging
-cron.schedule('0 3 * * *', () => {
-  console.log('Starting dailyPayout cron job at', new Date().toISOString());
-  dailyPayout();
-});
+// cron.schedule('0 3 * * *', () => {
+//   console.log('Starting dailyPayout cron job at', new Date().toISOString());
+//   dailyPayout();
+// });
 
-cron.schedule('0 3 * * *', () => {
+// cron.schedule('0 3 * * *', () => {
+//   console.log(
+//     'Starting compoundingPayout cron job at',
+//     new Date().toISOString()
+//   );
+//   compoundingPayout();
+//    dailyPayout();
+// });
+
+const cronTask = async () => {
   console.log(
     'Starting compoundingPayout cron job at',
     new Date().toISOString()
   );
-  compoundingPayout();
-});
+  await compoundingPayout();
+  await dailyPayout();
+
+  // Update lastRunTime in the database
+  await CronJobState.findOneAndUpdate(
+    { jobName: 'compoundingPayout' },
+    { lastRunTime: new Date() },
+    { upsert: true }
+  );
+};
+// const checkAndForceRunCron = async () => {
+//   // Fetch lastRunTime from the database
+//   const record = await CronJobState.findOne({ jobName: 'compoundingPayout' });
+//   const lastRunTime = record ? record.lastRunTime : null;
+
+//   const currentTime = new Date();
+//   const fourSecondsAgo = new Date(currentTime.getTime() - 4000); // 4 seconds ago
+
+//   if (lastRunTime === null || lastRunTime < fourSecondsAgo) {
+//     console.log('Cron job has not run in the last 4 seconds. Forcing run now.');
+//     await cronTask();
+//   } else {
+//     console.log('Cron job has already run in the last 4 seconds.');
+//   }
+// };
+
+const checkAndForceRunCron = async () => {
+  // Fetch lastRunTime from the database
+  const record = await CronJobState.findOne({ jobName: 'compoundingPayout' });
+  const lastRunTime = record ? record.lastRunTime : null;
+
+  const currentTime = new Date();
+  const threeAMToday = new Date(currentTime);
+  threeAMToday.setHours(3, 0, 0, 0);
+
+  if (lastRunTime === null || lastRunTime < threeAMToday) {
+    console.log('Cron job has not run today. Forcing run now.');
+    await cronTask();
+  } else {
+    console.log('Cron job has already run today.');
+  }
+};
+// '*/40 * * * * *',
+// Schedule the cron job
+// cron.schedule('*/40 * * * * *', cronTask);
+cron.schedule('0 3 * * *', cronTask);
+
+// Example usage to check and force-run the cron job
+checkAndForceRunCron();
 
 
 
